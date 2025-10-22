@@ -1,0 +1,18 @@
+from django import template
+
+register = template.Library()
+
+@register.filter
+def split(value, arg=' '):
+    """Split a string by the given argument (default is space)"""
+    return value.split(arg)
+
+@register.filter
+def first_word(value):
+    """Get the first word of a string"""
+    return value.split(' ')[0] if value else ''
+
+@register.filter
+def capitalize_specialty(value):
+    """Capitalize specialty names"""
+    return value.title() if value else ''

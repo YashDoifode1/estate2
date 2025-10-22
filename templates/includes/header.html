@@ -12,20 +12,19 @@
         </div>
         
         <!-- Navigation -->
-        <!-- In your navigation menu, add contact link -->
-<nav class="hidden md:flex space-x-8">
-    <a href="{% url 'home' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Home</a>
-    <a href="{% url 'property_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Properties</a>
-    <a href="{% url 'about' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">About</a>
-    <a href="{% url 'agents_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Agents</a>
-    <a href="{% url 'blog_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Blog</a>
-    <a href="{% url 'contact' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Contact</a>  <!-- Add this line -->
-    {% if user.is_authenticated %}
-        <a href="{% url 'profile' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">My Profile</a>
-    {% else %}
-        <a href="{% url 'login' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">Login</a>
-    {% endif %}
-</nav>
+        <nav class="hidden md:flex space-x-8">
+            <a href="{% url 'home' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Home</a>
+            <a href="{% url 'property_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Properties</a>
+            <a href="{% url 'agents:agents_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Our Agents</a>
+            <a href="{% url 'about' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">About</a>
+            <a href="{% url 'blog_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Blog</a>
+            <a href="{% url 'contact' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Contact</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">My Profile</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">Login</a>
+            {% endif %}
+        </nav>
         
         <!-- User Menu -->
         <div class="flex items-center space-x-4">
@@ -65,18 +64,50 @@
     </div>
     
     <!-- Mobile Menu -->
-    <!-- Mobile Menu -->
-<div id="mobile-menu" class="hidden md:hidden bg-white py-4 px-4 shadow-lg">
-    <a href="{% url 'home' %}" class="block py-2 text-gray-600 font-medium">Home</a>
-    <a href="{% url 'property_list' %}" class="block py-2 text-gray-600 font-medium">Properties</a>
-    <a href="{% url 'about' %}" class="block py-2 text-gray-600 font-medium">About</a>
-    <a href="{% url 'agents_list' %}" class="block py-2 text-gray-600 font-medium">Agents</a>
-    <a href="{% url 'blog_list' %}" class="block py-2 text-gray-600 font-medium">Blog</a>
-    <a href="{% url 'contact' %}" class="block py-2 text-gray-600 font-medium">Contact</a>  <!-- Add this line -->
-    {% if user.is_authenticated %}
-        <a href="{% url 'profile' %}" class="block py-2 text-blue-900 font-medium">My Profile</a>
-    {% else %}
-        <a href="{% url 'login' %}" class="block py-2 text-blue-900 font-medium">Login</a>
-    {% endif %}
-</div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white py-4 px-4 shadow-lg">
+        <a href="{% url 'home' %}" class="block py-2 text-gray-600 font-medium">Home</a>
+        <a href="{% url 'property_list' %}" class="block py-2 text-gray-600 font-medium">Properties</a>
+        <a href="{% url 'agents:agents_list' %}" class="block py-2 text-gray-600 font-medium">Our Agents</a>
+        <a href="{% url 'about' %}" class="block py-2 text-gray-600 font-medium">About</a>
+        <a href="{% url 'blog_list' %}" class="block py-2 text-gray-600 font-medium">Blog</a>
+        <a href="{% url 'contact' %}" class="block py-2 text-gray-600 font-medium">Contact</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="block py-2 text-blue-900 font-medium">My Profile</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="block py-2 text-blue-900 font-medium">Login</a>
+        {% endif %}
+    </div>
 </header>
+
+<!-- JavaScript for Mobile Menu and User Dropdown -->
+<script>
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // User dropdown toggle
+    document.getElementById('user-menu-button').addEventListener('click', function() {
+        const userMenu = document.getElementById('user-menu');
+        userMenu.classList.toggle('hidden');
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenu = document.getElementById('user-menu');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // Close user dropdown if clicking outside
+        if (userMenuButton && userMenu && !userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+            userMenu.classList.add('hidden');
+        }
+
+        // Close mobile menu if clicking outside
+        if (mobileMenuButton && mobileMenu && !mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+</script>

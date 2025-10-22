@@ -1,0 +1,372 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact {{ agent.name }} | DreamHomes Realty</title>
+    <meta name="description" content="Get in touch with {{ agent.name }}, our experienced real estate agent at DreamHomes Realty. Contact for buying, selling, or renting properties in Nagpur.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --royal-blue: #1e3a8a;
+            --gold: #d4af37;
+        }
+        
+        .hero-bg {
+            background-image: linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.9)), url('https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .linkedin-bg {
+            background-color: #0077b5;
+        }
+        
+        .whatsapp-bg {
+            background-color: #25D366;
+        }
+        
+        .email-bg {
+            background-color: #EA4335;
+        }
+        
+        .contact-form-bg {
+            background-image: linear-gradient(rgba(30, 58, 138, 0.05), rgba(30, 58, 138, 0.05)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1073&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Header -->
+    {% include 'base.html' %}
+    
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">Contact {{ agent.name }}</h1>
+            <p class="text-xl max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Get in touch with {{ agent.name }}, our dedicated real estate professional who is ready to guide you through every step of your property journey.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-16 contact-form-bg">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden" data-aos="fade-up">
+                <div class="md:flex">
+                    <!-- Agent Information -->
+                    <div class="md:w-2/5 bg-blue-900 text-white p-8">
+                        <div class="text-center mb-6">
+                            <img src="{{ agent.image_url }}" alt="{{ agent.name }}" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-yellow-400">
+                            <h2 class="text-2xl font-bold">{{ agent.name }}</h2>
+                            <p class="text-yellow-400">{{ agent.title }}</p>
+                        </div>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-start">
+                                <i class="fas fa-briefcase text-yellow-600 mt-1 mr-4"></i>
+                                <div>
+                                    <h3 class="font-bold">Experience</h3>
+                                    <p class="text-blue-200">{{ agent.experience }}+ years in real estate</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="fas fa-home text-yellow-600 mt-1 mr-4"></i>
+                                <div>
+                                    <h3 class="font-bold">Properties Sold</h3>
+                                    <p class="text-blue-200">{{ agent.properties_sold }}+ successful transactions</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-yellow-600 mr-4"></i>
+                                <div>
+                                    <h3 class="font-bold">Direct Line</h3>
+                                    <p class="text-blue-200">{{ agent.phone }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-yellow-600 mr-4"></i>
+                                <div>
+                                    <h3 class="font-bold">Email</h3>
+                                    <p class="text-blue-200">{{ agent.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Specialties -->
+                        <div class="mt-6">
+                            <h3 class="font-bold mb-3">Specialties</h3>
+                            <div class="flex flex-wrap">
+                                {% for specialty in agent.specialties %}
+                                <span class="bg-blue-800 text-blue-100 text-xs px-3 py-1 rounded-full mr-2 mb-2">
+                                    {{ specialty|title }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Social Links -->
+                        <div class="mt-8">
+                            <h3 class="font-bold mb-4">Connect With {{ agent.name|first_word }}</h3>
+                            <div class="flex space-x-4">
+                                {% if agent.linkedin_url %}
+                                <a href="{{ agent.linkedin_url }}" class="bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                {% endif %}
+                                {% if agent.whatsapp_url %}
+                                <a href="{{ agent.whatsapp_url }}" class="bg-green-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-green-500 transition">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                {% endif %}
+                                <a href="mailto:{{ agent.email }}" class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 transition">
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Form -->
+                    <div class="md:w-3/5 p-8">
+                        <h2 class="text-2xl font-bold text-blue-900 mb-2">Send a Message to {{ agent.name|first_word }}</h2>
+                        <p class="text-gray-600 mb-6">Fill out the form below and {{ agent.name|first_word }} will get back to you shortly.</p>
+                        
+                        <form id="contact-agent-form" method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label for="name" class="block text-gray-700 mb-2">Your Name *</label>
+                                    <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                                </div>
+                                <div>
+                                    <label for="phone" class="block text-gray-700 mb-2">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="property_type" class="block text-gray-700 mb-2">I'm Interested In</label>
+                                <select id="property_type" name="property_type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
+                                    <option value="">Select Property Type</option>
+                                    <option value="buying">Buying a Property</option>
+                                    <option value="selling">Selling a Property</option>
+                                    <option value="renting">Renting a Property</option>
+                                    <option value="investment">Property Investment</option>
+                                    <option value="consultation">Professional Consultation</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="location" class="block text-gray-700 mb-2">Preferred Location in Nagpur</label>
+                                <input type="text" id="location" name="location" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" placeholder="e.g., Civil Lines, Ramdaspeth, Wardhaman Nagar...">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="budget" class="block text-gray-700 mb-2">Budget Range (₹)</label>
+                                <select id="budget" name="budget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
+                                    <option value="">Select Budget Range</option>
+                                    <option value="0-20">Under 20 Lakhs</option>
+                                    <option value="20-50">20-50 Lakhs</option>
+                                    <option value="50-100">50 Lakhs - 1 Crore</option>
+                                    <option value="100-200">1-2 Crores</option>
+                                    <option value="200+">Above 2 Crores</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="message" class="block text-gray-700 mb-2">Your Message *</label>
+                                <textarea id="message" name="message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900" placeholder="Tell {{ agent.name|first_word }} about your specific requirements, timeline, and any questions you might have..." required></textarea>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="flex items-start">
+                                    <input type="checkbox" name="newsletter" class="rounded text-blue-900 focus:ring-blue-900 mt-1">
+                                    <span class="ml-2 text-gray-700 text-sm">Subscribe to our newsletter for property updates and market insights in Nagpur</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Send Message to {{ agent.name|first_word }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agent Description Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-blue-900 mb-6" data-aos="fade-up">About {{ agent.name }}</h2>
+                <div class="bg-white rounded-lg shadow-md p-8" data-aos="fade-up" data-aos-delay="200">
+                    <p class="text-gray-700 text-lg leading-relaxed mb-6">
+                        {{ agent.description }}
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                        <div class="text-center">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-briefcase text-blue-900 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-blue-900">{{ agent.experience }}+ Years</h3>
+                            <p class="text-gray-600 text-sm">Experience</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-home text-blue-900 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-blue-900">{{ agent.properties_sold }}+</h3>
+                            <p class="text-gray-600 text-sm">Properties Sold</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-award text-blue-900 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-blue-900">Expert</h3>
+                            <p class="text-gray-600 text-sm">In {{ agent.specialties|join:", "|title }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Other Agents Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">Meet Our Other Expert Agents</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Can't find what you're looking for? Our entire team is here to help you with your real estate needs.
+                </p>
+            </div>
+            
+            <div class="text-center mb-8">
+                <a href="{% url 'agents:agents_list' %}" class="inline-flex items-center bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
+                    <i class="fas fa-users mr-2"></i>
+                    View All Agents
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Contact form submission
+        document.getElementById('contact-agent-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            // Show loading state
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+            submitButton.disabled = true;
+            
+            const formData = new FormData(this);
+            
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showMessage('Message sent successfully! {{ agent.name|first_word }} will contact you soon.', 'success');
+                    this.reset();
+                } else {
+                    showMessage('Error sending message. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Error sending message. Please try again.', 'error');
+            })
+            .finally(() => {
+                // Reset button
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            });
+        });
+
+        function showMessage(message, type) {
+            // Create message element
+            const messageEl = document.createElement('div');
+            messageEl.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            messageEl.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(messageEl);
+            
+            // Remove message after 5 seconds
+            setTimeout(() => {
+                messageEl.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

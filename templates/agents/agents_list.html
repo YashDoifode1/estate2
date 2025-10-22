@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Our Real Estate Agents | DreamHomes Realty{% endblock %}
+
+{% block content %}
+<style>element.style {
+    background-color: darkblue;
+}
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+    background-color: darkblue;
+}
+</style>
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">Meet Our Expert Agents</h1>
+            <p class="text-xl max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Our dedicated team of real estate professionals is here to guide you through every step of your property journey.
+            </p>
+        </div>
+    </section>
+
+    <!-- Agents Grid -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">Our Real Estate Experts</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Each of our agents brings unique expertise and a commitment to exceptional service.
+                </p>
+            </div>
+            
+            <!-- Filter Options -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12" data-aos="fade-up">
+                <button class="filter-btn px-4 py-2 bg-blue-900 text-white rounded-lg transition active-filter" data-filter="all">
+                    All Agents
+                </button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-filter="residential">
+                    Residential
+                </button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-filter="commercial">
+                    Commercial
+                </button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-filter="luxury">
+                    Luxury Properties
+                </button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-filter="rental">
+                    Rental Properties
+                </button>
+            </div>
+            
+            <div id="agents-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {% for agent in agents %}
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md agent-card" data-aos="fade-up" data-specialties="{{ agent.specialties|join:',' }}">
+                        <div class="relative">
+                            <img src="{{ agent.image_url }}" alt="{{ agent.name }}" class="w-full h-64 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                <h3 class="text-xl font-bold text-white">{{ agent.name }}</h3>
+                                <p class="text-yellow-400">{{ agent.title }}</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex flex-wrap mb-4">
+                                {% for specialty in agent.specialties %}
+                                    <span class="specialty-badge">{{ specialty|title }}</span>
+                                {% endfor %}
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">{{ agent.description }}</p>
+                            <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                <div class="flex items-center">
+                                    <i class="fas fa-briefcase text-yellow-600 mr-2"></i>
+                                    <span>{{ agent.experience }} years</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-home text-yellow-600 mr-2"></i>
+                                    <span>{{ agent.properties_sold }}+ Properties</span>
+                                </div>
+                            </div>
+                            <div class="border-t border-gray-200 pt-4 mb-4">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-phone text-yellow-600 mr-3"></i>
+                                    <span class="text-gray-700">{{ agent.phone }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-envelope text-yellow-600 mr-3"></i>
+                                    <span class="text-gray-700">{{ agent.email }}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center space-x-4">
+                                {% if agent.linkedin_url %}
+                                <a href="{{ agent.linkedin_url }}" class="social-icon linkedin-bg text-white">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                {% endif %}
+                                {% if agent.whatsapp_url %}
+                                <a href="{{ agent.whatsapp_url }}" class="social-icon whatsapp-bg text-white">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                {% endif %}
+                                <a href="mailto:{{ agent.email }}" class="social-icon email-bg text-white">
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                            </div>
+                            <a href="{% url 'agents:contact_agent' agent.id %}" class="w-full mt-4 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 rounded-lg transition block text-center">
+                                Contact {{ agent.name|first_word }}
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-users text-5xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">No agents found</h3>
+                        <p class="text-gray-600">Try selecting a different specialty filter</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Work With Our Agents -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">Why Work With Our Agents?</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Our agents go beyond transactions to build lasting relationships and deliver exceptional results.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center" data-aos="fade-up">
+                    <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-blue-900 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Market Expertise</h3>
+                    <p class="text-gray-700">
+                        Deep knowledge of Nagpur's real estate market trends and pricing.
+                    </p>
+                </div>
+                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-handshake text-blue-900 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Skilled Negotiators</h3>
+                    <p class="text-gray-700">
+                        Get the best possible deal with our expert negotiation skills.
+                    </p>
+                </div>
+                <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-blue-900 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">Property Matching</h3>
+                    <p class="text-gray-700">
+                        We find properties that perfectly match your needs and preferences.
+                    </p>
+                </div>
+                <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                    <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-file-contract text-blue-900 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-blue-900 mb-3">End-to-End Support</h3>
+                    <p class="text-gray-700">
+                        Guidance through every step from search to documentation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-blue-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-aos="fade-up">Ready to Work With Our Agents?</h2>
+            <p class="text-xl mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Contact us today and let our experts help you find your dream property.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
+                <a href="{% url 'contact' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Contact Our Team
+                </a>
+                <a href="{% url 'property_list' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Browse Properties
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript for Filtering -->
+    <script>
+        // Initialize filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const agentsGrid = document.getElementById('agents-grid');
+            const agentCards = agentsGrid.querySelectorAll('.agent-card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active-filter', 'bg-blue-900', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    this.classList.add('active-filter', 'bg-blue-900', 'text-white');
+
+                    // Filter agents
+                    const filter = this.dataset.filter;
+                    let hasVisibleAgents = false;
+
+                    agentCards.forEach(card => {
+                        const specialties = card.dataset.specialties.split(',');
+                        if (filter === 'all' || specialties.includes(filter)) {
+                            card.style.display = 'block';
+                            hasVisibleAgents = true;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    // Update no agents message
+                    if (!hasVisibleAgents) {
+                        agentsGrid.innerHTML = `
+                            <div class="col-span-full text-center py-12">
+                                <i class="fas fa-users text-5xl text-gray-400 mb-4"></i>
+                                <h3 class="text-xl font-bold text-gray-700 mb-2">No agents found</h3>
+                                <p class="text-gray-600">Try selecting a different specialty filter</p>
+                            </div>
+                        `;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

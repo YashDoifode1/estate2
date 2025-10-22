@@ -362,8 +362,7 @@ def home(request):
 def about(request):
     return render(request, 'accounts/about.html')
 
-def agents_list(request):
-    return render(request, 'accounts/agents_list.html')
+
 
 def blog_list(request):
     return render(request, 'accounts/blog_list.html')

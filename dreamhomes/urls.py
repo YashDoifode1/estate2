@@ -2,13 +2,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from accounts import views as account_views
-from properties.views import contact  # Import the specific view directly
+from properties.views import contact
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('agents/', include('agents.urls', namespace='agents')),  # Add namespace here
     path('properties/', include('properties.urls')),
     
     # Password reset URLs
@@ -22,12 +23,11 @@ urlpatterns = [
     path('privacy/', account_views.privacy, name='privacy'),
     
     # Contact page
-    path('contact/', contact, name='contact'),  # Use the directly imported view
+    path('contact/', contact, name='contact'),
     
-    # Temporary placeholder views for navigation
+    # Keep only accounts-related pages
     path('', account_views.home, name='home'),
     path('about/', account_views.about, name='about'),
-    path('agents/', account_views.agents_list, name='agents_list'),
     path('blog/', account_views.blog_list, name='blog_list'),
     path('settings/', account_views.settings, name='settings'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

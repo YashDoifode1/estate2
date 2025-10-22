@@ -4,7 +4,7 @@
 
 {% block content %}
     <!-- Settings Header -->
-    <section class="settings-header text-white py-12">
+    <section class="settings-header bg-blue-900 text-white py-12">
         <div class="container mx-auto px-4">
             <div class="max-w-6xl mx-auto">
                 <!-- Breadcrumb -->
@@ -33,62 +33,62 @@
     </section>
 
     <!-- Settings Content -->
-    <section class="py-8">
+    <section class="py-8 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="flex flex-col lg:flex-row gap-8">
                     <!-- Settings Navigation -->
                     <aside class="lg:w-1/4">
-                        <div class="bg-white rounded-lg shadow-md p-6 settings-nav">
+                        <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
                             <h2 class="text-xl font-bold text-blue-900 mb-4">Settings</h2>
                             <nav class="space-y-2">
-                                <div class="nav-item active" data-section="profile">
+                                <button class="nav-item w-full text-left active" data-section="profile">
                                     <i class="fas fa-user-circle mr-3 text-lg"></i>
                                     <span>Profile Information</span>
-                                </div>
-                                <div class="nav-item" data-section="security">
+                                </button>
+                                <button class="nav-item w-full text-left" data-section="security">
                                     <i class="fas fa-shield-alt mr-3 text-lg"></i>
                                     <span>Security & Password</span>
-                                </div>
-                                <div class="nav-item" data-section="preferences">
+                                </button>
+                                <button class="nav-item w-full text-left" data-section="preferences">
                                     <i class="fas fa-sliders-h mr-3 text-lg"></i>
                                     <span>Preferences</span>
-                                </div>
-                                <div class="nav-item" data-section="notifications">
+                                </button>
+                                <button class="nav-item w-full text-left" data-section="notifications">
                                     <i class="fas fa-bell mr-3 text-lg"></i>
                                     <span>Notifications</span>
-                                </div>
-                                <div class="nav-item" data-section="privacy">
+                                </button>
+                                <button class="nav-item w-full text-left" data-section="privacy">
                                     <i class="fas fa-lock mr-3 text-lg"></i>
                                     <span>Privacy & Data</span>
-                                </div>
-                                <div class="nav-item text-red-600 hover:bg-red-50" data-section="delete">
+                                </button>
+                                <button class="nav-item w-full text-left text-red-600 hover:bg-red-50" data-section="delete">
                                     <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>
                                     <span>Delete Account</span>
-                                </div>
+                                </button>
                             </nav>
                         </div>
                     </aside>
                     
                     <!-- Settings Sections -->
                     <main class="lg:w-3/4">
-                        <!-- Success Message -->
-                        <div id="success-message" class="success-message bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6 {% if messages %}show{% endif %}">
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle mr-3 text-green-600"></i>
-                                <span id="success-text">
-                                    {% for message in messages %}
-                                        {{ message }}
-                                    {% empty %}
-                                        Your changes have been saved successfully.
-                                    {% endfor %}
-                                </span>
+                        <!-- Success/Error Messages -->
+                        {% if messages %}
+                        <div class="mb-6 space-y-2">
+                            {% for message in messages %}
+                            <div class="{% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-700{% else %}bg-red-50 border border-red-200 text-red-700{% endif %} p-4 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-3"></i>
+                                    <span>{{ message }}</span>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
+                        {% endif %}
                         
                         <!-- Profile Information Section -->
                         <div id="profile" class="settings-section active">
-                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                            <div class="bg-white rounded-lg shadow-md p-6">
                                 <h2 class="text-2xl font-bold text-blue-900 mb-6">Profile Information</h2>
                                 
                                 <form id="profile-form" method="POST" action="{% url 'update_profile' %}">
@@ -96,17 +96,24 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                         <div>
                                             <label class="block text-gray-700 font-medium mb-2">First Name</label>
-                                            {{ profile_form.first_name }}
+                                            <input type="text" name="first_name" value="{{ user.first_name }}" 
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                                   placeholder="Enter your first name">
                                         </div>
                                         <div>
                                             <label class="block text-gray-700 font-medium mb-2">Last Name</label>
-                                            {{ profile_form.last_name }}
+                                            <input type="text" name="last_name" value="{{ user.last_name }}"
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                                   placeholder="Enter your last name">
                                         </div>
                                     </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Email Address</label>
-                                        {{ profile_form.email }}
+                                        <input type="email" value="{{ user.email }}" 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                                               disabled>
+                                        <p class="text-sm text-gray-500 mt-1">Contact support to change your email address</p>
                                     </div>
                                     
                                     <div class="mb-6">
@@ -119,23 +126,23 @@
                                         {{ profile_form.location }}
                                     </div>
                                     
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">Bio</label>
+                                        {{ profile_form.bio }}
+                                    </div>
+                                    
                                     <div class="flex justify-end">
                                         <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
                                             Save Changes
                                         </button>
                                     </div>
-                                    {% if profile_form.errors %}
-                                        <p class="text-red-500 text-sm mt-1">
-                                            {{ profile_form.errors|first|default:"Please correct the errors above" }}
-                                        </p>
-                                    {% endif %}
                                 </form>
                             </div>
                         </div>
                         
                         <!-- Security & Password Section -->
-                        <div id="security" class="settings-section">
-                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                        <div id="security" class="settings-section hidden">
+                            <div class="bg-white rounded-lg shadow-md p-6">
                                 <h2 class="text-2xl font-bold text-blue-900 mb-6">Security & Password</h2>
                                 
                                 <form id="password-form" method="POST" action="{% url 'update_password' %}">
@@ -148,7 +155,9 @@
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">New Password</label>
                                         {{ password_form.new_password1 }}
-                                        <div id="password-strength" class="password-strength password-weak"></div>
+                                        <div id="password-strength" class="h-2 mt-2 rounded hidden">
+                                            <div class="h-full rounded password-strength-bar"></div>
+                                        </div>
                                         <p class="text-sm text-gray-500 mt-2">Password must be at least 8 characters with uppercase, lowercase, and numbers.</p>
                                     </div>
                                     
@@ -162,11 +171,6 @@
                                             Update Password
                                         </button>
                                     </div>
-                                    {% if password_form.errors %}
-                                        <p class="text-red-500 text-sm mt-1">
-                                            {{ password_form.errors|first|default:"Please correct the errors above" }}
-                                        </p>
-                                    {% endif %}
                                 </form>
                                 
                                 <hr class="my-8">
@@ -175,18 +179,19 @@
                                     <h3 class="text-lg font-bold text-blue-900 mb-4">Two-Factor Authentication</h3>
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="font-medium">Two-factor authentication is <span class="text-{% if user.profile.two_factor_enabled %}green-600{% else %}red-600{% endif %}">
-                                                {% if user.profile.two_factor_enabled %}enabled{% else %}disabled{% endif %}
-                                            </span></p>
+                                            <p class="font-medium">Two-factor authentication is 
+                                                <span class="text-red-600">disabled</span>
+                                            </p>
                                             <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
                                         </div>
                                         <form method="POST" action="{% url 'toggle_2fa' %}">
                                             {% csrf_token %}
                                             <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg transition text-sm">
-                                                {% if user.profile.two_factor_enabled %}Disable{% else %}Enable{% endif %} 2FA
+                                                Enable 2FA
                                             </button>
                                         </form>
                                     </div>
+                                    <p class="text-sm text-gray-500 mt-2">Two-factor authentication will be available after system updates.</p>
                                 </div>
                                 
                                 <div class="mb-6">
@@ -197,15 +202,15 @@
                                                 <div class="flex items-center">
                                                     <i class="fas fa-desktop text-blue-900 mr-3"></i>
                                                     <div>
-                                                        <p class="font-medium">Session</p>
-                                                        <p class="text-sm text-gray-600">{{ session.device }} • {{ session.location }}</p>
+                                                        <p class="font-medium">{{ session.device }}</p>
+                                                        <p class="text-sm text-gray-600">{{ session.location }} • {{ session.ip_address }}</p>
                                                     </div>
                                                 </div>
-                                                <span class="bg-{% if session.is_current %}green{% else %}gray{% endif %}-100 text-{% if session.is_current %}green{% else %}gray{% endif %}-800 text-xs px-2 py-1 rounded">
-                                                    {% if session.is_current %}Active{% else %}Inactive{% endif %}
+                                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                                    Active
                                                 </span>
                                             </div>
-                                            <p class="text-sm text-gray-600 mt-2">Last active: {{ session.last_active }}</p>
+                                            <p class="text-sm text-gray-600 mt-2">Last active: {{ session.last_active|timesince }} ago</p>
                                         </div>
                                     {% empty %}
                                         <p class="text-gray-600">No active sessions found.</p>
@@ -215,47 +220,83 @@
                         </div>
                         
                         <!-- Preferences Section -->
-                        <div id="preferences" class="settings-section">
-                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
-                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Preferences</h2>
+                        <div id="preferences" class="settings-section hidden">
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Property Preferences</h2>
                                 
                                 <form id="preferences-form" method="POST" action="{% url 'update_preferences' %}">
                                     {% csrf_token %}
-                                    <div class="mb-6">
-                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Property Preferences</h3>
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">I'm Interested In</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {{ preferences_form.interest_buying }}
-                                            {{ preferences_form.interest_renting }}
-                                            {{ preferences_form.interest_selling }}
-                                            {{ preferences_form.interest_commercial }}
+                                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" name="interest_buying" {% if preferences_form.instance.interest_buying %}checked{% endif %} 
+                                                       class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
+                                                <span class="font-medium">Buying Properties</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" name="interest_renting" {% if preferences_form.instance.interest_renting %}checked{% endif %}
+                                                       class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
+                                                <span class="font-medium">Renting Properties</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" name="interest_selling" {% if preferences_form.instance.interest_selling %}checked{% endif %}
+                                                       class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
+                                                <span class="font-medium">Selling Properties</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" name="interest_commercial" {% if preferences_form.instance.interest_commercial %}checked{% endif %}
+                                                       class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
+                                                <span class="font-medium">Commercial Properties</span>
+                                            </label>
                                         </div>
                                     </div>
                                     
-                                    <div class="mb-6">
-                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Budget Range</h3>
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Budget Range (₹)</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <label class="block text-gray-700 font-medium mb-2">Minimum Budget (₹)</label>
-                                                {{ preferences_form.min_budget }}
+                                                <label class="block text-gray-700 font-medium mb-2">Minimum Budget</label>
+                                                <input type="number" name="min_budget" value="{{ preferences_form.instance.min_budget|default:'' }}"
+                                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                                       placeholder="e.g., 500000">
                                             </div>
                                             <div>
-                                                <label class="block text-gray-700 font-medium mb-2">Maximum Budget (₹)</label>
-                                                {{ preferences_form.max_budget }}
+                                                <label class="block text-gray-700 font-medium mb-2">Maximum Budget</label>
+                                                <input type="number" name="max_budget" value="{{ preferences_form.instance.max_budget|default:'' }}"
+                                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                                       placeholder="e.g., 5000000">
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <div class="mb-6">
-                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Preferred Locations</h3>
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Preferred Locations in Nagpur</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {{ preferences_form.preferred_locations }}
+                                            {% with locations="Civil Lines,Ram Nagar,Dharampeth,Manish Nagar,Wardha Road,Byramji Town,Sitabuldi,Sadar,Ambazari,Hingna" %}
+                                            {% for location in locations.split %}
+                                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" name="preferred_locations" value="{{ location }}"
+                                                       class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
+                                                <span>{{ location }}</span>
+                                            </label>
+                                            {% endfor %}
+                                            {% endwith %}
                                         </div>
                                     </div>
                                     
-                                    <div class="mb-6">
+                                    <div class="mb-8">
                                         <h3 class="text-lg font-bold text-blue-900 mb-4">Property Types</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {{ preferences_form.property_types }}
+                                            {% with types="Apartment,Independent House,Villa,Plot,Commercial Space,Office Space,Shop,Warehouse" %}
+                                            {% for type in types.split %}
+                                            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" name="property_types" value="{{ type }}"
+                                                       class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
+                                                <span>{{ type }}</span>
+                                            </label>
+                                            {% endfor %}
+                                            {% endwith %}
                                         </div>
                                     </div>
                                     
@@ -264,84 +305,100 @@
                                             Save Preferences
                                         </button>
                                     </div>
-                                    {% if preferences_form.errors %}
-                                        <p class="text-red-500 text-sm mt-1">
-                                            {{ preferences_form.errors|first|default:"Please correct the errors above" }}
-                                        </p>
-                                    {% endif %}
                                 </form>
                             </div>
                         </div>
                         
                         <!-- Notifications Section -->
-                        <div id="notifications" class="settings-section">
-                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                        <div id="notifications" class="settings-section hidden">
+                            <div class="bg-white rounded-lg shadow-md p-6">
                                 <h2 class="text-2xl font-bold text-blue-900 mb-6">Notification Preferences</h2>
                                 
                                 <form id="notifications-form" method="POST" action="{% url 'update_notifications' %}">
                                     {% csrf_token %}
-                                    <div class="mb-6">
+                                    <div class="mb-8">
                                         <h3 class="text-lg font-bold text-blue-900 mb-4">Email Notifications</h3>
                                         <div class="space-y-4">
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Property Recommendations</p>
                                                     <p class="text-sm text-gray-600">Get notified about properties matching your preferences</p>
                                                 </div>
-                                                {{ notifications_form.email_property_recommendations }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="email_property_recommendations" {% if notifications_form.instance.email_property_recommendations %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                             
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Price Drop Alerts</p>
                                                     <p class="text-sm text-gray-600">Get notified when prices drop on saved properties</p>
                                                 </div>
-                                                {{ notifications_form.email_price_drop_alerts }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="email_price_drop_alerts" {% if notifications_form.instance.email_price_drop_alerts %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                             
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">New Listings</p>
                                                     <p class="text-sm text-gray-600">Get notified about new properties in your preferred areas</p>
                                                 </div>
-                                                {{ notifications_form.email_new_listings }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="email_new_listings" {% if notifications_form.instance.email_new_listings %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                             
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Market Updates</p>
                                                     <p class="text-sm text-gray-600">Receive real estate market insights and trends</p>
                                                 </div>
-                                                {{ notifications_form.email_market_updates }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="email_market_updates" {% if notifications_form.instance.email_market_updates %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                             
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Promotional Offers</p>
                                                     <p class="text-sm text-gray-600">Receive special offers and discounts</p>
                                                 </div>
-                                                {{ notifications_form.email_promotional_offers }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="email_promotional_offers" {% if notifications_form.instance.email_promotional_offers %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <div class="mb-6">
+                                    <div class="mb-8">
                                         <h3 class="text-lg font-bold text-blue-900 mb-4">Push Notifications</h3>
                                         <div class="space-y-4">
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Mobile Push Notifications</p>
                                                     <p class="text-sm text-gray-600">Receive notifications on your mobile device</p>
                                                 </div>
-                                                {{ notifications_form.push_notifications }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="push_notifications" {% if notifications_form.instance.push_notifications %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                             
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">SMS Notifications</p>
                                                     <p class="text-sm text-gray-600">Receive important alerts via SMS</p>
                                                 </div>
-                                                {{ notifications_form.sms_notifications }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="sms_notifications" {% if notifications_form.instance.sms_notifications %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -351,39 +408,40 @@
                                             Save Notification Settings
                                         </button>
                                     </div>
-                                    {% if notifications_form.errors %}
-                                        <p class="text-red-500 text-sm mt-1">
-                                            {{ notifications_form.errors|first|default:"Please correct the errors above" }}
-                                        </p>
-                                    {% endif %}
                                 </form>
                             </div>
                         </div>
                         
                         <!-- Privacy & Data Section -->
-                        <div id="privacy" class="settings-section">
-                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                        <div id="privacy" class="settings-section hidden">
+                            <div class="bg-white rounded-lg shadow-md p-6">
                                 <h2 class="text-2xl font-bold text-blue-900 mb-6">Privacy & Data</h2>
                                 
                                 <form id="privacy-form" method="POST" action="{% url 'update_privacy' %}">
                                     {% csrf_token %}
-                                    <div class="mb-6">
+                                    <div class="mb-8">
                                         <h3 class="text-lg font-bold text-blue-900 mb-4">Data Privacy</h3>
                                         <div class="space-y-4">
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Data Sharing with Partners</p>
                                                     <p class="text-sm text-gray-600">Allow us to share your preferences with trusted partners for better service</p>
                                                 </div>
-                                                {{ privacy_form.data_sharing }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="data_sharing" {% if privacy_form.instance.data_sharing %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                             
-                                            <div class="flex items-center justify-between">
+                                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                                 <div>
                                                     <p class="font-medium">Personalized Ads</p>
                                                     <p class="text-sm text-gray-600">Show personalized property recommendations based on your activity</p>
                                                 </div>
-                                                {{ privacy_form.personalized_ads }}
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" name="personalized_ads" {% if privacy_form.instance.personalized_ads %}checked{% endif %} class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -393,17 +451,12 @@
                                             Save Privacy Settings
                                         </button>
                                     </div>
-                                    {% if privacy_form.errors %}
-                                        <p class="text-red-500 text-sm mt-1">
-                                            {{ privacy_form.errors|first|default:"Please correct the errors above" }}
-                                        </p>
-                                    {% endif %}
                                 </form>
                                 
-                                <div class="mb-6">
+                                <div class="mb-8">
                                     <h3 class="text-lg font-bold text-blue-900 mb-4">Data Management</h3>
                                     <div class="space-y-4">
-                                        <div class="flex items-center justify-between">
+                                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                             <div>
                                                 <p class="font-medium">Download Your Data</p>
                                                 <p class="text-sm text-gray-600">Request a copy of all your personal data we have stored</p>
@@ -416,7 +469,7 @@
                                             </form>
                                         </div>
                                         
-                                        <div class="flex items-center justify-between">
+                                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                             <div>
                                                 <p class="font-medium">Clear Search History</p>
                                                 <p class="text-sm text-gray-600">Delete all your saved searches and browsing history</p>
@@ -437,14 +490,14 @@
                                         We value your privacy and are committed to protecting your personal information. 
                                         Our privacy policy explains how we collect, use, and safeguard your data.
                                     </p>
-                                    <a href="{% url 'privacy' %}" class="text-blue-900 hover:text-blue-700 font-medium">View Full Privacy Policy</a>
+                                    <a href="#" class="text-blue-900 hover:text-blue-700 font-medium">View Full Privacy Policy</a>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Delete Account Section -->
-                        <div id="delete" class="settings-section">
-                            <div class="bg-white rounded-lg shadow-md p-6 form-card border-l-4 border-red-500">
+                        <div id="delete" class="settings-section hidden">
+                            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
                                 <h2 class="text-2xl font-bold text-red-700 mb-6">Delete Account</h2>
                                 
                                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -462,7 +515,7 @@
                                 
                                 <div class="mb-6">
                                     <h3 class="text-lg font-bold text-gray-800 mb-4">Before you proceed</h3>
-                                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                    <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
                                         <li>Download any data you wish to keep</li>
                                         <li>Cancel any upcoming consultations</li>
                                         <li>Ensure you have no pending transactions</li>
@@ -471,13 +524,13 @@
                                 </div>
                                 
                                 <div class="flex flex-col sm:flex-row gap-4">
-                                    <form method="POST" action="{% url 'deactivate_account' %}">
+                                    <form method="POST" action="{% url 'deactivate_account' %}" class="flex-1">
                                         {% csrf_token %}
-                                        <button type="submit" id="deactivate-account" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition">
+                                        <button type="submit" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition">
                                             Deactivate Account Temporarily
                                         </button>
                                     </form>
-                                    <button id="delete-account" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                                    <button id="delete-account-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">
                                         Permanently Delete Account
                                     </button>
                                 </div>
@@ -490,7 +543,7 @@
     </section>
 
     <!-- Delete Account Modal -->
-    <div class="delete-modal" id="delete-modal">
+    <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <form method="POST" action="{% url 'delete_account' %}">
                 {% csrf_token %}
@@ -514,100 +567,42 @@
                             Delete Account
                         </button>
                     </div>
-                    {% if delete_form.errors %}
-                        <p class="text-red-500 text-sm mt-1">
-                            {{ delete_form.errors|first|default:"Invalid password" }}
-                        </p>
-                    {% endif %}
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Company Info -->
-                <div>
-                    <div class="flex items-center mb-6">
-                        <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
-                            <i class="fas fa-home text-white text-lg"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></h2>
-                    </div>
-                    <p class="text-gray-400 mb-6">
-                        Your trusted partner for all real estate needs in Nagpur. We help you find, buy, rent, or sell properties with ease and confidence.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="{{ company.facebook_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="{{ company.twitter_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="{{ company.instagram_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="{{ company.linkedin_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
-                    <ul class="space-y-3">
-                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
-                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
-                        
-                        <li><a href="{% url 'profile' %}" class="text-gray-400 hover:text-yellow-600 transition">My Profile</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Contact Info -->
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-yellow-600 mt-1 mr-3"></i>
-                            <span class="text-gray-400">{{ company.address|default:"123 Civil Lines, Nagpur, Maharashtra 440001" }}</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-yellow-600 mr-3"></i>
-                            <span class="text-gray-400">{{ company.phone|default:"+91 98765 43210" }}</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-yellow-600 mr-3"></i>
-                            <span class="text-gray-400">{{ company.email|default:"info@dreamhomesrealty.com" }}</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-clock text-yellow-600 mr-3"></i>
-                            <span class="text-gray-400">{{ company.hours|default:"Mon - Sat: 9:00 AM - 7:00 PM" }}</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Newsletter -->
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Newsletter</h3>
-                    <p class="text-gray-400 mb-4">
-                        Subscribe to our newsletter for the latest property updates and market insights.
-                    </p>
-                    
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; {{ now|date:"Y" }} DreamHomes Realty. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Custom Styles -->
+    <style>
+        .nav-item {
+            @apply flex items-center px-4 py-3 text-gray-700 rounded-lg transition-colors;
+        }
+        .nav-item:hover {
+            @apply bg-blue-50 text-blue-900;
+        }
+        .nav-item.active {
+            @apply bg-blue-900 text-white;
+        }
+        .settings-section {
+            @apply transition-opacity duration-300;
+        }
+        .password-strength-bar {
+            transition: all 0.3s ease;
+        }
+        .password-weak {
+            @apply bg-red-500;
+            width: 33%;
+        }
+        .password-medium {
+            @apply bg-yellow-500;
+            width: 66%;
+        }
+        .password-strong {
+            @apply bg-green-500;
+            width: 100%;
+        }
+    </style>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
     <!-- Custom JavaScript -->
     <script>
         // Initialize AOS
@@ -630,20 +625,26 @@
                 
                 // Hide all sections
                 document.querySelectorAll('.settings-section').forEach(section => {
+                    section.classList.add('hidden');
                     section.classList.remove('active');
                 });
                 
                 // Show selected section
                 const sectionId = this.getAttribute('data-section');
-                document.getElementById(sectionId).classList.add('active');
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                    targetSection.classList.add('active');
+                }
             });
         });
 
         // Password Strength Indicator
         const passwordInput = document.getElementById('id_new_password1');
         const passwordStrength = document.getElementById('password-strength');
+        const passwordStrengthBar = document.querySelector('.password-strength-bar');
         
-        if (passwordInput && passwordStrength) {
+        if (passwordInput && passwordStrength && passwordStrengthBar) {
             passwordInput.addEventListener('input', function() {
                 const password = this.value;
                 let strength = 0;
@@ -664,40 +665,78 @@
                 if (/[^A-Za-z0-9]/.test(password)) strength++;
                 
                 // Update strength indicator
-                passwordStrength.className = 'password-strength';
+                passwordStrength.classList.remove('hidden');
+                passwordStrengthBar.className = 'h-full rounded password-strength-bar';
                 
                 if (strength <= 2) {
-                    passwordStrength.classList.add('password-weak');
+                    passwordStrengthBar.classList.add('password-weak');
                 } else if (strength <= 4) {
-                    passwordStrength.classList.add('password-medium');
+                    passwordStrengthBar.classList.add('password-medium');
                 } else {
-                    passwordStrength.classList.add('password-strong');
+                    passwordStrengthBar.classList.add('password-strong');
+                }
+                
+                // Hide if empty
+                if (password.length === 0) {
+                    passwordStrength.classList.add('hidden');
                 }
             });
         }
 
         // Delete Account Modal
-        const deleteAccountBtn = document.getElementById('delete-account');
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
         const deleteModal = document.getElementById('delete-modal');
         const cancelDeleteBtn = document.getElementById('cancel-delete');
         
         if (deleteAccountBtn) {
             deleteAccountBtn.addEventListener('click', function() {
-                deleteModal.classList.add('open');
+                deleteModal.classList.remove('hidden');
             });
         }
         
         if (cancelDeleteBtn) {
             cancelDeleteBtn.addEventListener('click', function() {
-                deleteModal.classList.remove('open');
+                deleteModal.classList.add('hidden');
             });
         }
 
         // Close modal when clicking outside
         deleteModal.addEventListener('click', function(e) {
             if (e.target === deleteModal) {
-                deleteModal.classList.remove('open');
+                deleteModal.classList.add('hidden');
             }
+        });
+
+        // Form submission handling
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+                    
+                    // Re-enable after 3 seconds in case of error
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = submitBtn.textContent.includes('Save') ? 'Save Changes' : 'Update Password';
+                    }, 3000);
+                }
+            });
+        });
+
+        // Auto-save indicators
+        document.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('change', function() {
+                const form = this.closest('form');
+                if (form) {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn && !submitBtn.classList.contains('bg-green-600')) {
+                        submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                        const originalText = submitBtn.textContent;
+                        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>' + originalText;
+                    }
+                }
+            });
         });
     </script>
 {% endblock %}
