@@ -113,7 +113,7 @@ def newsletter_subscribe(request):
                     'error': form.errors['email'][0]
                 })
     
-    return redirect('blog_list')
+    return redirect('blog:blog_list')
 
 def add_comment(request, slug):
     post = get_object_or_404(BlogPost, slug=slug, status='published')

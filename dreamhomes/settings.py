@@ -10,6 +10,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    "jazzmin",
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,3 +127,59 @@ CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
 # Production settings (to be implemented)
 # 
 
+# Jazzmin configuration
+JAZZMIN_SETTINGS = {
+    "site_title": "DreamHomes Admin",
+    "site_header": "DreamHomes Realty",
+    "site_brand": "DreamHomes",
+    "site_logo": "images/favicon.ico",  # Add your admin logo in static/images/
+    "login_logo": "images/favicon.ico",
+    "login_logo_dark": None,
+    "site_icon": "images/favicon.ico",
+    "welcome_sign": "Welcome to DreamHomes Admin",
+    "copyright": "DreamHomes Realty © 2025",
+    "search_model": "blog.BlogPost",
+    "user_avatar": None,
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"model": "blog.BlogPost"},
+        {"app": "properties"},
+        {"app": "agents"},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": ["properties", "agents", "blog", "contact"],
+    "custom_links": {},
+    "icons": {
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-users-cog",
+        "blog.BlogPost": "fas fa-newspaper",
+        "blog.BlogCategory": "fas fa-tags",
+        "blog.BlogTag": "fas fa-tag",
+        "blog.BlogComment": "fas fa-comments",
+        "properties.Property": "fas fa-home",
+        "properties.Amenities": "fas fa-list",
+        "agents.Agent": "fas fa-user-tie",
+        "contact.Contact": "fas fa-envelope",
+    },
+    "related_modal_active": True,
+    "show_ui_builder": True,
+}
+
+# Optional: custom colors for theme
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",  # other options: cerulean, darkly, lumen, etc.
+    "navbar_small_text": False,
+    "footer_small_text": True,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "accent": "yellow",
+    "navbar": "darkblue",
+    "footer": "darkblue",
+    "show_sidebar": True,
+}
+
+
+LOGOUT_REDIRECT_URL = 'home'  # or 'login', depending on your flow

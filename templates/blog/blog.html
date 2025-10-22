@@ -4,16 +4,8 @@
 
 {% block content %}
     <!-- Hero Section -->
-     <style>element.style {
-    background-color: darkblue;
-}
-.text-white {
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-    background-color: darkblue;
-}
-</style>
-    <section class="hero-bg text-white py-20">
+    <section class="hero-bg text-white py-20" style="background-color: darkblue;">
+
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">DreamHomes Realty Blog</h1>
             <p class="text-xl max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
@@ -160,7 +152,28 @@
                             <h3 class="text-xl font-bold mb-4">Subscribe to Our Newsletter</h3>
                             <p class="mb-4 text-blue-100">Get the latest real estate insights and market updates directly in your inbox.</p>
                             
-                            <p class="text-blue-200 text-xs mt-3">We respect your privacy. Unsubscribe at any time.</p>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if "newsletter" in message.tags or "subscribe" in message.tags %}
+                                        <div class="mb-4 p-3 rounded-lg {% if message.tags == 'success' %}bg-green-800 text-green-100{% else %}bg-red-800 text-red-100{% endif %}">
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <form method="POST" action="{% url 'blog:newsletter_subscribe' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <div class="mb-3">
+                                    <input type="email" name="email" placeholder="Enter your email address" required
+                                           class="w-full p-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                </div>
+                                <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg transition flex items-center justify-center">
+                                    <i class="far fa-envelope mr-2"></i> Subscribe
+                                </button>
+                            </form>
+                            <p class="text-blue-200 text-xs mt-3 text-center">We respect your privacy. Unsubscribe at any time.</p>
                         </div>
                     </div>
                 </div>
@@ -179,7 +192,7 @@
                 <a href="{% url 'properties:property_list' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
                     <i class="fas fa-home mr-2"></i> Browse Properties
                 </a>
-                <a href="{% url 'contact' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                <a href="{% url 'properties:contact' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
                     <i class="fas fa-phone mr-2"></i> Contact Us
                 </a>
             </div>
@@ -254,6 +267,18 @@
             duration: 800,
             once: true,
             offset: 100
+        });
+
+        // Auto-hide messages after 5 seconds
+        const messages = document.querySelectorAll('.bg-green-800, .bg-red-800');
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.style.transition = 'opacity 0.5s ease';
+                message.style.opacity = '0';
+                setTimeout(() => {
+                    message.remove();
+                }, 500);
+            }, 5000);
         });
     });
 </script>

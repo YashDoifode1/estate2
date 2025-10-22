@@ -4,28 +4,19 @@
 
 {% block content %}
     <!-- Hero Section -->
-
-    <style>element.style {
-    background-color: darkblue;
-}
-/* .text-white {
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-    background-color: darkblue;
-} */
-</style>
-    <section class="hero-bg text-white py-20" style="background-color: darkblue;">
-
+    <section class="hero-bg text-white py-20 md:py-32">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-6" data-aos="fade-up">Find Your Dream Home in Nagpur</h1>
             <p class="text-xl mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
                 We help you find the perfect property that matches your lifestyle and budget.
             </p>
             <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
-                <a href="{% url 'properties:property_list' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition">
+                <a href="{% url 'property_list' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition">
                     Browse Properties
                 </a>
-                
+                <a href="{% url 'consultation' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Book Consultation
+                </a>
             </div>
         </div>
     </section>
@@ -34,7 +25,7 @@
     <section class="bg-white py-12 shadow-md -mt-10 relative z-10 rounded-lg mx-4 md:mx-auto max-w-6xl">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl font-bold text-center text-blue-900 mb-8">Find Your Perfect Property</h2>
-            <form action="{% url 'properties:property_list' %}" method="GET" class="bg-gray-50 p-6 rounded-lg">
+            <form action="{% url 'property_list' %}" method="GET" class="bg-gray-50 p-6 rounded-lg">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-gray-700 mb-2">I'm looking to</label>
@@ -97,7 +88,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for property in featured_properties %}
-                    <div class="bg-white rounded-lg overflow-hidden shadow-md property-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}">
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md property-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:200 }}">
                         <div class="relative">
                             <img src="{{ property.image_url }}" alt="{{ property.title }}" class="w-full h-56 object-cover">
                             <div class="absolute top-4 right-4 bg-{% if property.status == 'sale' %}yellow-600{% else %}green-600{% endif %} text-white px-3 py-1 rounded-full font-semibold">
@@ -122,7 +113,7 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <p class="text-2xl font-bold text-blue-900">{{ property.price }}</p>
-                                <a href="{% url 'properties:property_detail' property.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition">
+                                <a href="{% url 'property_detail' property.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition">
                                     View Details
                                 </a>
                             </div>
@@ -133,7 +124,7 @@
                 {% endfor %}
             </div>
             <div class="text-center mt-10">
-                <a href="{% url 'properties:property_list' %}" class="bg-transparent border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white font-bold py-3 px-8 rounded-lg transition">
+                <a href="{% url 'property_list' %}" class="bg-transparent border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white font-bold py-3 px-8 rounded-lg transition">
                     View All Properties
                 </a>
             </div>
@@ -253,49 +244,78 @@
     </section>
 
     <!-- Testimonials Slider -->
-    <!--  -->
-
-    <!-- Latest Blog Section -->
-    <!-- Latest Blog Section -->
-<<!-- Latest Blog Section -->
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">Latest From Our Blog</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
-                Stay updated with the latest real estate trends, market insights, and home buying tips.
-            </p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {% for post in latest_posts %}
-                <div class="bg-white rounded-lg overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}">
-                    {% if post.image %}
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
-                    {% endif %}
-                    <div class="p-6">
-                        <div class="flex items-center text-gray-500 text-sm mb-3">
-                            <i class="far fa-calendar-alt mr-2"></i> {{ post.published_date|date:"F d, Y" }}
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">What Our Clients Say</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Don't just take our word for it. Here's what our satisfied clients have to say about their experience with DreamHomes Realty.
+                </p>
+            </div>
+            <div class="swiper mySwiper" data-aos="fade-up">
+                <div class="swiper-wrapper">
+                    {% for testimonial in testimonials %}
+                        <div class="swiper-slide">
+                            <div class="bg-gray-50 p-8 rounded-lg shadow-md">
+                                <div class="flex items-center mb-6">
+                                    <img src="{{ testimonial.image_url }}" alt="{{ testimonial.name }}" class="w-16 h-16 rounded-full mr-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-blue-900">{{ testimonial.name }}</h3>
+                                        <p class="text-gray-600">{{ testimonial.occupation }}</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 italic">"{{ testimonial.content }}"</p>
+                                <div class="flex text-yellow-500 mt-4">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold text-blue-900 mb-3">{{ post.title }}</h3>
-                        <p class="text-gray-600 mb-4">{{ post.summary }}</p>
-                        <a href="{{ post.get_absolute_url }}" class="text-blue-900 font-bold hover:underline">
-                            Read More &rarr;
-                        </a>
-                    </div>
+                    {% empty %}
+                        <p class="text-center text-gray-600">No testimonials available.</p>
+                    {% endfor %}
                 </div>
-            {% empty %}
-                <p class="text-center text-gray-600">No blog posts available.</p>
-            {% endfor %}
+                <div class="swiper-pagination"></div>
+            </div>
         </div>
-        <div class="text-center mt-10">
-            <a href="{% url 'blog:blog_list' %}" class="bg-transparent border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white font-bold py-3 px-8 rounded-lg transition">
-                View All Blog Posts
-            </a>
+    </section>
+
+    <!-- Latest Blog Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">Latest From Our Blog</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Stay updated with the latest real estate trends, market insights, and home buying tips.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {% for post in latest_posts %}
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:200 }}">
+                        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center text-gray-500 text-sm mb-3">
+                                <i class="far fa-calendar-alt mr-2"></i> {{ post.date|date:"F d, Y" }}
+                            </div>
+                            <h3 class="text-xl font-bold text-blue-900 mb-3">{{ post.title }}</h3>
+                            <p class="text-gray-600 mb-4">{{ post.excerpt }}</p>
+                            <a href="{% url 'blog_detail' post.id %}" class="text-blue-900 font-semibold hover:text-yellow-600 transition flex items-center">
+                                Read More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-center text-gray-600">No blog posts available.</p>
+                {% endfor %}
+            </div>
+            <div class="text-center mt-10">
+                <a href="{% url 'blog_list' %}" class="bg-transparent border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white font-bold py-3 px-8 rounded-lg transition">
+                    View All Blog Posts
+                </a>
+            </div>
         </div>
-    </div>
-</section>
-
-
+    </section>
 
     <!-- CTA Section -->
     <section class="py-16 bg-blue-900 text-white">
@@ -305,7 +325,9 @@
                 Book a free consultation with our real estate experts today.
             </p>
             <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
-                
+                <a href="{% url 'consultation' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Book Free Consultation
+                </a>
                 <a href="tel:+919876543210" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition">
                     Call Us: +91 98765 43210
                 </a>
@@ -313,7 +335,8 @@
         </div>
     </section>
 
- <footer class="bg-gray-900 text-white py-12">
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Company Info -->
@@ -347,11 +370,11 @@
                     <h3 class="text-xl font-bold mb-6">Quick Links</h3>
                     <ul class="space-y-3">
                         <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
-                        <li><a href="{% url 'properties:property_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Properties</a></li>
+                        <li><a href="{% url 'property_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Properties</a></li>
                         <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
-                        
-                        <li><a href="{% url 'blog:blog_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Blog</a></li>
-                        <li><a href="{% url 'properties:contact' %}" class="text-gray-400 hover:text-yellow-600 transition">Contact</a></li>
+                        <li><a href="{% url 'services' %}" class="text-gray-400 hover:text-yellow-600 transition">Services</a></li>
+                        <li><a href="{% url 'blog_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Blog</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-yellow-600 transition">Contact</a></li>
                     </ul>
                 </div>
                 <!-- Contact Info -->
@@ -382,7 +405,7 @@
                     <p class="text-gray-400 mb-4">
                         Subscribe to our newsletter for the latest property updates and market insights.
                     </p>
-                    <form action="{% url 'blog:newsletter_subscribe' %}" method="POST" class="flex flex-col space-y-3">
+                    <form action="{% url 'newsletter_subscribe' %}" method="POST" class="flex flex-col space-y-3">
                         {% csrf_token %}
                         <input type="email" name="email" placeholder="Your Email" class="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg transition">
@@ -396,8 +419,6 @@
             </div>
         </div>
     </footer>
-
-
 
     <!-- Swiper CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -429,6 +450,4 @@
             },
         });
     </script>
-
 {% endblock %}
-

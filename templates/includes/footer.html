@@ -1,119 +1,162 @@
-<!-- Footer -->
-<footer class="bg-gray-900 text-white py-8">
+<!-- templates/includes/footer.html -->
+<footer class="bg-gray-900 text-white py-12">
     <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center mr-2">
-                        <i class="fas fa-home text-white text-sm"></i>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                        <i class="fas fa-home text-white text-lg"></i>
                     </div>
-                    <span class="text-xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></span>
+                    <h2 class="text-2xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></h2>
+                </div>
+                <p class="text-gray-400 mb-6">
+                    Your trusted partner for all real estate needs in Nagpur. We help you find, buy, rent, or sell properties with ease and confidence.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
                 </div>
             </div>
-            <div class="flex space-x-6 mb-4 md:mb-0">
-                <a href="#" class="text-gray-400 hover:text-white transition">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-white transition">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-white transition">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-white transition">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
+            
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                <ul class="space-y-3">
+                    <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
+                    <li><a href="{% url 'properties:property_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Properties</a></li>
+                    <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
+                    <li><a href="{% url 'agents:agents_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Our Agents</a></li>
+                    <li><a href="{% url 'blog:blog_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Blog</a></li>
+                    <li><a href="{% url 'properties:contact' %}" class="text-gray-400 hover:text-yellow-600 transition">Contact</a></li>
+                </ul>
             </div>
-            <div class="text-gray-400 text-sm">
-                <p>&copy; {{ current_year }} DreamHomes Realty. All rights reserved.</p>
+            
+            <!-- Contact Info -->
+            <div>
+                <h3 class="text-xl font-bold mb-6">Contact Us</h3>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-yellow-600 mt-1 mr-3"></i>
+                        <span class="text-gray-400">123 Civil Lines, Nagpur, Maharashtra 440001</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-phone text-yellow-600 mr-3"></i>
+                        <span class="text-gray-400">+91 98765 43210</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-envelope text-yellow-600 mr-3"></i>
+                        <span class="text-gray-400">info@dreamhomesrealty.com</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                        <span class="text-gray-400">Mon - Sat: 9:00 AM - 7:00 PM</span>
+                    </li>
+                </ul>
             </div>
+            
+            <!-- Newsletter -->
+            <div>
+                <h3 class="text-xl font-bold mb-6">Newsletter</h3>
+                <p class="text-gray-400 mb-4">
+                    Subscribe to our newsletter for the latest property updates and market insights.
+                </p>
+                <form method="POST" action="{% url 'blog:newsletter_subscribe' %}" id="newsletter-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <div class="mb-3">
+                        <input type="email" name="email" placeholder="Your Email" required
+                               class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 border border-gray-700">
+                    </div>
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg transition">
+                        Subscribe
+                    </button>
+                </form>
+                <div id="newsletter-message" class="mt-2 text-sm hidden"></div>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+            <p>&copy; {% now "Y" %} DreamHomes Realty. All rights reserved. | 
+               <a href="#" class="hover:text-yellow-600 transition">Privacy Policy</a> | 
+               <a href="#" class="hover:text-yellow-600 transition">Terms of Service</a>
+            </p>
         </div>
     </div>
 </footer>
 
-<div class="text-gray-400 text-sm">
-    <p>&copy; <span class="current-year">{{ current_year|default:2024 }}</span> DreamHomes Realty. All rights reserved.</p>
-</div>
-
-
-
-<!-- ------------------------------------------------------------ -->
-
-
-<!-- <footer class="bg-gray-900 text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              
-                <div>
-                    <div class="flex items-center mb-6">
-                        <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
-                            <i class="fas fa-home text-white text-lg"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></h2>
-                    </div>
-                    <p class="text-gray-400 mb-6">
-                        Your trusted partner for all real estate needs in Nagpur. We help you find, buy, rent, or sell properties with ease and confidence.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </div>
-               
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
-                    <ul class="space-y-3">
-                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
-                        <li><a href="{% url 'properties:property_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Properties</a></li>
-                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
-
-                        <li><a href="{% url 'blog:blog_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Blog</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-yellow-600 transition">Contact</a></li>
-                    </ul>
-                </div>
-             
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-yellow-600 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Civil Lines, Nagpur, Maharashtra 440001</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-yellow-600 mr-3"></i>
-                            <span class="text-gray-400">+91 98765 43210</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-yellow-600 mr-3"></i>
-                            <span class="text-gray-400">info@dreamhomesrealty.com</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-clock text-yellow-600 mr-3"></i>
-                            <span class="text-gray-400">Mon - Sat: 9:00 AM - 7:00 PM</span>
-                        </li>
-                    </ul>
-                </div>
-               
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Newsletter</h3>
-                    <p class="text-gray-400 mb-4">
-                        Subscribe to our newsletter for the latest property updates and market insights.
-                    </p>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Newsletter form handling
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const messageDiv = document.getElementById('newsletter-message');
+            
+            console.log('Newsletter form submitted');
+            console.log('Form data:', Object.fromEntries(formData));
+            
+            // Show loading state
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Subscribing...';
+            submitBtn.disabled = true;
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    messageDiv.className = 'mt-2 text-sm text-green-400';
+                    messageDiv.textContent = data.message || 'Thank you for subscribing!';
+                    messageDiv.classList.remove('hidden');
+                    newsletterForm.reset();
                     
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; {{ now|date:"Y" }} DreamHomes Realty. All rights reserved.</p>
-            </div>
-        </div>
-    </footer> -->
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        messageDiv.classList.add('hidden');
+                    }, 5000);
+                } else {
+                    messageDiv.className = 'mt-2 text-sm text-red-400';
+                    messageDiv.textContent = data.error || 'An error occurred. Please try again.';
+                    messageDiv.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                messageDiv.className = 'mt-2 text-sm text-red-400';
+                messageDiv.textContent = 'Network error. Please check your connection and try again.';
+                messageDiv.classList.remove('hidden');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+    }
+});
+</script>
