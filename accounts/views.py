@@ -10,6 +10,23 @@ import json
 import csv
 from .models import CustomUser, UserProfile, UserPreferences, NotificationSettings, PrivacySettings, LoginSession, SavedProperty, Consultation, Notification
 from .forms import CustomAuthenticationForm, CustomUserCreationForm, ProfilePictureForm, UserProfileForm, PasswordChangeForm, PreferencesForm, NotificationSettingsForm, PrivacySettingsForm, DeleteAccountForm, NewsletterForm, ProfileForm
+from django.shortcuts import render
+from properties.models import Property
+from blog.models import BlogPost  # Correct import
+
+def home(request):
+    # Featured properties
+    featured_properties = Property.objects.filter(featured=True).order_by('-created_at')[:6]
+
+
+    # Latest blog posts (published only)
+    latest_posts = BlogPost.objects.filter(status='published').order_by('-published_date')[:3]
+
+    context = {
+        'featured_properties': featured_properties,
+        'latest_posts': latest_posts,
+    }
+    return render(request, 'accounts/home.html', context)
 
 @login_required
 def settings_view(request):
@@ -356,11 +373,91 @@ def privacy(request):
     return render(request, 'accounts/privacy.html')
 
 
-def home(request):
-    return render(request, 'accounts/home.html')
+from django.shortcuts import render
+from properties.models import Property  # Your property model
+
+
+from django.shortcuts import render
+from datetime import datetime
 
 def about(request):
-    return render(request, 'accounts/about.html')
+    # Timeline milestones data (you can later move this to a model)
+    milestones = [
+        {
+            "year": "2008",
+            "title": "Founded DreamHomes Realty",
+            "description": "Started as a small local agency with a vision to simplify real estate transactions in Nagpur."
+        },
+        {
+            "year": "2012",
+            "title": "Expanded to Commercial Real Estate",
+            "description": "Entered the commercial sector, helping businesses find premium office spaces."
+        },
+        {
+            "year": "2016",
+            "title": "Reached 1000+ Clients",
+            "description": "A proud moment as we crossed the milestone of serving over 1000 satisfied clients."
+        },
+        {
+            "year": "2020",
+            "title": "Digital Transformation",
+            "description": "Launched our online property platform for a seamless search and inquiry experience."
+        },
+        {
+            "year": "2024",
+            "title": "Awarded Best Realty Agency in Nagpur",
+            "description": "Recognized for excellence, transparency, and customer satisfaction."
+        },
+    ]
+
+    # Team members data (can later come from a database model like TeamMember)
+    team_members = [
+        {
+            "name": "Rohan Sharma",
+            "position": "Founder & CEO",
+            "description": "With over 15 years of real estate experience, Rohan leads DreamHomes with a focus on trust and innovation.",
+            "image_url": "https://randomuser.me/api/portraits/men/32.jpg",
+            "linkedin_url": "https://linkedin.com/in/rohan-sharma",
+            "twitter_url": "https://twitter.com/rohan_sharma",
+            "email": "rohan@dreamhomesrealty.com"
+        },
+        {
+            "name": "Neha Verma",
+            "position": "Head of Sales",
+            "description": "Neha specializes in residential properties and customer success management.",
+            "image_url": "https://randomuser.me/api/portraits/women/44.jpg",
+            "linkedin_url": "https://linkedin.com/in/neha-verma",
+            "twitter_url": "https://twitter.com/neha_verma",
+            "email": "neha@dreamhomesrealty.com"
+        },
+        {
+            "name": "Amit Patel",
+            "position": "Marketing Director",
+            "description": "Amit drives our marketing and brand strategy, ensuring DreamHomes stays top-of-mind in Nagpur.",
+            "image_url": "https://randomuser.me/api/portraits/men/47.jpg",
+            "linkedin_url": "https://linkedin.com/in/amit-patel",
+            "twitter_url": "https://twitter.com/amit_patel",
+            "email": "amit@dreamhomesrealty.com"
+        },
+        {
+            "name": "Sneha Kulkarni",
+            "position": "Client Relations Manager",
+            "description": "Sneha ensures every client receives personalized attention and support throughout their property journey.",
+            "image_url": "https://randomuser.me/api/portraits/women/65.jpg",
+            "linkedin_url": "https://linkedin.com/in/sneha-kulkarni",
+            "twitter_url": "https://twitter.com/sneha_kulkarni",
+            "email": "sneha@dreamhomesrealty.com"
+        },
+    ]
+
+    context = {
+        "milestones": milestones,
+        "team_members": team_members,
+        "now": datetime.now(),  # used in footer © year
+    }
+
+    return render(request, 'accounts/about.html', context)
+
 
 
 

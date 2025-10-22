@@ -42,3 +42,19 @@ class ScheduleVisitForm(forms.Form):
             'rows': 4
         })
     )
+
+
+    from django import forms
+from .models import ContactMessage  # optional model for storing messages
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage  # or use forms.Form if no model
+        fields = ['name', 'email', 'phone', 'subject', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full p-3 border rounded'}),
+            'email': forms.EmailInput(attrs={'class': 'w-full p-3 border rounded'}),
+            'phone': forms.TextInput(attrs={'class': 'w-full p-3 border rounded'}),
+            'subject': forms.TextInput(attrs={'class': 'w-full p-3 border rounded'}),
+            'message': forms.Textarea(attrs={'class': 'w-full p-3 border rounded', 'rows': 5}),
+        }

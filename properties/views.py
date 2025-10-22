@@ -182,6 +182,34 @@ def schedule_visit(request, property_id):
     
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import ContactForm  # Make sure you have a ContactForm in forms.py
+
 def contact(request):
-    """Contact page view"""
-    return render(request, 'properties/contact.html')
+    """Contact page view with form handling"""
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Save form data or send email
+            contact_instance = form.save()  # if using a model form
+            # Or send email logic here if not using model
+            messages.success(request, "Thank you! Your message has been sent successfully.")
+            return redirect('contact')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ContactForm()
+
+    # OpenStreetMap/OpenStreetView coordinates for Nagpur office
+    office_location = {
+        "lat": 21.1458,  # Latitude for Nagpur
+        "lng": 79.0882,  # Longitude for Nagpur
+        "zoom": 16
+    }
+
+    context = {
+        'form': form,
+        'office_location': office_location,
+    }
+    return render(request, 'properties/contact.html', context)
