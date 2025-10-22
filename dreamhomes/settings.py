@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'accounts',
     'properties',
     'agents',
+    'blog',
 ]
 
 MIDDLEWARE = [

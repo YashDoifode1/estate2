@@ -104,7 +104,7 @@
                                         <i class="fas fa-heart"></i>
                                     </button>
                                     <div class="absolute top-3 left-3 bg-{% if property.status == 'for_sale' %}yellow{% else %}green{% endif %}-600 text-white px-2 py-1 rounded text-sm font-semibold">
-                                        {{ property.status|with_space }}
+                                        {{ property.status }}
                                     </div>
                                 </div>
                                 <div class="p-4">
@@ -162,8 +162,8 @@
                                     <div class="mb-4 md:mb-0">
                                         <div class="flex items-center mb-2">
                                             <h3 class="text-lg font-bold text-blue-900 mr-4">{{ consultation.title }}</h3>
-                                            <span class="status-badge {{ consultation.status|get_status_class }} px-3 py-1 rounded-full text-sm font-medium">
-                                                {{ consultation.status|with_space }}
+                                            <span class="status-badge {{ consultation.status }} px-3 py-1 rounded-full text-sm font-medium">
+                                                {{ consultation.status }}
                                             </span>
                                         </div>
                                         <div class="flex flex-wrap gap-4 text-gray-600">
@@ -180,8 +180,8 @@
                                                 <span>{{ consultation.time|time:"h:i A" }} - {{ consultation.end_time|time:"h:i A" }}</span>
                                             </div>
                                             <div class="flex items-center">
-                                                <i class="fas fa-{{ consultation.mode|get_icon_for_mode }} mr-2 text-yellow-600"></i>
-                                                <span>{{ consultation.mode|with_space }}</span>
+                                                <i class="fas fa-{{ consultation.mode }} mr-2 text-yellow-600"></i>
+                                                <span>{{ consultation.mode }}</span>
                                             </div>
                                         </div>
                                     </div>

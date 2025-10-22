@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}Real Estate Blog | DreamHomes Realty Nagpur{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">DreamHomes Realty Blog</h1>
+            <p class="text-xl max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Expert insights, market trends, and tips for home buyers, sellers, and investors in Nagpur.
+            </p>
+        </div>
+    </section>
+
+    <!-- Blog Content -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Main Blog Content -->
+                <div class="lg:w-2/3">
+                    <!-- Blog Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {% for post in page_obj %}
+                            <article class="bg-white rounded-lg overflow-hidden shadow-md blog-card" data-aos="fade-up" data-aos-delay="{% cycle '0' '100' '200' %}">
+                                <img src="{{ post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1973&q=80' }}" 
+                                     alt="{{ post.title }}" class="w-full h-48 object-cover">
+                                <div class="p-6">
+                                    <div class="flex items-center text-gray-500 text-sm mb-3">
+                                        <i class="far fa-calendar-alt mr-2"></i> {{ post.published_date|date:"F d, Y" }}
+                                        <span class="mx-2">•</span>
+                                        <i class="far fa-clock mr-1"></i> {{ post.read_time }} min read
+                                    </div>
+                                    {% for category in post.categories.all %}
+                                        <span class="category-badge {{ category.slug }}">{{ category.name }}</span>
+                                    {% endfor %}
+                                    <h2 class="text-xl font-bold text-blue-900 mb-3 mt-2">{{ post.title }}</h2>
+                                    <p class="text-gray-600 mb-4">{{ post.summary|truncatewords:30 }}</p>
+                                    <a href="{% url 'blog_detail' post.slug %}" class="text-blue-900 font-semibold hover:text-yellow-600 transition flex items-center">
+                                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <p class="text-gray-600 col-span-3 text-center py-8">No blog posts found.</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                        <div class="flex justify-center mt-12">
+                            <nav class="flex items-center space-x-2">
+                                {% if page_obj.has_previous %}
+                                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                                       class="pagination-btn bg-gray-200 text-gray-700 hover:bg-blue-900 hover:text-white transition">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                {% endif %}
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <span class="pagination-btn bg-blue-900 text-white">{{ num }}</span>
+                                    {% else %}
+                                        <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                                           class="pagination-btn bg-gray-200 text-gray-700 hover:bg-blue-900 hover:text-white transition">
+                                            {{ num }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                                       class="pagination-btn bg-gray-200 text-gray-700 hover:bg-blue-900 hover:text-white transition">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Sidebar -->
+                <div class="lg:w-1/3">
+                    <div class="sticky top-24 space-y-8">
+                        <!-- Search Box -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4">Search Blog</h3>
+                            <form method="GET" action="{% url 'blog_list' %}">
+                                <div class="relative">
+                                    <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search articles..." 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent">
+                                    <button type="submit" class="absolute right-3 top-3 text-gray-500 hover:text-blue-900 transition">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Categories -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4">Categories</h3>
+                            <ul class="space-y-3">
+                                {% for category in categories %}
+                                    <li>
+                                        <a href="{% url 'blog_list' %}?category={{ category.slug }}" 
+                                           class="flex justify-between items-center text-gray-700 hover:text-blue-900 transition py-2 border-b border-gray-100 last:border-b-0">
+                                            <span class="font-medium">{{ category.name }}</span>
+                                            <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded-full text-xs font-semibold">{{ category.post_count }}</span>
+                                        </a>
+                                    </li>
+                                {% empty %}
+                                    <li class="text-gray-500">No categories available.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <!-- Popular Posts -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4">Popular Posts</h3>
+                            <div class="space-y-4">
+                                {% for post in popular_posts %}
+                                    <a href="{% url 'blog_detail' post.slug %}" class="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 transition group">
+                                        <img src="{{ post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1973&q=80' }}" 
+                                             alt="{{ post.title }}" class="w-16 h-16 object-cover rounded flex-shrink-0">
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-semibold text-blue-900 text-sm mb-1 group-hover:text-yellow-600 transition line-clamp-2">{{ post.title }}</h4>
+                                            <p class="text-gray-500 text-xs">{{ post.published_date|date:"M d, Y" }}</p>
+                                            <div class="flex items-center mt-1">
+                                                <span class="text-xs text-gray-400"><i class="far fa-eye mr-1"></i>{{ post.views }} views</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% empty %}
+                                    <p class="text-gray-500 text-sm">No popular posts available.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Newsletter -->
+                        <div class="bg-blue-900 text-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold mb-4">Subscribe to Our Newsletter</h3>
+                            <p class="mb-4 text-blue-100">Get the latest real estate insights and market updates directly in your inbox.</p>
+                            <form method="POST" action="{% url 'newsletter_subscribe' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    {{ newsletter_form.email }}
+                                </div>
+                                <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition w-full mt-2 flex items-center justify-center">
+                                    <i class="far fa-envelope mr-2"></i> Subscribe
+                                </button>
+                                {% if newsletter_form.email.errors %}
+                                    <p class="text-red-300 text-sm mt-2">
+                                        {{ newsletter_form.email.errors|first }}
+                                    </p>
+                                {% endif %}
+                            </form>
+                            <p class="text-blue-200 text-xs mt-3">We respect your privacy. Unsubscribe at any time.</p>
+                        </div>
+
+                        <!-- Recent Comments -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4">Recent Comments</h3>
+                            <div class="space-y-3">
+                                <div class="text-sm text-gray-600 italic">
+                                    Comments feature coming soon...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-blue-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-aos="fade-up">Ready to Find Your Dream Home?</h2>
+            <p class="text-xl mb-10 max-w-2xl mx-auto text-blue-100" data-aos="fade-up" data-aos-delay="200">
+                Browse our properties or contact our experts for personalized assistance.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
+                <a href="{% url 'properties' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                    <i class="fas fa-home mr-2"></i> Browse Properties
+                </a>
+                <a href="{% url 'contact' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                    <i class="fas fa-phone mr-2"></i> Contact Us
+                </a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-bg {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    }
+    
+    .blog-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .category-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background-color: #dbeafe;
+        color: #1e40af;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .category-badge.buying-guide { background-color: #dcfce7; color: #166534; }
+    .category-badge.selling-tips { background-color: #fef3c7; color: #92400e; }
+    .category-badge.market-trends { background-color: #e0e7ff; color: #3730a3; }
+    .category-badge.home-improvement { background-color: #fce7f3; color: #be185d; }
+    .category-badge.investment { background-color: #fef3c7; color: #92400e; }
+    .category-badge.first-time-buyers { background-color: #dcfce7; color: #166534; }
+    
+    .pagination-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .sticky {
+        position: sticky;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize AOS
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // Add smooth scrolling to category links
+        document.querySelectorAll('a[href*="category="]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const target = document.querySelector('.blog-grid');
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Add a small delay to ensure scroll completes before page reload
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 500);
+                }
+            });
+        });
+        
+        // Newsletter form enhancement
+        const newsletterForm = document.querySelector('form[action*="newsletter_subscribe"]');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                const emailInput = this.querySelector('input[type="email"]');
+                const submitBtn = this.querySelector('button[type="submit"]');
+                
+                if (emailInput.value.trim()) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Subscribing...';
+                    submitBtn.disabled = true;
+                }
+            });
+        }
+        
+        // Search form enhancement
+        const searchForm = document.querySelector('form[action*="blog_list"]');
+        const searchInput = searchForm?.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                if (this.value.length > 2) {
+                    // Optional: Add auto-suggest functionality here
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

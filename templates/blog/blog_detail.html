@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ post.title }} | DreamHomes Realty Blog
+{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb -->
+    <section class="bg-gray-100 py-4">
+        <div class="container mx-auto px-4">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2 text-sm">
+                    <li>
+                        <a href="{% url 'home' %}" class="text-gray-500 hover:text-blue-900 transition">Home</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="{% url 'blog:blog_list' %}" class="text-gray-500 hover:text-blue-900 transition">Blog</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-blue-900 font-medium">{{ post.title|truncatewords:5 }}</span>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Blog Content -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Main Article Content -->
+                <article class="lg:w-2/3">
+                    <!-- Article Header -->
+                    <header class="mb-8">
+                        {% for category in post.categories.all %}
+                            <span class="category-badge {{ category.slug }}">{{ category.name }}</span>
+                        {% endfor %}
+                        
+                        <h1 class="text-3xl md:text-4xl font-bold text-blue-900 mt-4 mb-4" data-aos="fade-up">
+                            {{ post.title }}
+                        </h1>
+                        
+                        <div class="flex flex-wrap items-center text-gray-600 mb-6" data-aos="fade-up" data-aos-delay="100">
+                            <div class="flex items-center mr-6 mb-2">
+                                <i class="far fa-calendar-alt mr-2"></i>
+                                <span>{{ post.published_date|date:"F d, Y" }}</span>
+                            </div>
+                            <div class="flex items-center mr-6 mb-2">
+                                <i class="far fa-clock mr-2"></i>
+                                <span class="reading-time">{{ post.read_time }} min read</span>
+                            </div>
+                            <div class="flex items-center mb-2">
+                                <i class="far fa-user mr-2"></i>
+                                <span>By {{ post.author.get_full_name|default:post.author.username }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Featured Image -->
+                        <div class="mb-8" data-aos="fade-up" data-aos-delay="200">
+                            <img src="{{ post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80' }}" 
+                                 alt="{{ post.title }}" class="w-full h-96 object-cover rounded-lg">
+                        </div>
+                    </header>
+                    
+                    <!-- Article Content -->
+                    <div class="article-content" data-aos="fade-up">
+                        {{ post.content|safe }}
+                    </div>
+                    
+                    <!-- Article Footer -->
+                    <footer class="mt-12 pt-8 border-t border-gray-200">
+                        <!-- Tags -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-bold text-blue-900 mb-3">Tags</h3>
+                            <div class="flex flex-wrap gap-2">
+                                {% for tag in post.tags.all %}
+                                    <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Social Sharing -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-bold text-blue-900 mb-3">Share This Article</h3>
+                            <div class="flex space-x-4">
+                                <a href="#" class="social-share facebook-bg text-white" data-share="facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-share twitter-bg text-white" data-share="twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-share linkedin-bg text-white" data-share="linkedin">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-share whatsapp-bg text-white" data-share="whatsapp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Author Bio -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <div class="flex items-start">
+                                <img src="{{ post.author.profile_image.url|default:'https://randomuser.me/api/portraits/men/32.jpg' }}" 
+                                     alt="{{ post.author.get_full_name|default:post.author.username }}" class="w-16 h-16 rounded-full mr-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-blue-900 mb-2">About the Author</h3>
+                                    <p class="text-gray-700 mb-2">
+                                        <strong>{{ post.author.get_full_name|default:post.author.username }}</strong> {{ post.author.bio|default:"is a Senior Property Consultant at DreamHomes Realty with extensive experience in Nagpur's real estate market." }}
+                                    </p>
+                                    <a href="{% url 'agents' %}#{{ post.author.username }}" class="text-blue-900 font-semibold hover:text-yellow-600 transition flex items-center">
+                                        View {{ post.author.get_full_name|default:"Author's" }} Profile <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </article>
+                
+                <!-- Sidebar -->
+                <aside class="lg:w-1/3">
+                    <div class="sticky-sidebar space-y-8">
+                        <!-- About the Author (Mobile) -->
+                        <div class="bg-white p-6 rounded-lg shadow-md lg:hidden">
+                            <div class="flex items-center mb-4">
+                                <img src="{{ post.author.profile_image.url|default:'https://randomuser.me/api/portraits/men/32.jpg' }}" 
+                                     alt="{{ post.author.get_full_name|default:post.author.username }}" class="w-12 h-12 rounded-full mr-4">
+                                <div>
+                                    <h3 class="font-bold text-blue-900">{{ post.author.get_full_name|default:post.author.username }}</h3>
+                                    <p class="text-gray-600 text-sm">Senior Property Consultant</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 text-sm mb-4">
+                                {{ post.author.bio|truncatewords:20|default:"With extensive experience in Nagpur's real estate market, specializes in helping first-time home buyers." }}
+                            </p>
+                            <a href="{% url 'contact' %}#contact-form" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 rounded-lg transition text-center block">
+                                Contact {{ post.author.get_full_name|default:"Author" }}
+                            </a>
+                        </div>
+                        
+                        <!-- Recent Posts -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4">Recent Posts</h3>
+                            <div class="space-y-4">
+                                {% for recent_post in recent_posts %}
+                                    <a href="{% url 'blog:blog_detail' recent_post.slug %}" class="recent-post flex border-b border-gray-200 pb-4">
+                                        <img src="{{ recent_post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1973&q=80' }}" 
+                                             alt="{{ recent_post.title }}" class="w-16 h-16 object-cover rounded mr-4">
+                                        <div>
+                                            <h4 class="font-semibold text-blue-900 text-sm mb-1">{{ recent_post.title|truncatewords:10 }}</h4>
+                                            <p class="text-gray-500 text-xs">{{ recent_post.published_date|date:"F d, Y" }}</p>
+                                        </div>
+                                    </a>
+                                {% empty %}
+                                    <p class="text-gray-600">No recent posts available.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Categories -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4">Categories</h3>
+                            <ul class="space-y-3">
+                                {% for category in categories %}
+                                    <li>
+                                        <a href="{% url 'blog:blog_list' %}?category={{ category.slug }}" 
+                                           class="flex justify-between text-gray-700 hover:text-blue-900 transition">
+                                            <span>{{ category.name }}</span>
+                                            <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded-full text-xs">{{ category.post_count }}</span>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <!-- CTA -->
+                        <div class="bg-blue-900 text-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold mb-4">Need Help Buying Your First Home?</h3>
+                            <p class="mb-4">Our expert agents specialize in helping first-time buyers navigate the process smoothly.</p>
+                            <a href="{% url 'contact' %}#contact-form" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg transition text-center block">
+                                Contact Our Team
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Articles -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-900 mb-4" data-aos="fade-up">You Might Also Like</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Explore more articles to help you with your home buying journey.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {% for related_post in related_posts %}
+                    <article class="bg-white rounded-lg overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="{% cycle '0' '100' '200' %}">
+                        <img src="{{ related_post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1973&q=80' }}" 
+                             alt="{{ related_post.title }}" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center text-gray-500 text-sm mb-3">
+                                <i class="far fa-calendar-alt mr-2"></i> {{ related_post.published_date|date:"F d, Y" }}
+                            </div>
+                            {% for category in related_post.categories.all %}
+                                <span class="category-badge {{ category.slug }}">{{ category.name }}</span>
+                            {% endfor %}
+                            <h3 class="text-xl font-bold text-blue-900 mb-3 mt-2">{{ related_post.title }}</h3>
+                            <p class="text-gray-600 mb-4">{{ related_post.summary|truncatewords:20 }}</p>
+                            <a href="{% url 'blog:blog_detail' related_post.slug %}" class="text-blue-900 font-semibold hover:text-yellow-600 transition flex items-center">
+                                Read More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <p class="text-gray-600">No related articles available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-blue-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-aos="fade-up">Ready to Start Your Home Buying Journey?</h2>
+            <p class="text-xl mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Contact our expert team today for personalized guidance and support.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
+                <a href="{% url 'contact' %}#contact-form" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Contact Our Team
+                </a>
+                <a href="{% url 'properties' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Browse Properties
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                            <i class="fas fa-home text-white text-lg"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></h2>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Your trusted partner for all real estate needs in Nagpur. We help you find, buy, rent, or sell properties with ease and confidence.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="{{ company.facebook_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="{{ company.twitter_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="{{ company.instagram_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="{{ company.linkedin_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
+                        <li><a href="{% url 'properties:property_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Properties</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
+                        <li><a href="{% url 'agents:agents_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Our Agents</a></li>
+                        <li><a href="{% url 'blog:blog' %}" class="text-gray-400 hover:text-yellow-600 transition">Blog</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-yellow-600 transition">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-yellow-600 mt-1 mr-3"></i>
+                            <span class="text-gray-400">{{ company.address|default:"123 Civil Lines, Nagpur, Maharashtra 440001" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.phone|default:"+91 98765 43210" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.email|default:"info@dreamhomesrealty.com" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.hours|default:"Mon - Sat: 9:00 AM - 7:00 PM" }}</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter -->
+               
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; {{ now|date:"Y" }} DreamHomes Realty. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+        
+        // Smooth scroll for table of contents links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Social sharing functionality
+        document.querySelectorAll('.social-share').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = window.location.href;
+                const title = document.title;
+                
+                if (this.dataset.share === 'facebook') {
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, 'facebook-share-dialog', 'width=626,height=436');
+                } else if (this.dataset.share === 'twitter') {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, 'twitter-share-dialog', 'width=626,height=436');
+                } else if (this.dataset.share === 'linkedin') {
+                    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, 'linkedin-share-dialog', 'width=626,height=436');
+                } else if (this.dataset.share === 'whatsapp') {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`, 'whatsapp-share-dialog', 'width=626,height=436');
+                }
+            });
+        });
+
+        // Reading time calculation
+        function calculateReadingTime() {
+            const article = document.querySelector('.article-content');
+            const text = article.textContent || article.innerText;
+            const wordCount = text.trim().split(/\s+/).length;
+            const readingTime = Math.ceil(wordCount / 200); // 200 words per minute
+            document.querySelector('.reading-time').textContent = `${readingTime} min read`;
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateReadingTime();
+        });
+    </script>
+{% endblock %}
