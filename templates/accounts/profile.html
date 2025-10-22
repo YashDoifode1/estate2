@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}My Profile | DreamHomes Realty{% endblock %}
+
+{% block content %}
+    <!-- Profile Header -->
+    <section class="profile-header text-white pt-8 pb-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <!-- Profile Picture -->
+                <div class="mb-6 md:mb-0 md:mr-8" data-aos="fade-right">
+                    <div class="relative">
+                        <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://randomuser.me/api/portraits/men/75.jpg{% endif %}" 
+                             alt="{{ user.get_full_name }}" class="w-32 h-32 rounded-full profile-pic">
+                        <form id="profile-pic-form" method="POST" action="{% url 'upload_profile_picture' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" id="profile-pic-input" name="profile_picture" class="hidden" accept="image/*">
+                            <button type="button" id="profile-pic-button" class="absolute bottom-2 right-2 bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-full transition">
+                                <i class="fas fa-camera text-sm"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Profile Info -->
+                <div class="flex-1 text-center md:text-left" data-aos="fade-left">
+                    <h1 class="text-3xl font-bold mb-2">{{ user.get_full_name }}</h1>
+                    <p class="text-blue-200 mb-4">Member since {{ user.date_joined|date:"F Y" }}</p>
+                    
+                    <div class="flex flex-wrap justify-center md:justify-start gap-6 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-yellow-400"></i>
+                            <span>{{ user.email }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-phone mr-2 text-yellow-400"></i>
+                            <span>{{ user.profile.phone_number|default:"Not provided" }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-yellow-400"></i>
+                            <span>{{ user.profile.location|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="{% url 'settings' %}" class="bg-white text-blue-900 hover:bg-blue-50 font-semibold py-2 px-6 rounded-lg transition flex items-center">
+                            <i class="fas fa-edit mr-2"></i> Edit Profile
+                        </a>
+                        <button id="share-profile-btn" class="bg-transparent border border-white hover:bg-white hover:text-blue-900 font-semibold py-2 px-6 rounded-lg transition flex items-center">
+                            <i class="fas fa-share-alt mr-2"></i> Share Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-8 -mt-8">
+        <div class="container mx-auto px-4">
+            <!-- Tab Navigation -->
+            <div class="bg-white rounded-t-lg shadow-sm" data-aos="fade-up">
+                <div class="flex overflow-x-auto">
+                    <button class="tab-button active" data-tab="saved-properties">
+                        <i class="fas fa-heart mr-2"></i> Saved Properties
+                        <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ saved_properties.count }}</span>
+                    </button>
+                    <button class="tab-button" data-tab="consultations">
+                        <i class="fas fa-calendar-alt mr-2"></i> My Consultations
+                        <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ consultations.count }}</span>
+                    </button>
+                    <button class="tab-button" data-tab="notifications">
+                        <i class="fas fa-bell mr-2"></i> Notifications
+                        <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ notifications.count }}</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="bg-white rounded-b-lg shadow-md">
+                <!-- Saved Properties Tab -->
+                <div id="saved-properties" class="tab-content p-6 active">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900">Saved Properties</h2>
+                        <div class="flex space-x-2">
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition flex items-center">
+                                <i class="fas fa-filter mr-2"></i> Filter
+                            </button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition flex items-center">
+                                <i class="fas fa-sort mr-2"></i> Sort
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Properties Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for property in saved_properties %}
+                            <div class="property-card bg-white rounded-lg overflow-hidden border" data-property-id="{{ property.id }}">
+                                <div class="relative">
+                                    <img src="{{ property.image.url|default:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80' }}" 
+                                         alt="{{ property.title }}" class="w-full h-48 object-cover">
+                                    <button class="toggle-save-btn absolute top-3 right-3 bg-white hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-full transition">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <div class="absolute top-3 left-3 bg-{% if property.status == 'for_sale' %}yellow{% else %}green{% endif %}-600 text-white px-2 py-1 rounded text-sm font-semibold">
+                                        {{ property.status|with_space }}
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-bold text-blue-900 mb-1">{{ property.title }}</h3>
+                                    <p class="text-gray-600 text-sm mb-3 flex items-center">
+                                        <i class="fas fa-map-marker-alt text-yellow-600 mr-1"></i> {{ property.location }}
+                                    </p>
+                                    <div class="flex justify-between text-gray-700 text-sm mb-3">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-bed text-yellow-600 mr-1"></i> {{ property.bedrooms }} Beds
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-bath text-yellow-600 mr-1"></i> {{ property.bathrooms }} Baths
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-vector-square text-yellow-600 mr-1"></i> {{ property.area }} sq.ft.
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-xl font-bold text-blue-900">₹{{ property.price }}</p>
+                                        <div class="flex space-x-2">
+                                            <a href="{% url 'property_detail' property.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-3 py-1 rounded text-sm transition">
+                                                View
+                                            </a>
+                                            <button class="remove-property-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state col-span-full text-center py-12">
+                                <i class="fas fa-heart text-gray-400 text-6xl mb-4"></i>
+                                <h3 class="text-xl font-bold text-gray-700 mb-2">No Saved Properties</h3>
+                                <p class="text-gray-600 mb-6">You haven't saved any properties yet.</p>
+                                
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Consultations Tab -->
+                <div id="consultations" class="tab-content p-6 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900">My Consultations</h2>
+                        
+                    </div>
+                    
+                    <!-- Consultations List -->
+                    <div class="space-y-6">
+                        {% for consultation in consultations %}
+                            <div class="bg-white border rounded-lg p-6" data-aos="fade-up" data-consultation-id="{{ consultation.id }}">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="mb-4 md:mb-0">
+                                        <div class="flex items-center mb-2">
+                                            <h3 class="text-lg font-bold text-blue-900 mr-4">{{ consultation.title }}</h3>
+                                            <span class="status-badge {{ consultation.status|get_status_class }} px-3 py-1 rounded-full text-sm font-medium">
+                                                {{ consultation.status|with_space }}
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-4 text-gray-600">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-user mr-2 text-yellow-600"></i>
+                                                <span>With: {{ consultation.agent.get_full_name }}</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-calendar mr-2 text-yellow-600"></i>
+                                                <span>{{ consultation.date|date:"F j, Y" }}</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-clock mr-2 text-yellow-600"></i>
+                                                <span>{{ consultation.time|time:"h:i A" }} - {{ consultation.end_time|time:"h:i A" }}</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-{{ consultation.mode|get_icon_for_mode }} mr-2 text-yellow-600"></i>
+                                                <span>{{ consultation.mode|with_space }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        {% if consultation.status == 'scheduled' %}
+                                            <a href="{% url 'reschedule_consultation' consultation.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
+                                                <i class="fas fa-edit mr-1"></i> Reschedule
+                                            </a>
+                                        {% endif %}
+                                        {% if consultation.status == 'completed' or consultation.status == 'cancelled' %}
+                                            <a href="{% url 'book_consultation' %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
+                                                <i class="fas fa-redo mr-1"></i> Book Again
+                                            </a>
+                                        {% endif %}
+                                        {% if consultation.status == 'completed' %}
+                                            <a href="{% url 'consultation_details' consultation.id %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition text-sm">
+                                                <i class="fas fa-file-alt mr-1"></i> Details
+                                            </a>
+                                        {% endif %}
+                                        {% if consultation.status == 'scheduled' %}
+                                            <button class="cancel-consultation-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition text-sm">
+                                                <i class="fas fa-times mr-1"></i> Cancel
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state text-center py-12">
+                                <i class="fas fa-calendar-alt text-gray-400 text-6xl mb-4"></i>
+                                <h3 class="text-xl font-bold text-gray-700 mb-2">No Consultations Booked</h3>
+                                <p class="text-gray-600 mb-6">You haven't booked any consultations yet.</p>
+                                
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Notifications Tab -->
+                <div id="notifications" class="tab-content p-6 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900">Notifications</h2>
+                        
+                    </div>
+                    
+                    <!-- Notifications List -->
+                    <div class="space-y-4">
+                        {% for notification in notifications %}
+                            <div class="bg-{% if notification.type == 'price_drop' %}blue-50 border-blue-200{% elif notification.type == 'consultation_reminder' %}green-50 border-green-200{% else %}yellow-50 border-yellow-200{% endif %} border rounded-lg p-4" data-aos="fade-up" data-notification-id="{{ notification.id }}">
+                                <div class="flex">
+                                    <div class="flex-shrink-0 mr-4">
+                                        <div class="w-10 h-10 bg-{% if notification.type == 'price_drop' %}blue{% elif notification.type == 'consultation_reminder' %}green{% else %}yellow{% endif %}-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-{% if notification.type == 'price_drop' %}home{% elif notification.type == 'consultation_reminder' %}calendar-check{% else %}bell{% endif %} text-{% if notification.type == 'price_drop' %}blue{% elif notification.type == 'consultation_reminder' %}green{% else %}yellow{% endif %}-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-bold text-blue-900">{{ notification.title }}</h4>
+                                        <p class="text-gray-700 mb-2">{{ notification.message }}</p>
+                                        <p class="text-gray-500 text-sm">{{ notification.created_at|timesince }} ago</p>
+                                    </div>
+                                    <button class="dismiss-notification-btn text-gray-400 hover:text-gray-600 self-start">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state text-center py-12">
+                                <i class="fas fa-bell text-gray-400 text-6xl mb-4"></i>
+                                <h3 class="text-xl font-bold text-gray-700 mb-2">No Notifications</h3>
+                                <p class="text-gray-600 mb-6">You don't have any notifications at the moment.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-blue-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-aos="fade-up">Need Help With Your Property Search?</h2>
+            <p class="text-xl mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Our expert agents are here to help you find your dream home.
+            </p>
+            
+        </div>
+    </section>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // User Menu Toggle
+        document.getElementById('user-menu-button').addEventListener('click', function() {
+            const userMenu = document.getElementById('user-menu');
+            userMenu.classList.toggle('hidden');
+        });
+
+        // Profile Picture Upload
+        const profilePicButton = document.getElementById('profile-pic-button');
+        const profilePicInput = document.getElementById('profile-pic-input');
+        const profilePicForm = document.getElementById('profile-pic-form');
+
+        if (profilePicButton && profilePicInput && profilePicForm) {
+            profilePicButton.addEventListener('click', function() {
+                profilePicInput.click();
+            });
+
+            profilePicInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    profilePicForm.submit();
+                }
+            });
+        }
+
+        // Share Profile
+        const shareProfileBtn = document.getElementById('share-profile-btn');
+        if (shareProfileBtn) {
+            shareProfileBtn.addEventListener('click', function() {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Profile URL copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy URL:', err);
+                    alert('Failed to copy URL. Please try again.');
+                });
+            });
+        }
+
+        // Tab Switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    content.classList.add('hidden');
+                });
+
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Property Save/Unsave Toggle
+        document.querySelectorAll('.toggle-save-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const propertyCard = this.closest('.property-card');
+                const propertyId = propertyCard.getAttribute('data-property-id');
+                const heart = this.querySelector('i');
+                const isSaved = heart.classList.contains('fa-heart');
+
+                fetch('{% url "toggle_save_property" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ property_id: propertyId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (isSaved) {
+                            heart.classList.remove('fa-heart');
+                            heart.classList.add('fa-heart-broken');
+                            this.classList.remove('text-red-500', 'hover:bg-red-500');
+                            this.classList.add('text-gray-400', 'hover:bg-gray-400');
+                        } else {
+                            heart.classList.remove('fa-heart-broken');
+                            heart.classList.add('fa-heart');
+                            this.classList.remove('text-gray-400', 'hover:bg-gray-400');
+                            this.classList.add('text-red-500', 'hover:bg-red-500');
+                        }
+                        // Update saved count in tab
+                        const savedCountElement = document.querySelector('[data-tab="saved-properties"] .bg-blue-100');
+                        if (savedCountElement) {
+                            savedCountElement.textContent = data.saved_count;
+                        }
+                    } else {
+                        alert(data.message || 'Failed to update save status.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        });
+
+        // Property Remove Button
+        document.querySelectorAll('.remove-property-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const propertyCard = this.closest('.property-card');
+                const propertyId = propertyCard.getAttribute('data-property-id');
+
+                fetch('{% url "remove_saved_property" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ property_id: propertyId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        propertyCard.style.opacity = '0';
+                        propertyCard.style.transform = 'translateX(100px)';
+                        setTimeout(() => {
+                            propertyCard.remove();
+                            const propertiesContainer = document.querySelector('#saved-properties .grid');
+                            if (propertiesContainer && propertiesContainer.children.length === 0) {
+                                document.querySelector('#saved-properties .empty-state').classList.remove('hidden');
+                            }
+                            // Update saved count in tab
+                            const savedCountElement = document.querySelector('[data-tab="saved-properties"] .bg-blue-100');
+                            if (savedCountElement) {
+                                savedCountElement.textContent = data.saved_count;
+                            }
+                        }, 300);
+                    } else {
+                        alert(data.message || 'Failed to remove property.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        });
+
+        // Close Notification
+        document.querySelectorAll('.dismiss-notification-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const notification = this.closest('.bg-blue-50, .bg-yellow-50, .bg-green-50');
+                const notificationId = notification.getAttribute('data-notification-id');
+
+                fetch('{% url "dismiss_notification" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ notification_id: notificationId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100px)';
+                        setTimeout(() => {
+                            notification.remove();
+                            const notificationsContainer = document.querySelector('#notifications .space-y-4');
+                            if (notificationsContainer && notificationsContainer.children.length === 0) {
+                                document.querySelector('#notifications .empty-state').classList.remove('hidden');
+                            }
+                            // Update notification count in tab
+                            const notificationCountElement = document.querySelector('[data-tab="notifications"] .bg-blue-100');
+                            if (notificationCountElement) {
+                                notificationCountElement.textContent = data.notification_count;
+                            }
+                        }, 300);
+                    } else {
+                        alert(data.message || 'Failed to dismiss notification.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        });
+
+        // Cancel Consultation
+        document.querySelectorAll('.cancel-consultation-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Are you sure you want to cancel this consultation?')) {
+                    const consultation = this.closest('.bg-white');
+                    const consultationId = consultation.getAttribute('data-consultation-id');
+
+                    fetch('{% url "cancel_consultation" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ consultation_id: consultationId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            consultation.style.opacity = '0';
+                            consultation.style.transform = 'translateX(100px)';
+                            setTimeout(() => {
+                                consultation.remove();
+                                const consultationsContainer = document.querySelector('#consultations .space-y-6');
+                                if (consultationsContainer && consultationsContainer.children.length === 0) {
+                                    document.querySelector('#consultations .empty-state').classList.remove('hidden');
+                                }
+                                // Update consultation count in tab
+                                const consultationCountElement = document.querySelector('[data-tab="consultations"] .bg-blue-100');
+                                if (consultationCountElement) {
+                                    consultationCountElement.textContent = data.consultation_count;
+                                }
+                            }, 300);
+                        } else {
+                            alert(data.message || 'Failed to cancel consultation.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

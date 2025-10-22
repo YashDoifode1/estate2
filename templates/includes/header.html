@@ -1,0 +1,82 @@
+<!-- Header -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                <i class="fas fa-home text-white text-lg"></i>
+            </div>
+            <a href="{% url 'home' %}" class="text-2xl font-bold text-blue-900">
+                DreamHomes <span class="text-yellow-600">Realty</span>
+            </a>
+        </div>
+        
+        <!-- Navigation -->
+        <!-- In your navigation menu, add contact link -->
+<nav class="hidden md:flex space-x-8">
+    <a href="{% url 'home' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Home</a>
+    <a href="{% url 'property_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Properties</a>
+    <a href="{% url 'about' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">About</a>
+    <a href="{% url 'agents_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Agents</a>
+    <a href="{% url 'blog_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Blog</a>
+    <a href="{% url 'contact' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Contact</a>  <!-- Add this line -->
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">My Profile</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">Login</a>
+    {% endif %}
+</nav>
+        
+        <!-- User Menu -->
+        <div class="flex items-center space-x-4">
+            {% if user.is_authenticated %}
+                <div class="hidden md:flex items-center space-x-2 text-gray-700">
+                    <span>Welcome, {{ user.first_name|default:user.username }}</span>
+                </div>
+                <div class="relative">
+                    <button id="user-menu-button" class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-2 transition">
+                        <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% else %}https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80{% endif %}" alt="User" class="w-8 h-8 rounded-full">
+                        <i class="fas fa-chevron-down text-gray-600 text-sm"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                        <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                            <i class="fas fa-user mr-2"></i> My Profile
+                        </a>
+                        <a href="{% url 'settings' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <hr class="my-2">
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Sign Out
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">Login</a>
+            {% endif %}
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-blue-900">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <!-- Mobile Menu -->
+<div id="mobile-menu" class="hidden md:hidden bg-white py-4 px-4 shadow-lg">
+    <a href="{% url 'home' %}" class="block py-2 text-gray-600 font-medium">Home</a>
+    <a href="{% url 'property_list' %}" class="block py-2 text-gray-600 font-medium">Properties</a>
+    <a href="{% url 'about' %}" class="block py-2 text-gray-600 font-medium">About</a>
+    <a href="{% url 'agents_list' %}" class="block py-2 text-gray-600 font-medium">Agents</a>
+    <a href="{% url 'blog_list' %}" class="block py-2 text-gray-600 font-medium">Blog</a>
+    <a href="{% url 'contact' %}" class="block py-2 text-gray-600 font-medium">Contact</a>  <!-- Add this line -->
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="block py-2 text-blue-900 font-medium">My Profile</a>
+    {% else %}
+        <a href="{% url 'login' %}" class="block py-2 text-blue-900 font-medium">Login</a>
+    {% endif %}
+</div>
+</header>

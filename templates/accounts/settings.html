@@ -1,0 +1,703 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Settings | DreamHomes Realty{% endblock %}
+
+{% block content %}
+    <!-- Settings Header -->
+    <section class="settings-header text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <!-- Breadcrumb -->
+                <nav class="flex mb-6" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2 text-sm">
+                        <li>
+                            <a href="{% url 'home' %}" class="text-blue-200 hover:text-white transition">Home</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-chevron-right text-blue-300 mx-2"></i>
+                            <a href="{% url 'profile' %}" class="text-blue-200 hover:text-white transition">My Profile</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-chevron-right text-blue-300 mx-2"></i>
+                            <span class="text-white font-medium">Settings</span>
+                        </li>
+                    </ol>
+                </nav>
+                
+                <h1 class="text-3xl md:text-4xl font-bold mb-4" data-aos="fade-up">Account Settings</h1>
+                <p class="text-xl text-blue-100 max-w-2xl" data-aos="fade-up" data-aos-delay="100">
+                    Manage your account preferences, security settings, and notification preferences.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Settings Content -->
+    <section class="py-8">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Settings Navigation -->
+                    <aside class="lg:w-1/4">
+                        <div class="bg-white rounded-lg shadow-md p-6 settings-nav">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">Settings</h2>
+                            <nav class="space-y-2">
+                                <div class="nav-item active" data-section="profile">
+                                    <i class="fas fa-user-circle mr-3 text-lg"></i>
+                                    <span>Profile Information</span>
+                                </div>
+                                <div class="nav-item" data-section="security">
+                                    <i class="fas fa-shield-alt mr-3 text-lg"></i>
+                                    <span>Security & Password</span>
+                                </div>
+                                <div class="nav-item" data-section="preferences">
+                                    <i class="fas fa-sliders-h mr-3 text-lg"></i>
+                                    <span>Preferences</span>
+                                </div>
+                                <div class="nav-item" data-section="notifications">
+                                    <i class="fas fa-bell mr-3 text-lg"></i>
+                                    <span>Notifications</span>
+                                </div>
+                                <div class="nav-item" data-section="privacy">
+                                    <i class="fas fa-lock mr-3 text-lg"></i>
+                                    <span>Privacy & Data</span>
+                                </div>
+                                <div class="nav-item text-red-600 hover:bg-red-50" data-section="delete">
+                                    <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>
+                                    <span>Delete Account</span>
+                                </div>
+                            </nav>
+                        </div>
+                    </aside>
+                    
+                    <!-- Settings Sections -->
+                    <main class="lg:w-3/4">
+                        <!-- Success Message -->
+                        <div id="success-message" class="success-message bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6 {% if messages %}show{% endif %}">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                                <span id="success-text">
+                                    {% for message in messages %}
+                                        {{ message }}
+                                    {% empty %}
+                                        Your changes have been saved successfully.
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Information Section -->
+                        <div id="profile" class="settings-section active">
+                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Profile Information</h2>
+                                
+                                <form id="profile-form" method="POST" action="{% url 'update_profile' %}">
+                                    {% csrf_token %}
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">First Name</label>
+                                            {{ profile_form.first_name }}
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Last Name</label>
+                                            {{ profile_form.last_name }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+                                        {{ profile_form.email }}
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                                        {{ profile_form.phone_number }}
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">Location</label>
+                                        {{ profile_form.location }}
+                                    </div>
+                                    
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                    {% if profile_form.errors %}
+                                        <p class="text-red-500 text-sm mt-1">
+                                            {{ profile_form.errors|first|default:"Please correct the errors above" }}
+                                        </p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Security & Password Section -->
+                        <div id="security" class="settings-section">
+                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Security & Password</h2>
+                                
+                                <form id="password-form" method="POST" action="{% url 'update_password' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">Current Password</label>
+                                        {{ password_form.current_password }}
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">New Password</label>
+                                        {{ password_form.new_password1 }}
+                                        <div id="password-strength" class="password-strength password-weak"></div>
+                                        <p class="text-sm text-gray-500 mt-2">Password must be at least 8 characters with uppercase, lowercase, and numbers.</p>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 font-medium mb-2">Confirm New Password</label>
+                                        {{ password_form.new_password2 }}
+                                    </div>
+                                    
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
+                                            Update Password
+                                        </button>
+                                    </div>
+                                    {% if password_form.errors %}
+                                        <p class="text-red-500 text-sm mt-1">
+                                            {{ password_form.errors|first|default:"Please correct the errors above" }}
+                                        </p>
+                                    {% endif %}
+                                </form>
+                                
+                                <hr class="my-8">
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-blue-900 mb-4">Two-Factor Authentication</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium">Two-factor authentication is <span class="text-{% if user.profile.two_factor_enabled %}green-600{% else %}red-600{% endif %}">
+                                                {% if user.profile.two_factor_enabled %}enabled{% else %}disabled{% endif %}
+                                            </span></p>
+                                            <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                                        </div>
+                                        <form method="POST" action="{% url 'toggle_2fa' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg transition text-sm">
+                                                {% if user.profile.two_factor_enabled %}Disable{% else %}Enable{% endif %} 2FA
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-blue-900 mb-4">Login Sessions</h3>
+                                    {% for session in sessions %}
+                                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <div class="flex items-center">
+                                                    <i class="fas fa-desktop text-blue-900 mr-3"></i>
+                                                    <div>
+                                                        <p class="font-medium">Session</p>
+                                                        <p class="text-sm text-gray-600">{{ session.device }} • {{ session.location }}</p>
+                                                    </div>
+                                                </div>
+                                                <span class="bg-{% if session.is_current %}green{% else %}gray{% endif %}-100 text-{% if session.is_current %}green{% else %}gray{% endif %}-800 text-xs px-2 py-1 rounded">
+                                                    {% if session.is_current %}Active{% else %}Inactive{% endif %}
+                                                </span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mt-2">Last active: {{ session.last_active }}</p>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-gray-600">No active sessions found.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preferences Section -->
+                        <div id="preferences" class="settings-section">
+                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Preferences</h2>
+                                
+                                <form id="preferences-form" method="POST" action="{% url 'update_preferences' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Property Preferences</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {{ preferences_form.interest_buying }}
+                                            {{ preferences_form.interest_renting }}
+                                            {{ preferences_form.interest_selling }}
+                                            {{ preferences_form.interest_commercial }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Budget Range</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-gray-700 font-medium mb-2">Minimum Budget (₹)</label>
+                                                {{ preferences_form.min_budget }}
+                                            </div>
+                                            <div>
+                                                <label class="block text-gray-700 font-medium mb-2">Maximum Budget (₹)</label>
+                                                {{ preferences_form.max_budget }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Preferred Locations</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {{ preferences_form.preferred_locations }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Property Types</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {{ preferences_form.property_types }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
+                                            Save Preferences
+                                        </button>
+                                    </div>
+                                    {% if preferences_form.errors %}
+                                        <p class="text-red-500 text-sm mt-1">
+                                            {{ preferences_form.errors|first|default:"Please correct the errors above" }}
+                                        </p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Notifications Section -->
+                        <div id="notifications" class="settings-section">
+                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Notification Preferences</h2>
+                                
+                                <form id="notifications-form" method="POST" action="{% url 'update_notifications' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Email Notifications</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Property Recommendations</p>
+                                                    <p class="text-sm text-gray-600">Get notified about properties matching your preferences</p>
+                                                </div>
+                                                {{ notifications_form.email_property_recommendations }}
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Price Drop Alerts</p>
+                                                    <p class="text-sm text-gray-600">Get notified when prices drop on saved properties</p>
+                                                </div>
+                                                {{ notifications_form.email_price_drop_alerts }}
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">New Listings</p>
+                                                    <p class="text-sm text-gray-600">Get notified about new properties in your preferred areas</p>
+                                                </div>
+                                                {{ notifications_form.email_new_listings }}
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Market Updates</p>
+                                                    <p class="text-sm text-gray-600">Receive real estate market insights and trends</p>
+                                                </div>
+                                                {{ notifications_form.email_market_updates }}
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Promotional Offers</p>
+                                                    <p class="text-sm text-gray-600">Receive special offers and discounts</p>
+                                                </div>
+                                                {{ notifications_form.email_promotional_offers }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Push Notifications</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Mobile Push Notifications</p>
+                                                    <p class="text-sm text-gray-600">Receive notifications on your mobile device</p>
+                                                </div>
+                                                {{ notifications_form.push_notifications }}
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">SMS Notifications</p>
+                                                    <p class="text-sm text-gray-600">Receive important alerts via SMS</p>
+                                                </div>
+                                                {{ notifications_form.sms_notifications }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
+                                            Save Notification Settings
+                                        </button>
+                                    </div>
+                                    {% if notifications_form.errors %}
+                                        <p class="text-red-500 text-sm mt-1">
+                                            {{ notifications_form.errors|first|default:"Please correct the errors above" }}
+                                        </p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Privacy & Data Section -->
+                        <div id="privacy" class="settings-section">
+                            <div class="bg-white rounded-lg shadow-md p-6 form-card">
+                                <h2 class="text-2xl font-bold text-blue-900 mb-6">Privacy & Data</h2>
+                                
+                                <form id="privacy-form" method="POST" action="{% url 'update_privacy' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-blue-900 mb-4">Data Privacy</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Data Sharing with Partners</p>
+                                                    <p class="text-sm text-gray-600">Allow us to share your preferences with trusted partners for better service</p>
+                                                </div>
+                                                {{ privacy_form.data_sharing }}
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium">Personalized Ads</p>
+                                                    <p class="text-sm text-gray-600">Show personalized property recommendations based on your activity</p>
+                                                </div>
+                                                {{ privacy_form.personalized_ads }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg transition">
+                                            Save Privacy Settings
+                                        </button>
+                                    </div>
+                                    {% if privacy_form.errors %}
+                                        <p class="text-red-500 text-sm mt-1">
+                                            {{ privacy_form.errors|first|default:"Please correct the errors above" }}
+                                        </p>
+                                    {% endif %}
+                                </form>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-blue-900 mb-4">Data Management</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="font-medium">Download Your Data</p>
+                                                <p class="text-sm text-gray-600">Request a copy of all your personal data we have stored</p>
+                                            </div>
+                                            <form method="POST" action="{% url 'download_data' %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition text-sm">
+                                                    Request Data
+                                                </button>
+                                            </form>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="font-medium">Clear Search History</p>
+                                                <p class="text-sm text-gray-600">Delete all your saved searches and browsing history</p>
+                                            </div>
+                                            <form method="POST" action="{% url 'clear_history' %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition text-sm">
+                                                    Clear History
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-blue-900 mb-4">Privacy Policy</h3>
+                                    <p class="text-gray-700 mb-4">
+                                        We value your privacy and are committed to protecting your personal information. 
+                                        Our privacy policy explains how we collect, use, and safeguard your data.
+                                    </p>
+                                    <a href="{% url 'privacy' %}" class="text-blue-900 hover:text-blue-700 font-medium">View Full Privacy Policy</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delete Account Section -->
+                        <div id="delete" class="settings-section">
+                            <div class="bg-white rounded-lg shadow-md p-6 form-card border-l-4 border-red-500">
+                                <h2 class="text-2xl font-bold text-red-700 mb-6">Delete Account</h2>
+                                
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                                    <div class="flex">
+                                        <i class="fas fa-exclamation-triangle text-red-500 text-xl mr-3 mt-1"></i>
+                                        <div>
+                                            <h3 class="font-bold text-red-700 mb-1">Warning: This action cannot be undone</h3>
+                                            <p class="text-red-700">
+                                                Deleting your account will permanently remove all your data, including saved properties, 
+                                                search history, and consultation bookings. You will lose access to your account immediately.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-gray-800 mb-4">Before you proceed</h3>
+                                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                        <li>Download any data you wish to keep</li>
+                                        <li>Cancel any upcoming consultations</li>
+                                        <li>Ensure you have no pending transactions</li>
+                                        <li>Consider deactivating your account instead</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <form method="POST" action="{% url 'deactivate_account' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" id="deactivate-account" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition">
+                                            Deactivate Account Temporarily
+                                        </button>
+                                    </form>
+                                    <button id="delete-account" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                                        Permanently Delete Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Delete Account Modal -->
+    <div class="delete-modal" id="delete-modal">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <form method="POST" action="{% url 'delete_account' %}">
+                {% csrf_token %}
+                <div class="text-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Your Account?</h3>
+                    <p class="text-gray-700 mb-6">
+                        This action cannot be undone. All your data will be permanently deleted.
+                    </p>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">Enter your password to confirm</label>
+                        {{ delete_form.password }}
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button type="button" id="cancel-delete" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition flex-1">
+                            Cancel
+                        </button>
+                        <button type="submit" id="confirm-delete" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition flex-1">
+                            Delete Account
+                        </button>
+                    </div>
+                    {% if delete_form.errors %}
+                        <p class="text-red-500 text-sm mt-1">
+                            {{ delete_form.errors|first|default:"Invalid password" }}
+                        </p>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                            <i class="fas fa-home text-white text-lg"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></h2>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Your trusted partner for all real estate needs in Nagpur. We help you find, buy, rent, or sell properties with ease and confidence.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="{{ company.facebook_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="{{ company.twitter_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="{{ company.instagram_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="{{ company.linkedin_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
+                        
+                        <li><a href="{% url 'profile' %}" class="text-gray-400 hover:text-yellow-600 transition">My Profile</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-yellow-600 mt-1 mr-3"></i>
+                            <span class="text-gray-400">{{ company.address|default:"123 Civil Lines, Nagpur, Maharashtra 440001" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.phone|default:"+91 98765 43210" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.email|default:"info@dreamhomesrealty.com" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.hours|default:"Mon - Sat: 9:00 AM - 7:00 PM" }}</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Newsletter</h3>
+                    <p class="text-gray-400 mb-4">
+                        Subscribe to our newsletter for the latest property updates and market insights.
+                    </p>
+                    
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; {{ now|date:"Y" }} DreamHomes Realty. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+        
+        // Settings Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all sections
+                document.querySelectorAll('.settings-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Password Strength Indicator
+        const passwordInput = document.getElementById('id_new_password1');
+        const passwordStrength = document.getElementById('password-strength');
+        
+        if (passwordInput && passwordStrength) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                // Check password length
+                if (password.length >= 8) strength++;
+                
+                // Check for uppercase letters
+                if (/[A-Z]/.test(password)) strength++;
+                
+                // Check for lowercase letters
+                if (/[a-z]/.test(password)) strength++;
+                
+                // Check for numbers
+                if (/[0-9]/.test(password)) strength++;
+                
+                // Check for special characters
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                // Update strength indicator
+                passwordStrength.className = 'password-strength';
+                
+                if (strength <= 2) {
+                    passwordStrength.classList.add('password-weak');
+                } else if (strength <= 4) {
+                    passwordStrength.classList.add('password-medium');
+                } else {
+                    passwordStrength.classList.add('password-strong');
+                }
+            });
+        }
+
+        // Delete Account Modal
+        const deleteAccountBtn = document.getElementById('delete-account');
+        const deleteModal = document.getElementById('delete-modal');
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        
+        if (deleteAccountBtn) {
+            deleteAccountBtn.addEventListener('click', function() {
+                deleteModal.classList.add('open');
+            });
+        }
+        
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteModal.classList.remove('open');
+            });
+        }
+
+        // Close modal when clicking outside
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) {
+                deleteModal.classList.remove('open');
+            }
+        });
+    </script>
+{% endblock %}

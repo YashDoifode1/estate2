@@ -1,0 +1,494 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account | DreamHomes Realty{% endblock %}
+
+{% block content %}
+    <!-- Register Section -->
+    <section class="register-hero">
+        <div class="container mx-auto px-4 py-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+                    <!-- Register Form -->
+                    <div class="w-full lg:w-5/12" data-aos="fade-right">
+                        <div class="register-card bg-white rounded-2xl p-8">
+                            <div class="text-center mb-8">
+                                <h1 class="text-3xl font-bold text-blue-900 mb-2">Create Account</h1>
+                                <p class="text-gray-600">Join DreamHomes Realty to unlock personalized property experiences</p>
+                            </div>
+                            
+                            <!-- Success Message -->
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags == 'success' %}
+                                        <div class="success-message bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6 show">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                                                <span>{{ message }}</span>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% if message.tags == 'error' %}
+                                        <div class="error-message bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6 show">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-exclamation-circle mr-3 text-red-600"></i>
+                                                <span>{{ message }}</span>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <div id="success-message" class="success-message bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                                        <span id="success-text">Account created successfully! Redirecting to login...</span>
+                                    </div>
+                                </div>
+                                <div id="error-message" class="error-message bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-3 text-red-600"></i>
+                                        <span id="error-text">Please fix the errors below to continue.</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <form id="register-form" method="POST" action="{% url 'register' %}">
+                                {% csrf_token %}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-gray-700 font-medium mb-2" for="id_first_name">First Name</label>
+                                        {{ form.first_name }}
+                                        <p id="first-name-error" class="text-red-500 text-sm mt-1 {% if not form.first_name.errors %}hidden{% endif %}">
+                                            {{ form.first_name.errors|first|default:"First name is required" }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 font-medium mb-2" for="id_last_name">Last Name</label>
+                                        {{ form.last_name }}
+                                        <p id="last-name-error" class="text-red-500 text-sm mt-1 {% if not form.last_name.errors %}hidden{% endif %}">
+                                            {{ form.last_name.errors|first|default:"Last name is required" }}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 font-medium mb-2" for="id_email">Email Address</label>
+                                    <div class="relative">
+                                        {{ form.email }}
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i class="fas fa-envelope text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <p id="email-error" class="text-red-500 text-sm mt-1 {% if not form.email.errors %}hidden{% endif %}">
+                                        {{ form.email.errors|first|default:"Please enter a valid email address" }}
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 font-medium mb-2" for="id_phone">Phone Number</label>
+                                    <div class="relative">
+                                        {{ form.phone }}
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i class="fas fa-phone text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <p id="phone-error" class="text-red-500 text-sm mt-1 {% if not form.phone.errors %}hidden{% endif %}">
+                                        {{ form.phone.errors|first|default:"Please enter a valid phone number" }}
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 font-medium mb-2" for="id_password1">Password</label>
+                                    <div class="relative">
+                                        {{ form.password1 }}
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i id="password-toggle" class="fas fa-eye-slash text-gray-400 password-toggle"></i>
+                                        </div>
+                                    </div>
+                                    <div id="password-strength" class="password-strength password-weak"></div>
+                                    <ul id="password-requirements" class="text-xs text-gray-600 mt-2 space-y-1">
+                                        <li id="req-length" class="requirement-unmet">At least 8 characters</li>
+                                        <li id="req-uppercase" class="requirement-unmet">One uppercase letter</li>
+                                        <li id="req-lowercase" class="requirement-unmet">One lowercase letter</li>
+                                        <li id="req-number" class="requirement-unmet">One number</li>
+                                        <li id="req-special" class="requirement-unmet">One special character</li>
+                                    </ul>
+                                    <p id="password-error" class="text-red-500 text-sm mt-1 {% if not form.password1.errors %}hidden{% endif %}">
+                                        {{ form.password1.errors|first|default:"Password does not meet requirements" }}
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 font-medium mb-2" for="id_password2">Confirm Password</label>
+                                    <div class="relative">
+                                        {{ form.password2 }}
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i id="confirm-password-toggle" class="fas fa-eye-slash text-gray-400 password-toggle"></i>
+                                        </div>
+                                    </div>
+                                    <p id="confirm-password-error" class="text-red-500 text-sm mt-1 {% if not form.password2.errors %}hidden{% endif %}">
+                                        {{ form.password2.errors|first|default:"Passwords do not match" }}
+                                    </p>
+                                </div>
+                                
+                                <!-- In the terms section, make sure the links are using the correct URL names -->
+<div class="mb-6">
+    <label class="flex items-start cursor-pointer">
+        {{ form.terms }}
+        <span class="text-gray-700 text-sm ml-3">
+            I agree to the <a href="{% url 'terms' %}" class="text-blue-900 hover:underline">Terms of Service</a> and <a href="{% url 'privacy' %}" class="text-blue-900 hover:underline">Privacy Policy</a>. I consent to receive communications from DreamHomes Realty.
+        </span>
+    </label>
+    <p id="terms-error" class="text-red-500 text-sm mt-1 {% if not form.terms.errors %}hidden{% endif %}">
+        {{ form.terms.errors|first|default:"You must agree to the terms and conditions" }}
+    </p>
+</div>
+                                
+                                <div class="mb-6">
+                                    <label class="flex items-start cursor-pointer">
+                                        {{ form.newsletter }}
+                                        <span class="text-gray-700 text-sm ml-3">
+                                            Yes, I'd like to receive property updates, market insights, and promotional offers from DreamHomes Realty.
+                                        </span>
+                                    </label>
+                                </div>
+                                
+                                <button 
+                                    type="submit" 
+                                    id="register-btn"
+                                    class="register-btn w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition mb-6"
+                                >
+                                    Create Account
+                                </button>
+                                
+                                <div class="text-center mb-6">
+                                    <span class="text-gray-500 text-sm">Or sign up with</span>
+                                </div>
+                                
+                                
+                                
+                                <div class="text-center">
+                                    <span class="text-gray-600">Already have an account?</span>
+                                    <a href="{% url 'login' %}" class="text-blue-900 font-medium hover:text-blue-700 transition ml-1">
+                                        Sign In
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Benefits Section -->
+                    <div class="w-full lg:w-6/12" data-aos="fade-left">
+                        <div class="text-center lg:text-left mb-8">
+                            <h2 class="text-4xl font-bold text-white mb-4">Start Your Real Estate Journey</h2>
+                            <p class="text-blue-100 text-xl max-w-2xl">
+                                Create your account today and unlock a world of premium property opportunities in Nagpur.
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="benefit-card bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 text-white">
+                                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fas fa-home text-white text-xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2">Personalized Property Matches</h3>
+                                <p class="text-blue-100">Get recommendations based on your preferences, budget, and lifestyle.</p>
+                            </div>
+                            <div class="benefit-card bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 text-white">
+                                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fas fa-heart text-white text-xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2">Save Favorite Properties</h3>
+                                <p class="text-blue-100">Bookmark properties you love and receive price change alerts.</p>
+                            </div>
+                            <div class="benefit-card bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 text-white">
+                                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2">Schedule Viewings</h3>
+                                <p class="text-blue-100">Book property tours with our expert agents at your convenience.</p>
+                            </div>
+                            <div class="benefit-card bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 text-white">
+                                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fas fa-chart-line text-white text-xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2">Market Insights</h3>
+                                <p class="text-blue-100">Access exclusive market trends and investment opportunities.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 text-white">
+                            <h3 class="text-xl font-bold mb-4">Join 10,000+ Happy Homeowners</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mr-4">
+                                        <i class="fas fa-check text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">500+ Properties Sold Monthly</p>
+                                        <p class="text-blue-100 text-sm">Consistent track record of successful transactions</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-4">
+                                        <i class="fas fa-users text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">98% Customer Satisfaction</p>
+                                        <p class="text-blue-100 text-sm">Rated excellent by our clients</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center mr-4">
+                                        <i class="fas fa-award text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">15+ Years of Excellence</p>
+                                        <p class="text-blue-100 text-sm">Trusted real estate partner in Nagpur</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-center lg:text-left">
+                            <div class="flex items-center justify-center lg:justify-start text-white">
+                                <div class="flex rating-stars text-xl mr-4">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="text-lg">4.9/5 from 1,200+ reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                            <i class="fas fa-home text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></span>
+                    </div>
+                </div>
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+                <div class="text-gray-400 text-sm">
+                    <p>&copy; {{ now|date:"Y" }} DreamHomes Realty. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer> -->
+
+    <!-- Custom JavaScript -->
+    <script>
+        // DOM Elements
+        const registerForm = document.getElementById('register-form');
+        const firstNameInput = document.getElementById('id_first_name');
+        const lastNameInput = document.getElementById('id_last_name');
+        const emailInput = document.getElementById('id_email');
+        const phoneInput = document.getElementById('id_phone');
+        const passwordInput = document.getElementById('id_password1');
+        const confirmPasswordInput = document.getElementById('id_password2');
+        const termsCheckbox = document.getElementById('id_terms');
+        const newsletterCheckbox = document.getElementById('id_newsletter');
+        const passwordToggle = document.getElementById('password-toggle');
+        const confirmPasswordToggle = document.getElementById('confirm-password-toggle');
+        const registerBtn = document.getElementById('register-btn');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        const passwordStrength = document.getElementById('password-strength');
+        const passwordRequirements = document.getElementById('password-requirements');
+
+        // Password visibility toggle
+        passwordToggle.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordToggle.classList.remove('fa-eye-slash');
+                passwordToggle.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                passwordToggle.classList.remove('fa-eye');
+                passwordToggle.classList.add('fa-eye-slash');
+            }
+        });
+
+        confirmPasswordToggle.addEventListener('click', function() {
+            if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                confirmPasswordToggle.classList.remove('fa-eye-slash');
+                confirmPasswordToggle.classList.add('fa-eye');
+            } else {
+                confirmPasswordInput.type = 'password';
+                confirmPasswordToggle.classList.remove('fa-eye');
+                confirmPasswordToggle.classList.add('fa-eye-slash');
+            }
+        });
+
+        // Form validation functions
+        function validateName(name) {
+            return name.trim().length >= 2;
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function validatePhone(phone) {
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            return phoneRegex.test(phone.replace(/\s/g, ''));
+        }
+
+        function validatePassword(password) {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            return passwordRegex.test(password);
+        }
+
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            return strength;
+        }
+
+        function updatePasswordStrength(password) {
+            const strength = checkPasswordStrength(password);
+            passwordStrength.className = 'password-strength';
+            if (strength <= 2) {
+                passwordStrength.classList.add('password-weak');
+            } else if (strength <= 4) {
+                passwordStrength.classList.add('password-medium');
+            } else {
+                passwordStrength.classList.add('password-strong');
+            }
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[^A-Za-z0-9]/.test(password)
+            };
+            document.getElementById('req-length').className = requirements.length ? 'requirement-met' : 'requirement-unmet';
+            document.getElementById('req-uppercase').className = requirements.uppercase ? 'requirement-met' : 'requirement-unmet';
+            document.getElementById('req-lowercase').className = requirements.lowercase ? 'requirement-met' : 'requirement-unmet';
+            document.getElementById('req-number').className = requirements.number ? 'requirement-met' : 'requirement-unmet';
+            document.getElementById('req-special').className = requirements.special ? 'requirement-met' : 'requirement-unmet';
+        }
+
+        function showError(element, message) {
+            element.classList.add('error');
+            const errorElement = document.getElementById(`${element.id}-error`);
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+
+        function hideError(element) {
+            element.classList.remove('error');
+            const errorElement = document.getElementById(`${element.id}-error`);
+            errorElement.classList.add('hidden');
+        }
+
+        function showErrorMessage(message) {
+            if (errorMessage) {
+                document.getElementById('error-text').textContent = message;
+                errorMessage.classList.add('show');
+                successMessage.classList.remove('show');
+            }
+        }
+
+        function hideErrorMessage() {
+            if (errorMessage) {
+                errorMessage.classList.remove('show');
+            }
+        }
+
+        // Real-time validation
+        firstNameInput.addEventListener('blur', function() {
+            if (!validateName(this.value)) {
+                showError(this, 'First name must be at least 2 characters');
+            } else {
+                hideError(this);
+            }
+        });
+
+        lastNameInput.addEventListener('blur', function() {
+            if (!validateName(this.value)) {
+                showError(this, 'Last name must be at least 2 characters');
+            } else {
+                hideError(this);
+            }
+        });
+
+        emailInput.addEventListener('blur', function() {
+            if (!validateEmail(this.value)) {
+                showError(this, 'Please enter a valid email address');
+            } else {
+                hideError(this);
+            }
+        });
+
+        phoneInput.addEventListener('blur', function() {
+            if (!validatePhone(this.value)) {
+                showError(this, 'Please enter a valid phone number');
+            } else {
+                hideError(this);
+            }
+        });
+
+        passwordInput.addEventListener('input', function() {
+            updatePasswordStrength(this.value);
+            hideError(this);
+            hideErrorMessage();
+            if (confirmPasswordInput.value && this.value !== confirmPasswordInput.value) {
+                showError(confirmPasswordInput, 'Passwords do not match');
+            } else {
+                hideError(confirmPasswordInput);
+            }
+        });
+
+        confirmPasswordInput.addEventListener('input', function() {
+            if (passwordInput.value && this.value !== passwordInput.value) {
+                showError(this, 'Passwords do not match');
+            } else {
+                hideError(this);
+            }
+            hideErrorMessage();
+        });
+
+        [firstNameInput, lastNameInput, emailInput, phoneInput].forEach(input => {
+            input.addEventListener('input', function() {
+                hideError(this);
+                hideErrorMessage();
+            });
+        });
+
+        // Initialize password strength on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePasswordStrength('');
+        });
+    </script>
+{% endblock %}
