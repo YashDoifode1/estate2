@@ -4,6 +4,15 @@
 
 {% block content %}
     <!-- Hero Section -->
+     <style>element.style {
+    background-color: darkblue;
+}
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+    background-color: darkblue;
+}
+</style>
     <section class="hero-bg text-white py-20">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">DreamHomes Realty Blog</h1>
@@ -23,8 +32,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {% for post in page_obj %}
                             <article class="bg-white rounded-lg overflow-hidden shadow-md blog-card" data-aos="fade-up" data-aos-delay="{% cycle '0' '100' '200' %}">
-                                <img src="{{ post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1973&q=80' }}" 
-                                     alt="{{ post.title }}" class="w-full h-48 object-cover">
+                                {% if post.image and post.image.url %}
+                                    <img src="{{ post.image.url }}" 
+                                         alt="{{ post.title }}" class="w-full h-48 object-cover">
+                                {% else %}
+                                    <div class="w-full h-48 bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center">
+                                        <i class="fas fa-home text-white text-4xl"></i>
+                                    </div>
+                                {% endif %}
                                 <div class="p-6">
                                     <div class="flex items-center text-gray-500 text-sm mb-3">
                                         <i class="far fa-calendar-alt mr-2"></i> {{ post.published_date|date:"F d, Y" }}
@@ -36,7 +51,7 @@
                                     {% endfor %}
                                     <h2 class="text-xl font-bold text-blue-900 mb-3 mt-2">{{ post.title }}</h2>
                                     <p class="text-gray-600 mb-4">{{ post.summary|truncatewords:30 }}</p>
-                                    <a href="{% url 'blog_detail' post.slug %}" class="text-blue-900 font-semibold hover:text-yellow-600 transition flex items-center">
+                                    <a href="{% url 'blog:blog_detail' post.slug %}" class="text-blue-900 font-semibold hover:text-yellow-600 transition flex items-center">
                                         Read More <i class="fas fa-arrow-right ml-2"></i>
                                     </a>
                                 </div>
@@ -83,7 +98,7 @@
                         <!-- Search Box -->
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <h3 class="text-xl font-bold text-blue-900 mb-4">Search Blog</h3>
-                            <form method="GET" action="{% url 'blog_list' %}">
+                            <form method="GET" action="{% url 'blog:blog_list' %}">
                                 <div class="relative">
                                     <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search articles..." 
                                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent">
@@ -100,7 +115,7 @@
                             <ul class="space-y-3">
                                 {% for category in categories %}
                                     <li>
-                                        <a href="{% url 'blog_list' %}?category={{ category.slug }}" 
+                                        <a href="{% url 'blog:blog_list' %}?category={{ category.slug }}" 
                                            class="flex justify-between items-center text-gray-700 hover:text-blue-900 transition py-2 border-b border-gray-100 last:border-b-0">
                                             <span class="font-medium">{{ category.name }}</span>
                                             <span class="bg-blue-100 text-blue-900 px-2 py-1 rounded-full text-xs font-semibold">{{ category.post_count }}</span>
@@ -117,9 +132,15 @@
                             <h3 class="text-xl font-bold text-blue-900 mb-4">Popular Posts</h3>
                             <div class="space-y-4">
                                 {% for post in popular_posts %}
-                                    <a href="{% url 'blog_detail' post.slug %}" class="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 transition group">
-                                        <img src="{{ post.image.url|default:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1973&q=80' }}" 
-                                             alt="{{ post.title }}" class="w-16 h-16 object-cover rounded flex-shrink-0">
+                                    <a href="{% url 'blog:blog_detail' post.slug %}" class="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 transition group">
+                                        {% if post.image and post.image.url %}
+                                            <img src="{{ post.image.url }}" 
+                                                 alt="{{ post.title }}" class="w-16 h-16 object-cover rounded flex-shrink-0">
+                                        {% else %}
+                                            <div class="w-16 h-16 bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center rounded flex-shrink-0">
+                                                <i class="fas fa-home text-white text-lg"></i>
+                                            </div>
+                                        {% endif %}
                                         <div class="flex-1 min-w-0">
                                             <h4 class="font-semibold text-blue-900 text-sm mb-1 group-hover:text-yellow-600 transition line-clamp-2">{{ post.title }}</h4>
                                             <p class="text-gray-500 text-xs">{{ post.published_date|date:"M d, Y" }}</p>
@@ -138,31 +159,8 @@
                         <div class="bg-blue-900 text-white p-6 rounded-lg shadow-md">
                             <h3 class="text-xl font-bold mb-4">Subscribe to Our Newsletter</h3>
                             <p class="mb-4 text-blue-100">Get the latest real estate insights and market updates directly in your inbox.</p>
-                            <form method="POST" action="{% url 'newsletter_subscribe' %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    {{ newsletter_form.email }}
-                                </div>
-                                <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition w-full mt-2 flex items-center justify-center">
-                                    <i class="far fa-envelope mr-2"></i> Subscribe
-                                </button>
-                                {% if newsletter_form.email.errors %}
-                                    <p class="text-red-300 text-sm mt-2">
-                                        {{ newsletter_form.email.errors|first }}
-                                    </p>
-                                {% endif %}
-                            </form>
+                            
                             <p class="text-blue-200 text-xs mt-3">We respect your privacy. Unsubscribe at any time.</p>
-                        </div>
-
-                        <!-- Recent Comments -->
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold text-blue-900 mb-4">Recent Comments</h3>
-                            <div class="space-y-3">
-                                <div class="text-sm text-gray-600 italic">
-                                    Comments feature coming soon...
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,7 +176,7 @@
                 Browse our properties or contact our experts for personalized assistance.
             </p>
             <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
-                <a href="{% url 'properties' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                <a href="{% url 'properties:property_list' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
                     <i class="fas fa-home mr-2"></i> Browse Properties
                 </a>
                 <a href="{% url 'contact' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
@@ -257,49 +255,6 @@
             once: true,
             offset: 100
         });
-        
-        // Add smooth scrolling to category links
-        document.querySelectorAll('a[href*="category="]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                const target = document.querySelector('.blog-grid');
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    // Add a small delay to ensure scroll completes before page reload
-                    setTimeout(() => {
-                        window.location.href = this.href;
-                    }, 500);
-                }
-            });
-        });
-        
-        // Newsletter form enhancement
-        const newsletterForm = document.querySelector('form[action*="newsletter_subscribe"]');
-        if (newsletterForm) {
-            newsletterForm.addEventListener('submit', function(e) {
-                const emailInput = this.querySelector('input[type="email"]');
-                const submitBtn = this.querySelector('button[type="submit"]');
-                
-                if (emailInput.value.trim()) {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Subscribing...';
-                    submitBtn.disabled = true;
-                }
-            });
-        }
-        
-        // Search form enhancement
-        const searchForm = document.querySelector('form[action*="blog_list"]');
-        const searchInput = searchForm?.querySelector('input[name="q"]');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                if (this.value.length > 2) {
-                    // Optional: Add auto-suggest functionality here
-                }
-            });
-        }
     });
 </script>
 {% endblock %}
