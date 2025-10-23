@@ -10,6 +10,16 @@ from .models import (
     PropertyView,
 )
 
+from django.contrib import admin
+from .models import ScheduledVisit
+
+@admin.register(ScheduledVisit)
+class ScheduledVisitAdmin(admin.ModelAdmin):
+    list_display = ('property', 'name', 'email', 'phone', 'preferred_date', 'preferred_time', 'created_at')
+    list_filter = ('preferred_date', 'created_at')
+    search_fields = ('name', 'email', 'property__title')
+
+
 # -----------------------------
 # INLINE CLASSES
 # -----------------------------

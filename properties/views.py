@@ -158,29 +158,87 @@ def property_detail(request, property_id):
     }
     return render(request, 'properties/property_detail.html', context)
 
+from django.core.mail import send_mail
+from django.http import JsonResponse
+from django.conf import settings
+from .models import Property, ScheduledVisit
+
 def schedule_visit(request, property_id):
-    """Handle schedule visit form submission"""
     if request.method == 'POST':
-        property_obj = get_object_or_404(Property, id=property_id)
-        form = ScheduleVisitForm(request.POST)
-        
-        if form.is_valid():
-            # Here you would typically:
-            # 1. Save the inquiry to database
-            # 2. Send email notifications
-            # 3. Integrate with CRM
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Thank you! Our agent will contact you shortly to schedule your visit.'
-            })
-        else:
-            return JsonResponse({
-                'success': False,
-                'errors': form.errors.get_json_data()
-            })
-    
-    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        preferred_date = request.POST.get('preferred_date')
+        preferred_time = request.POST.get('preferred_time')
+        message = request.POST.get('message', '')
+
+        try:
+            property_obj = Property.objects.get(id=property_id)
+
+            # Save visit details in DB
+            visit = ScheduledVisit.objects.create(
+                property=property_obj,
+                name=name,
+                email=email,
+                phone=phone,
+                preferred_date=preferred_date,
+                preferred_time=preferred_time,
+                message=message,
+            )
+
+            # ---------- Email to Agent/Admin ----------
+            agent_email = getattr(property_obj.agent, 'email', settings.DEFAULT_FROM_EMAIL)
+            subject_agent = f"New Visit Scheduled for {property_obj.title}"
+            message_agent = (
+                f"Hello {property_obj.agent.name if hasattr(property_obj, 'agent') else 'Admin'},\n\n"
+                f"A new property visit has been scheduled:\n\n"
+                f"Property: {property_obj.title}\n"
+                f"Location: {property_obj.location}\n\n"
+                f"Name: {name}\n"
+                f"Email: {email}\n"
+                f"Phone: {phone}\n"
+                f"Preferred Date: {preferred_date}\n"
+                f"Preferred Time: {preferred_time}\n\n"
+                f"Message: {message or 'N/A'}\n\n"
+                f"— DreamHomes Realty"
+            )
+
+            send_mail(
+                subject_agent,
+                message_agent,
+                settings.DEFAULT_FROM_EMAIL,
+                [agent_email],
+                fail_silently=False,
+            )
+
+            # ---------- Email Confirmation to User ----------
+            subject_user = f"Visit Confirmation — {property_obj.title}"
+            message_user = (
+                f"Hi {name},\n\n"
+                f"Thank you for scheduling a visit for the property '{property_obj.title}'.\n"
+                f"Here are your visit details:\n\n"
+                f"Date: {preferred_date}\n"
+                f"Time: {preferred_time}\n"
+                f"Address: {property_obj.location}\n\n"
+                f"Our agent will contact you shortly to confirm the visit.\n\n"
+                f"Best regards,\n"
+                f"DreamHomes Realty"
+            )
+
+            send_mail(
+                subject_user,
+                message_user,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+
+            return JsonResponse({'success': True, 'message': 'Your visit has been scheduled successfully! A confirmation email has been sent.'})
+
+        except Property.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Property not found.'}, status=404)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
 from django.shortcuts import render, redirect
 from django.contrib import messages

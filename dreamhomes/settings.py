@@ -77,55 +77,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Custom user model
-AUTH_USER_MODEL = 'accounts.CustomUser'
-
-# Login/Logout URLs
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
-LOGIN_URL = 'login'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'noreply@dreamhomesrealty.com'
-
-# Remove CONTACT_EMAIL if it's causing issues, or make sure it's defined
-# CONTACT_EMAIL = 'contact@dreamhomesrealty.com'
-
-# For production, use:
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.your-email-provider.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your-email@example.com'
-# EMAIL_HOST_PASSWORD = 'your-email-password'
-# DEFAULT_FROM_EMAIL = 'your-email@example.com'
-
-# settings.py
-SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-
-# Production settings (to be implemented)
-# 
 
 # Jazzmin configuration
 JAZZMIN_SETTINGS = {
@@ -211,3 +162,52 @@ JAZZMIN_UI_TWEAKS = {
 
 
 LOGOUT_REDIRECT_URL = 'home'  # or 'login', depending on your flow
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Custom user model
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# Login/Logout URLs
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Email Configuration
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
+# EMAIL_USE_TLS = False
+# DEFAULT_FROM_EMAIL = 'noreply@dreamhomesrealty.com'
+
+# Remove CONTACT_EMAIL if it's causing issues, or make sure it's defined
+# CONTACT_EMAIL = 'contact@dreamhomesrealty.com'
+
+# For production, use:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'yashdoifode1439@gmail.com'
+EMAIL_HOST_PASSWORD = 'mvub juzg shso fhpa'
+DEFAULT_FROM_EMAIL = 'your-email@example.com'
+
+# settings.py
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+
+# Production settings (to be implemented)
+# 
