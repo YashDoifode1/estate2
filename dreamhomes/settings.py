@@ -132,54 +132,82 @@ JAZZMIN_SETTINGS = {
     "site_title": "DreamHomes Admin",
     "site_header": "DreamHomes Realty",
     "site_brand": "DreamHomes",
-    "site_logo": "images/favicon.ico",  # Add your admin logo in static/images/
-    "login_logo": "images/favicon.ico",
-    "login_logo_dark": None,
+    "site_logo": "images/favicon.jpeg",  # optional: upload in static/images/
     "site_icon": "images/favicon.ico",
-    "welcome_sign": "Welcome to DreamHomes Admin",
+    "welcome_sign": "Welcome to DreamHomes Admin Dashboard",
     "copyright": "DreamHomes Realty © 2025",
-    "search_model": "blog.BlogPost",
+    "search_model": "properties.Property",  # Search bar will prioritize Property
     "user_avatar": None,
+
+    # Top navigation bar links
     "topmenu_links": [
-        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"model": "blog.BlogPost"},
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"app": "properties"},
         {"app": "agents"},
+        {"app": "blog"},
+        {"app": "contact"},
     ],
+
+    # Sidebar customization
     "show_sidebar": True,
     "navigation_expanded": True,
+
+    # App order
+    "order_with_respect_to": ["properties", "agents", "blog", "contact", "auth"],
+
+    # Hide or reorder certain apps/models
     "hide_apps": [],
     "hide_models": [],
-    "order_with_respect_to": ["properties", "agents", "blog", "contact"],
-    "custom_links": {},
+
+    # Custom icons per model
     "icons": {
+        # Auth
         "auth.User": "fas fa-user",
         "auth.Group": "fas fa-users-cog",
+
+        # Blog
         "blog.BlogPost": "fas fa-newspaper",
         "blog.BlogCategory": "fas fa-tags",
         "blog.BlogTag": "fas fa-tag",
         "blog.BlogComment": "fas fa-comments",
-        "properties.Property": "fas fa-home",
-        "properties.Amenities": "fas fa-list",
+
+        # Properties App
+         "properties.Property": "fas fa-home",
+    "properties.PropertyType": "fas fa-building",
+    "properties.PropertyImage": "fas fa-image",
+    "properties.Amenity": "fas fa-list",
+    "properties.PropertyAmenity": "fas fa-check-circle",
+    "properties.NearbyPlace": "fas fa-map-marker-alt",
+    "properties.PropertyView": "fas fa-eye",
+
+        # Agents
         "agents.Agent": "fas fa-user-tie",
-        "contact.Contact": "fas fa-envelope",
+
+        # Contact Messages
+        "contact.ContactMessage": "fas fa-envelope",
     },
+
+    # UI features
     "related_modal_active": True,
     "show_ui_builder": True,
 }
 
-# Optional: custom colors for theme
+# Optional UI theme tweaks
 JAZZMIN_UI_TWEAKS = {
-    "theme": "flatly",  # other options: cerulean, darkly, lumen, etc.
+    "theme": "flatly",  # Other great ones: "cosmo", "darkly", "lumen"
     "navbar_small_text": False,
     "footer_small_text": True,
     "body_small_text": False,
     "brand_small_text": False,
-    "accent": "yellow",
-    "navbar": "darkblue",
-    "footer": "darkblue",
-    "show_sidebar": True,
+    "accent": "blue",
+    "navbar": "navbar-dark bg-primary",
+    "footer": "footer-dark bg-dark",
+    "sidebar_fixed": True,
+    "layout_boxed": False,
+    "theme_switcher": True,
+    "actions_sticky_top": True,
 }
+
 
 
 LOGOUT_REDIRECT_URL = 'home'  # or 'login', depending on your flow

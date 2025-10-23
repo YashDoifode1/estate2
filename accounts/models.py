@@ -89,6 +89,7 @@ class LoginSession(models.Model):
     location = models.CharField(max_length=255)
     ip_address = models.GenericIPAddressField()
     user_agent = models.TextField()
+    session_key = models.CharField(max_length=40, blank=True, null=True)  # Add this field
     last_active = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

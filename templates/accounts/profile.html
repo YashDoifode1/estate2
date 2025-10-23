@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% load custom_filters %}
 
-{% block title %}My Profile | DreamHomes Realty{% endblock %}
+{% block title %}
+{{ user.get_full_name }} | DreamHomes Realty Profile
+{% endblock %}
 
 {% block content %}
     <!-- Profile Header -->
-    <section class="profile-header text-white pt-8 pb-16">
+    <section class="profile-header bg-blue-900 text-white pt-8 pb-16">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center">
                 <!-- Profile Picture -->
@@ -41,6 +42,10 @@
                             <i class="fas fa-map-marker-alt mr-2 text-yellow-400"></i>
                             <span>{{ user.profile.location|default:"Not provided" }}</span>
                         </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle mr-2 text-yellow-400"></i>
+                            <span>{{ user.profile.bio|default:"No bio provided" }}</span>
+                        </div>
                     </div>
                     
                     <div class="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -74,6 +79,13 @@
                         <i class="fas fa-bell mr-2"></i> Notifications
                         <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ notifications.count }}</span>
                     </button>
+                    <button class="tab-button" data-tab="preferences">
+                        <i class="fas fa-sliders-h mr-2"></i> Preferences
+                    </button>
+                    <button class="tab-button" data-tab="sessions">
+                        <i class="fas fa-desktop mr-2"></i> Active Sessions
+                        <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ sessions.count }}</span>
+                    </button>
                 </div>
             </div>
             
@@ -95,38 +107,38 @@
                     
                     <!-- Properties Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {% for property in saved_properties %}
-                            <div class="property-card bg-white rounded-lg overflow-hidden border" data-property-id="{{ property.id }}">
+                        {% for saved_property in saved_properties %}
+                            <div class="property-card bg-white rounded-lg overflow-hidden border" data-property-id="{{ saved_property.property.id }}">
                                 <div class="relative">
-                                    <img src="{{ property.image.url|default:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80' }}" 
-                                         alt="{{ property.title }}" class="w-full h-48 object-cover">
+                                    <img src="{{ saved_property.property.image.url|default:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80' }}" 
+                                         alt="{{ saved_property.property.title }}" class="w-full h-48 object-cover">
                                     <button class="toggle-save-btn absolute top-3 right-3 bg-white hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-full transition">
                                         <i class="fas fa-heart"></i>
                                     </button>
-                                    <div class="absolute top-3 left-3 bg-{% if property.status == 'for_sale' %}yellow{% else %}green{% endif %}-600 text-white px-2 py-1 rounded text-sm font-semibold">
-                                        {{ property.status }}
+                                    <div class="absolute top-3 left-3 bg-{% if saved_property.property.status == 'for_sale' %}yellow{% else %}green{% endif %}-600 text-white px-2 py-1 rounded text-sm font-semibold">
+                                        {{ saved_property.property.status|title }}
                                     </div>
                                 </div>
                                 <div class="p-4">
-                                    <h3 class="font-bold text-blue-900 mb-1">{{ property.title }}</h3>
+                                    <h3 class="font-bold text-blue-900 mb-1">{{ saved_property.property.title }}</h3>
                                     <p class="text-gray-600 text-sm mb-3 flex items-center">
-                                        <i class="fas fa-map-marker-alt text-yellow-600 mr-1"></i> {{ property.location }}
+                                        <i class="fas fa-map-marker-alt text-yellow-600 mr-1"></i> {{ saved_property.property.location }}
                                     </p>
                                     <div class="flex justify-between text-gray-700 text-sm mb-3">
                                         <div class="flex items-center">
-                                            <i class="fas fa-bed text-yellow-600 mr-1"></i> {{ property.bedrooms }} Beds
+                                            <i class="fas fa-bed text-yellow-600 mr-1"></i> {{ saved_property.property.bedrooms }} Beds
                                         </div>
                                         <div class="flex items-center">
-                                            <i class="fas fa-bath text-yellow-600 mr-1"></i> {{ property.bathrooms }} Baths
+                                            <i class="fas fa-bath text-yellow-600 mr-1"></i> {{ saved_property.property.bathrooms }} Baths
                                         </div>
                                         <div class="flex items-center">
-                                            <i class="fas fa-vector-square text-yellow-600 mr-1"></i> {{ property.area }} sq.ft.
+                                            <i class="fas fa-vector-square text-yellow-600 mr-1"></i> {{ saved_property.property.area }} sq.ft.
                                         </div>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <p class="text-xl font-bold text-blue-900">₹{{ property.price }}</p>
+                                        <p class="text-xl font-bold text-blue-900">{{ saved_property.property.price }}</p>
                                         <div class="flex space-x-2">
-                                            <a href="{% url 'property_detail' property.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-3 py-1 rounded text-sm transition">
+                                            <a href="{% url 'property_detail' saved_property.property.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-3 py-1 rounded text-sm transition">
                                                 View
                                             </a>
                                             <button class="remove-property-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition">
@@ -137,11 +149,13 @@
                                 </div>
                             </div>
                         {% empty %}
-                            <div class="empty-state col-span-full text-center py-12">
-                                <i class="fas fa-heart text-gray-400 text-6xl mb-4"></i>
+                            <div class="empty-state text-center">
+                                <i class="fas fa-heart text-4xl text-gray-400 mb-4"></i>
                                 <h3 class="text-xl font-bold text-gray-700 mb-2">No Saved Properties</h3>
-                                <p class="text-gray-600 mb-6">You haven't saved any properties yet.</p>
-                                
+                                <p class="mb-6">You haven't saved any properties yet.</p>
+                                <a href="{% url 'properties:property_list' %}" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg transition inline-block">
+                                    Browse Properties
+                                </a>
                             </div>
                         {% endfor %}
                     </div>
@@ -162,9 +176,7 @@
                                     <div class="mb-4 md:mb-0">
                                         <div class="flex items-center mb-2">
                                             <h3 class="text-lg font-bold text-blue-900 mr-4">{{ consultation.title }}</h3>
-                                            <span class="status-badge {{ consultation.status }} px-3 py-1 rounded-full text-sm font-medium">
-                                                {{ consultation.status }}
-                                            </span>
+                                            <span class="status-badge status-{{ consultation.status }}">{{ consultation.status|title }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-4 text-gray-600">
                                             <div class="flex items-center">
@@ -180,23 +192,24 @@
                                                 <span>{{ consultation.time|time:"h:i A" }} - {{ consultation.end_time|time:"h:i A" }}</span>
                                             </div>
                                             <div class="flex items-center">
-                                                <i class="fas fa-{{ consultation.mode }} mr-2 text-yellow-600"></i>
-                                                <span>{{ consultation.mode }}</span>
+                                                <i class="fas fa-{{ consultation.mode|lower }} mr-2 text-yellow-600"></i>
+                                                <span>{{ consultation.mode|title }}</span>
                                             </div>
                                         </div>
+                                        {% if consultation.notes %}
+                                            <p class="text-gray-600 mt-2">{{ consultation.notes|truncatewords:20 }}</p>
+                                        {% endif %}
                                     </div>
                                     <div class="flex space-x-2">
-                                        {% if consultation.status == 'scheduled' %}
+                                        {% if consultation.status == 'scheduled' or consultation.status == 'cancelled' %}
                                             <a href="{% url 'reschedule_consultation' consultation.id %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
-                                                <i class="fas fa-edit mr-1"></i> Reschedule
-                                            </a>
-                                        {% endif %}
-                                        {% if consultation.status == 'completed' or consultation.status == 'cancelled' %}
-                                            <a href="{% url 'book_consultation' %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
-                                                <i class="fas fa-redo mr-1"></i> Book Again
+                                                <i class="fas fa-{% if consultation.status == 'scheduled' %}edit{% else %}redo{% endif %} mr-1"></i> {{ consultation.status|title }}
                                             </a>
                                         {% endif %}
                                         {% if consultation.status == 'completed' %}
+                                            <a href="{% url 'book_consultation' %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
+                                                <i class="fas fa-redo mr-1"></i> Book Again
+                                            </a>
                                             <a href="{% url 'consultation_details' consultation.id %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition text-sm">
                                                 <i class="fas fa-file-alt mr-1"></i> Details
                                             </a>
@@ -210,10 +223,10 @@
                                 </div>
                             </div>
                         {% empty %}
-                            <div class="empty-state text-center py-12">
-                                <i class="fas fa-calendar-alt text-gray-400 text-6xl mb-4"></i>
+                            <div class="empty-state text-center">
+                                <i class="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
                                 <h3 class="text-xl font-bold text-gray-700 mb-2">No Consultations Booked</h3>
-                                <p class="text-gray-600 mb-6">You haven't booked any consultations yet.</p>
+                                <p class="mb-6">You haven't booked any consultations yet.</p>
                                 
                             </div>
                         {% endfor %}
@@ -234,7 +247,7 @@
                                 <div class="flex">
                                     <div class="flex-shrink-0 mr-4">
                                         <div class="w-10 h-10 bg-{% if notification.type == 'price_drop' %}blue{% elif notification.type == 'consultation_reminder' %}green{% else %}yellow{% endif %}-100 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-{% if notification.type == 'price_drop' %}home{% elif notification.type == 'consultation_reminder' %}calendar-check{% else %}bell{% endif %} text-{% if notification.type == 'price_drop' %}blue{% elif notification.type == 'consultation_reminder' %}green{% else %}yellow{% endif %}-600"></i>
+                                            <i class="fas fa-{% if notification.type == 'price_drop' %}home{% elif notification.type == 'consultation_reminder' %}calendar-check{% else %}home{% endif %} text-{% if notification.type == 'price_drop' %}blue{% elif notification.type == 'consultation_reminder' %}green{% else %}yellow{% endif %}-600"></i>
                                         </div>
                                     </div>
                                     <div class="flex-1">
@@ -248,10 +261,113 @@
                                 </div>
                             </div>
                         {% empty %}
-                            <div class="empty-state text-center py-12">
-                                <i class="fas fa-bell text-gray-400 text-6xl mb-4"></i>
+                            <div class="empty-state text-center">
+                                <i class="fas fa-bell text-4xl text-gray-400 mb-4"></i>
                                 <h3 class="text-xl font-bold text-gray-700 mb-2">No Notifications</h3>
-                                <p class="text-gray-600 mb-6">You don't have any notifications at the moment.</p>
+                                <p class="mb-6">You don't have any notifications at the moment.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Preferences Tab -->
+                <div id="preferences" class="tab-content p-6 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900">Preferences</h2>
+                        <a href="{% url 'settings' %}" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center">
+                            <i class="fas fa-edit mr-2"></i> Edit Preferences
+                        </a>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-white border rounded-lg p-6" data-aos="fade-up">
+                            <h3 class="text-lg font-bold text-blue-900 mb-4">Property Interests</h3>
+                            <ul class="text-gray-600 space-y-2">
+                                <li><i class="fas fa-{% if user.preferences.interest_buying %}check{% else %}times{% endif %} mr-2 text-{% if user.preferences.interest_buying %}green{% else %}red{% endif %}-600"></i> Buying: {% if user.preferences.interest_buying %}Interested{% else %}Not Interested{% endif %}</li>
+                                <li><i class="fas fa-{% if user.preferences.interest_renting %}check{% else %}times{% endif %} mr-2 text-{% if user.preferences.interest_renting %}green{% else %}red{% endif %}-600"></i> Renting: {% if user.preferences.interest_renting %}Interested{% else %}Not Interested{% endif %}</li>
+                                <li><i class="fas fa-{% if user.preferences.interest_selling %}check{% else %}times{% endif %} mr-2 text-{% if user.preferences.interest_selling %}green{% else %}red{% endif %}-600"></i> Selling: {% if user.preferences.interest_selling %}Interested{% else %}Not Interested{% endif %}</li>
+                                <li><i class="fas fa-{% if user.preferences.interest_commercial %}check{% else %}times{% endif %} mr-2 text-{% if user.preferences.interest_commercial %}green{% else %}red{% endif %}-600"></i> Commercial: {% if user.preferences.interest_commercial %}Interested{% else %}Not Interested{% endif %}</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white border rounded-lg p-6" data-aos="fade-up">
+                            <h3 class="text-lg font-bold text-blue-900 mb-4">Budget</h3>
+                            <p class="text-gray-600">Minimum: {% if user.preferences.min_budget %}{{ user.preferences.min_budget|floatformat:2 }}{% else %}Not specified{% endif %}</p>
+                            <p class="text-gray-600">Maximum: {% if user.preferences.max_budget %}{{ user.preferences.max_budget|floatformat:2 }}{% else %}Not specified{% endif %}</p>
+                        </div>
+                        <div class="bg-white border rounded-lg p-6" data-aos="fade-up">
+                            <h3 class="text-lg font-bold text-blue-900 mb-4">Preferred Locations</h3>
+                            {% if user.preferences.preferred_locations %}
+                                <ul class="text-gray-600 space-y-2">
+                                    {% for location in user.preferences.preferred_locations %}
+                                        <li><i class="fas fa-map-marker-alt mr-2 text-yellow-600"></i> {{ location }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-gray-600">No preferred locations specified.</p>
+                            {% endif %}
+                        </div>
+                        <div class="bg-white border rounded-lg p-6" data-aos="fade-up">
+                            <h3 class="text-lg font-bold text-blue-900 mb-4">Property Types</h3>
+                            {% if user.preferences.property_types %}
+                                <ul class="text-gray-600 space-y-2">
+                                    {% for type in user.preferences.property_types %}
+                                        <li><i class="fas fa-home mr-2 text-yellow-600"></i> {{ type }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-gray-600">No property types specified.</p>
+                            {% endif %}
+                        </div>
+                        <div class="bg-white border rounded-lg p-6" data-aos="fade-up">
+                            <h3 class="text-lg font-bold text-blue-900 mb-4">Notification Settings</h3>
+                            <ul class="text-gray-600 space-y-2">
+                                <li><i class="fas fa-{% if user.notification_settings.email_property_recommendations %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.email_property_recommendations %}green{% else %}red{% endif %}-600"></i> Property Recommendations: {% if user.notification_settings.email_property_recommendations %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.notification_settings.email_price_drop_alerts %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.email_price_drop_alerts %}green{% else %}red{% endif %}-600"></i> Price Drop Alerts: {% if user.notification_settings.email_price_drop_alerts %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.notification_settings.email_new_listings %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.email_new_listings %}green{% else %}red{% endif %}-600"></i> New Listings: {% if user.notification_settings.email_new_listings %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.notification_settings.email_market_updates %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.email_market_updates %}green{% else %}red{% endif %}-600"></i> Market Updates: {% if user.notification_settings.email_market_updates %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.notification_settings.email_promotional_offers %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.email_promotional_offers %}green{% else %}red{% endif %}-600"></i> Promotional Offers: {% if user.notification_settings.email_promotional_offers %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.notification_settings.push_notifications %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.push_notifications %}green{% else %}red{% endif %}-600"></i> Push Notifications: {% if user.notification_settings.push_notifications %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.notification_settings.sms_notifications %}check{% else %}times{% endif %} mr-2 text-{% if user.notification_settings.sms_notifications %}green{% else %}red{% endif %}-600"></i> SMS Notifications: {% if user.notification_settings.sms_notifications %}Enabled{% else %}Disabled{% endif %}</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white border rounded-lg p-6" data-aos="fade-up">
+                            <h3 class="text-lg font-bold text-blue-900 mb-4">Privacy Settings</h3>
+                            <ul class="text-gray-600 space-y-2">
+                                <li><i class="fas fa-{% if user.privacy_settings.data_sharing %}check{% else %}times{% endif %} mr-2 text-{% if user.privacy_settings.data_sharing %}green{% else %}red{% endif %}-600"></i> Data Sharing: {% if user.privacy_settings.data_sharing %}Enabled{% else %}Disabled{% endif %}</li>
+                                <li><i class="fas fa-{% if user.privacy_settings.personalized_ads %}check{% else %}times{% endif %} mr-2 text-{% if user.privacy_settings.personalized_ads %}green{% else %}red{% endif %}-600"></i> Personalized Ads: {% if user.privacy_settings.personalized_ads %}Enabled{% else %}Disabled{% endif %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Sessions Tab -->
+                <div id="sessions" class="tab-content p-6 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900">Active Sessions</h2>
+                        <button id="terminate-all-sessions" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Terminate All
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        {% for session in sessions %}
+                            <div class="bg-white border rounded-lg p-4" data-aos="fade-up" data-session-id="{{ session.id }}">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="mb-4 md:mb-0">
+                                        <h4 class="font-bold text-blue-900">{{ session.device }}</h4>
+                                        <p class="text-gray-600 text-sm">IP: {{ session.ip_address }}</p>
+                                        <p class="text-gray-600 text-sm">Location: {{ session.location }}</p>
+                                        <p class="text-gray-600 text-sm">Last Active: {{ session.last_active|timesince }} ago</p>
+                                        <p class="text-gray-600 text-sm">User Agent: {{ session.user_agent|truncatechars:50 }}</p>
+                                    </div>
+                                    <button class="terminate-session-btn bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg transition text-sm">
+                                        <i class="fas fa-times mr-1"></i> Terminate
+                                    </button>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state text-center">
+                                <i class="fas fa-desktop text-4xl text-gray-400 mb-4"></i>
+                                <h3 class="text-xl font-bold text-gray-700 mb-2">No Active Sessions</h3>
+                                <p class="mb-6">No active login sessions found.</p>
                             </div>
                         {% endfor %}
                     </div>
@@ -267,9 +383,91 @@
             <p class="text-xl mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
                 Our expert agents are here to help you find your dream home.
             </p>
-            
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
+                
+                <a href="{% url 'properties:property_list' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition">
+                    Browse Properties
+                </a>
+            </div>
         </div>
     </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                            <i class="fas fa-home text-white text-lg"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">DreamHomes <span class="text-yellow-600">Realty</span></h2>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Your trusted partner for all real estate needs in Nagpur. We help you find, buy, rent, or sell properties with ease and confidence.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="{{ company.facebook_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="{{ company.twitter_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="{{ company.instagram_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="{{ company.linkedin_url|default:'#' }}" class="bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-900 transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-yellow-600 transition">Home</a></li>
+                        <li><a href="{% url 'properties:property_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Properties</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-yellow-600 transition">About Us</a></li>
+                        <li><a href="{% url 'agents:agents_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Our Agents</a></li>
+                        <li><a href="{% url 'blog:blog_list' %}" class="text-gray-400 hover:text-yellow-600 transition">Blog</a></li>
+                        <li><a href="{% url 'profile' %}" class="text-gray-400 hover:text-yellow-600 transition">My Profile</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-yellow-600 mt-1 mr-3"></i>
+                            <span class="text-gray-400">{{ company.address|default:"123 Civil Lines, Nagpur, Maharashtra 440001" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.phone|default:"+91 98765 43210" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.email|default:"info@dreamhomesrealty.com" }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                            <span class="text-gray-400">{{ company.hours|default:"Mon - Sat: 9:00 AM - 7:00 PM" }}</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter -->
+                
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; {{ now|date:"Y" }} DreamHomes Realty. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Custom JavaScript -->
     <script>
@@ -280,48 +478,31 @@
             offset: 100
         });
 
-        // Mobile Menu Toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // User Menu Toggle
-        document.getElementById('user-menu-button').addEventListener('click', function() {
-            const userMenu = document.getElementById('user-menu');
-            userMenu.classList.toggle('hidden');
-        });
-
         // Profile Picture Upload
         const profilePicButton = document.getElementById('profile-pic-button');
         const profilePicInput = document.getElementById('profile-pic-input');
         const profilePicForm = document.getElementById('profile-pic-form');
 
-        if (profilePicButton && profilePicInput && profilePicForm) {
-            profilePicButton.addEventListener('click', function() {
-                profilePicInput.click();
-            });
+        profilePicButton.addEventListener('click', function() {
+            profilePicInput.click();
+        });
 
-            profilePicInput.addEventListener('change', function() {
-                if (this.files.length > 0) {
-                    profilePicForm.submit();
-                }
-            });
-        }
+        profilePicInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                profilePicForm.submit();
+            }
+        });
 
         // Share Profile
-        const shareProfileBtn = document.getElementById('share-profile-btn');
-        if (shareProfileBtn) {
-            shareProfileBtn.addEventListener('click', function() {
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Profile URL copied to clipboard!');
-                }).catch(err => {
-                    console.error('Failed to copy URL:', err);
-                    alert('Failed to copy URL. Please try again.');
-                });
+        document.getElementById('share-profile-btn').addEventListener('click', function() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Profile URL copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy URL:', err);
+                alert('Failed to copy URL. Please try again.');
             });
-        }
+        });
 
         // Tab Switching
         document.querySelectorAll('.tab-button').forEach(button => {
@@ -343,8 +524,7 @@
         document.querySelectorAll('.toggle-save-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.stopPropagation();
-                const propertyCard = this.closest('.property-card');
-                const propertyId = propertyCard.getAttribute('data-property-id');
+                const propertyId = this.closest('.property-card').getAttribute('data-property-id');
                 const heart = this.querySelector('i');
                 const isSaved = heart.classList.contains('fa-heart');
 
@@ -370,11 +550,7 @@
                             this.classList.remove('text-gray-400', 'hover:bg-gray-400');
                             this.classList.add('text-red-500', 'hover:bg-red-500');
                         }
-                        // Update saved count in tab
-                        const savedCountElement = document.querySelector('[data-tab="saved-properties"] .bg-blue-100');
-                        if (savedCountElement) {
-                            savedCountElement.textContent = data.saved_count;
-                        }
+                        document.querySelector('[data-tab="saved-properties"] .bg-blue-100').textContent = data.saved_count;
                     } else {
                         alert(data.message || 'Failed to update save status.');
                     }
@@ -409,14 +585,10 @@
                         setTimeout(() => {
                             propertyCard.remove();
                             const propertiesContainer = document.querySelector('#saved-properties .grid');
-                            if (propertiesContainer && propertiesContainer.children.length === 0) {
+                            if (propertiesContainer.children.length === 0) {
                                 document.querySelector('#saved-properties .empty-state').classList.remove('hidden');
                             }
-                            // Update saved count in tab
-                            const savedCountElement = document.querySelector('[data-tab="saved-properties"] .bg-blue-100');
-                            if (savedCountElement) {
-                                savedCountElement.textContent = data.saved_count;
-                            }
+                            document.querySelector('[data-tab="saved-properties"] .bg-blue-100').textContent = data.saved_count;
                         }, 300);
                     } else {
                         alert(data.message || 'Failed to remove property.');
@@ -432,7 +604,7 @@
         // Close Notification
         document.querySelectorAll('.dismiss-notification-btn').forEach(button => {
             button.addEventListener('click', function() {
-                const notification = this.closest('.bg-blue-50, .bg-yellow-50, .bg-green-50');
+                const notification = this.closest('.bg-white, .bg-blue-50, .bg-yellow-50, .bg-green-50');
                 const notificationId = notification.getAttribute('data-notification-id');
 
                 fetch('{% url "dismiss_notification" %}', {
@@ -451,14 +623,10 @@
                         setTimeout(() => {
                             notification.remove();
                             const notificationsContainer = document.querySelector('#notifications .space-y-4');
-                            if (notificationsContainer && notificationsContainer.children.length === 0) {
+                            if (notificationsContainer.children.length === 0) {
                                 document.querySelector('#notifications .empty-state').classList.remove('hidden');
                             }
-                            // Update notification count in tab
-                            const notificationCountElement = document.querySelector('[data-tab="notifications"] .bg-blue-100');
-                            if (notificationCountElement) {
-                                notificationCountElement.textContent = data.notification_count;
-                            }
+                            document.querySelector('[data-tab="notifications"] .bg-blue-100').textContent = data.notification_count;
                         }, 300);
                     } else {
                         alert(data.message || 'Failed to dismiss notification.');
@@ -494,14 +662,10 @@
                             setTimeout(() => {
                                 consultation.remove();
                                 const consultationsContainer = document.querySelector('#consultations .space-y-6');
-                                if (consultationsContainer && consultationsContainer.children.length === 0) {
+                                if (consultationsContainer.children.length === 0) {
                                     document.querySelector('#consultations .empty-state').classList.remove('hidden');
                                 }
-                                // Update consultation count in tab
-                                const consultationCountElement = document.querySelector('[data-tab="consultations"] .bg-blue-100');
-                                if (consultationCountElement) {
-                                    consultationCountElement.textContent = data.consultation_count;
-                                }
+                                document.querySelector('[data-tab="consultations"] .bg-blue-100').textContent = data.consultation_count;
                             }, 300);
                         } else {
                             alert(data.message || 'Failed to cancel consultation.');
@@ -513,6 +677,76 @@
                     });
                 }
             });
+        });
+
+        // Terminate Session
+        document.querySelectorAll('.terminate-session-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Are you sure you want to terminate this session?')) {
+                    const session = this.closest('.bg-white');
+                    const sessionId = session.getAttribute('data-session-id');
+
+                    fetch('{% url "terminate_session" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ session_id: sessionId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            session.style.opacity = '0';
+                            session.style.transform = 'translateX(100px)';
+                            setTimeout(() => {
+                                session.remove();
+                                const sessionsContainer = document.querySelector('#sessions .space-y-4');
+                                if (sessionsContainer.children.length === 0) {
+                                    document.querySelector('#sessions .empty-state').classList.remove('hidden');
+                                }
+                                document.querySelector('[data-tab="sessions"] .bg-blue-100').textContent = data.session_count;
+                            }, 300);
+                        } else {
+                            alert(data.message || 'Failed to terminate session.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                }
+            });
+        });
+
+        // Terminate All Sessions
+        document.getElementById('terminate-all-sessions').addEventListener('click', function() {
+            if (confirm('Are you sure you want to terminate all sessions? This will log you out from all devices except the current one.')) {
+                fetch('{% url "terminate_all_sessions" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const sessionsContainer = document.querySelector('#sessions .space-y-4');
+                        sessionsContainer.innerHTML = '';
+                        document.querySelector('#sessions .empty-state').classList.remove('hidden');
+                        document.querySelector('[data-tab="sessions"] .bg-blue-100').textContent = data.session_count;
+                        alert('All sessions terminated successfully.');
+                    } else {
+                        alert(data.message || 'Failed to terminate sessions.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            }
         });
     </script>
 {% endblock %}

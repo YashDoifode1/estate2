@@ -1,5 +1,20 @@
+# properties/forms.py
 from django import forms
-from .models import Property
+from .models import Property, PropertyType
+
+class PropertyForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Combine static choices + dynamic ones
+        static_choices = list(Property.TYPE_CHOICES)
+        dynamic_choices = [(f"custom_{pt.id}", pt.name) for pt in PropertyType.objects.all()]
+        combined_choices = static_choices + dynamic_choices
+        self.fields['type'].choices = combined_choices
+
+    class Meta:
+        model = Property
+        fields = '__all__'
+
 
 class ScheduleVisitForm(forms.Form):
     name = forms.CharField(

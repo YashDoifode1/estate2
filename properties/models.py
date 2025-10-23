@@ -1,19 +1,33 @@
 from django.db import models
 
 # Create your models here.
+# properties/models.py
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from agents.models import Agent
 
+class PropertyType(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "Property Type"
+        verbose_name_plural = "Property Types"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class Property(models.Model):
+    # 🔹 Define all choices first
     STATUS_CHOICES = [
         ('for_sale', 'For Sale'),
         ('for_rent', 'For Rent'),
         ('sold', 'Sold'),
         ('rented', 'Rented'),
     ]
-    
+
     TYPE_CHOICES = [
         ('apartment', 'Apartment'),
         ('villa', 'Villa'),
@@ -23,12 +37,24 @@ class Property(models.Model):
         ('office', 'Office'),
         ('shop', 'Shop'),
     ]
-    
+
     FURNISHING_CHOICES = [
         ('furnished', 'Fully Furnished'),
         ('semi_furnished', 'Semi Furnished'),
         ('unfurnished', 'Unfurnished'),
     ]
+
+    # 🔹 Now you can safely use them below
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    property_id = models.CharField(max_length=20, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='for_sale')
+
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    custom_type = models.ForeignKey(
+        PropertyType, on_delete=models.SET_NULL, null=True, blank=True,
+        help_text="Optional: select a custom property type (overrides default type)"
+    )
     
     # Basic Information
     title = models.CharField(max_length=200)

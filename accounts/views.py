@@ -14,6 +14,50 @@ from django.shortcuts import render
 from properties.models import Property
 from blog.models import BlogPost  # Correct import
 
+
+from django.contrib.sessions.models import Session
+from django.utils import timezone
+
+@login_required
+@require_POST
+def terminate_session(request):
+    try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        session = get_object_or_404(LoginSession, id=session_id, user=request.user)
+        # Find and delete the corresponding Django session
+        django_session = Session.objects.filter(session_key=session.session_key).first()
+        if django_session:
+            django_session.delete()
+        session.delete()
+        session_count = LoginSession.objects.filter(user=request.user).count()
+        return JsonResponse({
+            'success': True,
+            'session_count': session_count
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
+@login_required
+@require_POST
+def terminate_all_sessions(request):
+    try:
+        # Keep the current session active
+        current_session_key = request.session.session_key
+        sessions = LoginSession.objects.filter(user=request.user).exclude(session_key=current_session_key)
+        for session in sessions:
+            django_session = Session.objects.filter(session_key=session.session_key).first()
+            if django_session:
+                django_session.delete()
+            session.delete()
+        session_count = LoginSession.objects.filter(user=request.user).count()
+        return JsonResponse({
+            'success': True,
+            'session_count': session_count
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
 def home(request):
     # Featured properties
     featured_properties = Property.objects.filter(featured=True).order_by('-created_at')[:6]
@@ -273,13 +317,18 @@ def profile_view(request):
     saved_properties = request.user.saved_properties.select_related('property').all()
     consultations = request.user.consultations.select_related('agent').all()
     notifications = request.user.notifications.filter(is_read=False)
+    sessions = LoginSession.objects.filter(user=request.user).order_by('-last_active')
     
     context = {
+        'company': Company.objects.first(),
         'saved_properties': saved_properties,
         'consultations': consultations,
         'notifications': notifications,
+        'sessions': sessions,
+        'newsletter_form': NewsletterForm(),
     }
     return render(request, 'accounts/profile.html', context)
+
 
 @login_required
 @require_POST
@@ -490,9 +539,6 @@ from .forms import CustomAuthenticationForm, CustomUserCreationForm, ProfilePict
 
 # Authentication Views
 def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('profile')
-        
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -504,6 +550,17 @@ def login_view(request):
                 remember_me = form.cleaned_data.get('remember_me')
                 if not remember_me:
                     request.session.set_expiry(0)
+                
+                # Log login session
+                LoginSession.objects.create(
+                    user=user,
+                    device=request.META.get('HTTP_USER_AGENT', 'Unknown'),
+                    location=f"{request.META.get('REMOTE_ADDR', 'Unknown')}",
+                    ip_address=request.META.get('REMOTE_ADDR', ''),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    session_key=request.session.session_key
+                )
+                
                 return redirect('profile')
     else:
         form = CustomAuthenticationForm()
