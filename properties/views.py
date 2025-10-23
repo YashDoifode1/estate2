@@ -244,6 +244,72 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import ContactForm  # Make sure you have a ContactForm in forms.py
 
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.conf import settings
+from .forms import ContactForm
+from .models import ContactMessage
+
+def contact_view(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact = form.save()  # Save in DB
+
+            # ----- Email to Admin -----
+            subject_admin = f"New Contact Message: {contact.subject}"
+            message_admin = (
+                f"You have received a new contact form message from DreamHomes Realty:\n\n"
+                f"Name: {contact.name}\n"
+                f"Email: {contact.email}\n"
+                f"Phone: {contact.phone or 'N/A'}\n"
+                f"Subject: {contact.subject}\n\n"
+                f"Message:\n{contact.message}\n\n"
+                f"---\nThis message was sent from DreamHomes Realty website."
+            )
+
+            send_mail(
+                subject_admin,
+                message_admin,
+                settings.DEFAULT_FROM_EMAIL,
+                ['info@dreamhomesrealty.com'],  # Admin/sales team email
+                fail_silently=False,
+            )
+
+            # ----- Confirmation Email to User -----
+            subject_user = "Thank you for contacting DreamHomes Realty"
+            message_user = (
+                f"Hi {contact.name},\n\n"
+                f"Thank you for reaching out to DreamHomes Realty.\n"
+                f"We’ve received your message and our team will get back to you shortly.\n\n"
+                f"Your message details:\n"
+                f"Subject: {contact.subject}\n"
+                f"Message: {contact.message}\n\n"
+                f"Best regards,\n"
+                f"DreamHomes Realty Team\n"
+                f"📞 +91 98765 43210\n"
+                f"✉️ info@dreamhomesrealty.com"
+            )
+
+            send_mail(
+                subject_user,
+                message_user,
+                settings.DEFAULT_FROM_EMAIL,
+                [contact.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "Your message has been sent successfully! Check your email for confirmation.")
+            return redirect('properties:contact')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ContactForm()
+
+    return render(request, 'properties/contact.html', {'form': form})
+
+
 def contact(request):
     """Contact page view with form handling"""
     if request.method == 'POST':

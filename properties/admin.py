@@ -19,6 +19,14 @@ class ScheduledVisitAdmin(admin.ModelAdmin):
     list_filter = ('preferred_date', 'created_at')
     search_fields = ('name', 'email', 'property__title')
 
+from django.contrib import admin
+from .models import ContactMessage
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'phone', 'subject', 'created_at')
+    search_fields = ('name', 'email', 'subject')
+    list_filter = ('created_at',)
 
 # -----------------------------
 # INLINE CLASSES
