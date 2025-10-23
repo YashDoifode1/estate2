@@ -12,7 +12,7 @@
                 <!-- Profile Picture -->
                 <div class="mb-6 md:mb-0 md:mr-8" data-aos="fade-right">
                     <div class="relative">
-                        <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://randomuser.me/api/portraits/men/75.jpg{% endif %}" 
+                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}https://randomuser.me/api/portraits/men/75.jpg{% endif %}" 
                              alt="{{ user.get_full_name }}" class="w-32 h-32 rounded-full profile-pic">
                         <form id="profile-pic-form" method="POST" action="{% url 'upload_profile_picture' %}" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -26,7 +26,7 @@
                 
                 <!-- Profile Info -->
                 <div class="flex-1 text-center md:text-left" data-aos="fade-left">
-                    <h1 class="text-3xl font-bold mb-2">{{ user.get_full_name }}</h1>
+                    <h1 class="text-3xl font-bold mb-2">{{ user.get_full_name|default:"User Profile" }}</h1>
                     <p class="text-blue-200 mb-4">Member since {{ user.date_joined|date:"F Y" }}</p>
                     
                     <div class="flex flex-wrap justify-center md:justify-start gap-6 mb-6">
@@ -165,7 +165,9 @@
                 <div id="consultations" class="tab-content p-6 hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-blue-900">My Consultations</h2>
-                        
+                        <a href="#" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center">
+                            <i class="fas fa-calendar-plus mr-2"></i> Book Consultation
+                        </a>
                     </div>
                     
                     <!-- Consultations List -->
@@ -207,7 +209,7 @@
                                             </a>
                                         {% endif %}
                                         {% if consultation.status == 'completed' %}
-                                            <a href="{% url 'book_consultation' %}" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
+                                            <a href="#" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition text-sm">
                                                 <i class="fas fa-redo mr-1"></i> Book Again
                                             </a>
                                             <a href="{% url 'consultation_details' consultation.id %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition text-sm">
@@ -227,7 +229,9 @@
                                 <i class="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
                                 <h3 class="text-xl font-bold text-gray-700 mb-2">No Consultations Booked</h3>
                                 <p class="mb-6">You haven't booked any consultations yet.</p>
-                                
+                                <a href="#" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg transition inline-block">
+                                    Book a Consultation
+                                </a>
                             </div>
                         {% endfor %}
                     </div>
@@ -237,7 +241,9 @@
                 <div id="notifications" class="tab-content p-6 hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-blue-900">Notifications</h2>
-                        
+                        <a href="{% url 'settings' %}" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center">
+                            <i class="fas fa-cog mr-2"></i> Manage Notifications
+                        </a>
                     </div>
                     
                     <!-- Notifications List -->
@@ -384,7 +390,9 @@
                 Our expert agents are here to help you find your dream home.
             </p>
             <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4" data-aos="fade-up" data-aos-delay="400">
-                
+                <a href="#" class="bg-white text-blue-900 hover:bg-blue-50 font-bold py-3 px-8 rounded-lg transition">
+                    Book a Consultation
+                </a>
                 <a href="{% url 'properties:property_list' %}" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition">
                     Browse Properties
                 </a>
@@ -460,7 +468,19 @@
                 </div>
                 
                 <!-- Newsletter -->
-                
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Newsletter</h3>
+                    <p class="text-gray-400 mb-4">Subscribe to our newsletter for the latest property updates and market trends.</p>
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+                        <div class="flex">
+                            <input type="email" name="email" placeholder="Enter your email" class="w-full px-4 py-2 rounded-l-lg border border-gray-600 bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-900">
+                            <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white px-4 rounded-r-lg transition">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
             
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
@@ -469,284 +489,342 @@
         </div>
     </footer>
 
+    <!-- Custom Styles -->
+    <style>
+        .tab-button {
+            @apply flex items-center px-4 py-3 text-gray-700 font-semibold border-b-2 border-transparent hover:border-blue-900 transition;
+        }
+        .tab-button.active {
+            @apply text-blue-900 border-blue-900;
+        }
+        .tab-content {
+            @apply transition-opacity duration-300;
+        }
+        .tab-content.active {
+            @apply opacity-100 block;
+        }
+        .tab-content.hidden {
+            @apply opacity-0 hidden;
+        }
+        .status-badge {
+            @apply px-2 py-1 text-xs font-semibold rounded-full;
+        }
+        .status-scheduled {
+            @apply bg-blue-100 text-blue-800;
+        }
+        .status-completed {
+            @apply bg-green-100 text-green-800;
+        }
+        .status-cancelled {
+            @apply bg-red-100 text-red-800;
+        }
+        .property-card {
+            @apply transition-all duration-300;
+        }
+        .empty-state {
+            @apply py-12;
+        }
+    </style>
+
     <!-- Custom JavaScript -->
     <script>
         // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
-
-        // Profile Picture Upload
-        const profilePicButton = document.getElementById('profile-pic-button');
-        const profilePicInput = document.getElementById('profile-pic-input');
-        const profilePicForm = document.getElementById('profile-pic-form');
-
-        profilePicButton.addEventListener('click', function() {
-            profilePicInput.click();
-        });
-
-        profilePicInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                profilePicForm.submit();
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 1000,
+                    once: true,
+                    offset: 100
+                });
             }
-        });
 
-        // Share Profile
-        document.getElementById('share-profile-btn').addEventListener('click', function() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Profile URL copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy URL:', err);
-                alert('Failed to copy URL. Please try again.');
-            });
-        });
+            // Profile Picture Upload
+            const profilePicButton = document.getElementById('profile-pic-button');
+            const profilePicInput = document.getElementById('profile-pic-input');
+            const profilePicForm = document.getElementById('profile-pic-form');
 
-        // Tab Switching
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                    content.classList.add('hidden');
+            if (profilePicButton && profilePicInput && profilePicForm) {
+                profilePicButton.addEventListener('click', function() {
+                    profilePicInput.click();
                 });
 
-                this.classList.add('active');
-                const tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId).classList.remove('hidden');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-
-        // Property Save/Unsave Toggle
-        document.querySelectorAll('.toggle-save-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const propertyId = this.closest('.property-card').getAttribute('data-property-id');
-                const heart = this.querySelector('i');
-                const isSaved = heart.classList.contains('fa-heart');
-
-                fetch('{% url "toggle_save_property" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({ property_id: propertyId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (isSaved) {
-                            heart.classList.remove('fa-heart');
-                            heart.classList.add('fa-heart-broken');
-                            this.classList.remove('text-red-500', 'hover:bg-red-500');
-                            this.classList.add('text-gray-400', 'hover:bg-gray-400');
-                        } else {
-                            heart.classList.remove('fa-heart-broken');
-                            heart.classList.add('fa-heart');
-                            this.classList.remove('text-gray-400', 'hover:bg-gray-400');
-                            this.classList.add('text-red-500', 'hover:bg-red-500');
-                        }
-                        document.querySelector('[data-tab="saved-properties"] .bg-blue-100').textContent = data.saved_count;
-                    } else {
-                        alert(data.message || 'Failed to update save status.');
+                profilePicInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        profilePicForm.submit();
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
+                });
+            }
+
+            // Share Profile
+            const shareProfileBtn = document.getElementById('share-profile-btn');
+            if (shareProfileBtn) {
+                shareProfileBtn.addEventListener('click', function() {
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('Profile URL copied to clipboard!');
+                    }).catch(err => {
+                        console.error('Failed to copy URL:', err);
+                        alert('Failed to copy URL. Please try again.');
+                    });
+                });
+            }
+
+            // Tab Switching
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        content.classList.add('hidden');
+                    });
+
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    const targetContent = document.getElementById(tabId);
+                    if (targetContent) {
+                        targetContent.classList.remove('hidden');
+                        targetContent.classList.add('active');
+                    }
                 });
             });
-        });
 
-        // Property Remove Button
-        document.querySelectorAll('.remove-property-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const propertyCard = this.closest('.property-card');
-                const propertyId = propertyCard.getAttribute('data-property-id');
+            // Property Save/Unsave Toggle
+            document.querySelectorAll('.toggle-save-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const propertyCard = this.closest('.property-card');
+                    const propertyId = propertyCard.getAttribute('data-property-id');
+                    const heart = this.querySelector('i');
+                    const isSaved = heart.classList.contains('fa-heart');
 
-                fetch('{% url "remove_saved_property" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({ property_id: propertyId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        propertyCard.style.opacity = '0';
-                        propertyCard.style.transform = 'translateX(100px)';
-                        setTimeout(() => {
-                            propertyCard.remove();
-                            const propertiesContainer = document.querySelector('#saved-properties .grid');
-                            if (propertiesContainer.children.length === 0) {
-                                document.querySelector('#saved-properties .empty-state').classList.remove('hidden');
+                    fetch('{% url "toggle_save_property" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ property_id: propertyId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (isSaved) {
+                                heart.classList.remove('fa-heart');
+                                heart.classList.add('fa-heart-broken');
+                                this.classList.remove('text-red-500', 'hover:bg-red-500');
+                                this.classList.add('text-gray-400', 'hover:bg-gray-400');
+                            } else {
+                                heart.classList.remove('fa-heart-broken');
+                                heart.classList.add('fa-heart');
+                                this.classList.remove('text-gray-400', 'hover:bg-gray-400');
+                                this.classList.add('text-red-500', 'hover:bg-red-500');
                             }
                             document.querySelector('[data-tab="saved-properties"] .bg-blue-100').textContent = data.saved_count;
-                        }, 300);
-                    } else {
-                        alert(data.message || 'Failed to remove property.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
+                        } else {
+                            alert(data.message || 'Failed to update save status.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
                 });
             });
-        });
 
-        // Close Notification
-        document.querySelectorAll('.dismiss-notification-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const notification = this.closest('.bg-white, .bg-blue-50, .bg-yellow-50, .bg-green-50');
-                const notificationId = notification.getAttribute('data-notification-id');
+            // Property Remove Button
+            document.querySelectorAll('.remove-property-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const propertyCard = this.closest('.property-card');
+                    const propertyId = propertyCard.getAttribute('data-property-id');
 
-                fetch('{% url "dismiss_notification" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({ notification_id: notificationId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateX(100px)';
-                        setTimeout(() => {
-                            notification.remove();
-                            const notificationsContainer = document.querySelector('#notifications .space-y-4');
-                            if (notificationsContainer.children.length === 0) {
-                                document.querySelector('#notifications .empty-state').classList.remove('hidden');
+                    fetch('{% url "remove_saved_property" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ property_id: propertyId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            propertyCard.style.opacity = '0';
+                            propertyCard.style.transform = 'translateX(100px)';
+                            setTimeout(() => {
+                                propertyCard.remove();
+                                const propertiesContainer = document.querySelector('#saved-properties .grid');
+                                if (propertiesContainer.children.length === 0) {
+                                    document.querySelector('#saved-properties .empty-state').classList.remove('hidden');
+                                }
+                                document.querySelector('[data-tab="saved-properties"] .bg-blue-100').textContent = data.saved_count;
+                            }, 300);
+                        } else {
+                            alert(data.message || 'Failed to remove property.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+            });
+
+            // Cancel Consultation
+            document.querySelectorAll('.cancel-consultation-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to cancel this consultation?')) {
+                        const consultation = this.closest('.bg-white');
+                        const consultationId = consultation.getAttribute('data-consultation-id');
+
+                        fetch('{% url "cancel_consultation" %}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({ consultation_id: consultationId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                consultation.style.opacity = '0';
+                                consultation.style.transform = 'translateX(100px)';
+                                setTimeout(() => {
+                                    consultation.remove();
+                                    const consultationsContainer = document.querySelector('#consultations .space-y-6');
+                                    if (consultationsContainer.children.length === 0) {
+                                        document.querySelector('#consultations .empty-state').classList.remove('hidden');
+                                    }
+                                    document.querySelector('[data-tab="consultations"] .bg-blue-100').textContent = data.consultation_count;
+                                }, 300);
+                            } else {
+                                alert(data.message || 'Failed to cancel consultation.');
                             }
-                            document.querySelector('[data-tab="notifications"] .bg-blue-100').textContent = data.notification_count;
-                        }, 300);
-                    } else {
-                        alert(data.message || 'Failed to dismiss notification.');
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
                 });
             });
-        });
 
-        // Cancel Consultation
-        document.querySelectorAll('.cancel-consultation-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                if (confirm('Are you sure you want to cancel this consultation?')) {
-                    const consultation = this.closest('.bg-white');
-                    const consultationId = consultation.getAttribute('data-consultation-id');
+            // Dismiss Notification
+            document.querySelectorAll('.dismiss-notification-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const notification = this.closest('.bg-white, .bg-blue-50, .bg-yellow-50, .bg-green-50');
+                    const notificationId = notification.getAttribute('data-notification-id');
 
-                    fetch('{% url "cancel_consultation" %}', {
+                    fetch('{% url "dismiss_notification" %}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        body: JSON.stringify({ consultation_id: consultationId })
+                        body: JSON.stringify({ notification_id: notificationId })
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            consultation.style.opacity = '0';
-                            consultation.style.transform = 'translateX(100px)';
+                            notification.style.opacity = '0';
+                            notification.style.transform = 'translateX(100px)';
                             setTimeout(() => {
-                                consultation.remove();
-                                const consultationsContainer = document.querySelector('#consultations .space-y-6');
-                                if (consultationsContainer.children.length === 0) {
-                                    document.querySelector('#consultations .empty-state').classList.remove('hidden');
+                                notification.remove();
+                                const notificationsContainer = document.querySelector('#notifications .space-y-4');
+                                if (notificationsContainer.children.length === 0) {
+                                    document.querySelector('#notifications .empty-state').classList.remove('hidden');
                                 }
-                                document.querySelector('[data-tab="consultations"] .bg-blue-100').textContent = data.consultation_count;
+                                document.querySelector('[data-tab="notifications"] .bg-blue-100').textContent = data.notification_count;
                             }, 300);
                         } else {
-                            alert(data.message || 'Failed to cancel consultation.');
+                            alert(data.message || 'Failed to dismiss notification.');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         alert('An error occurred. Please try again.');
                     });
-                }
+                });
             });
-        });
 
-        // Terminate Session
-        document.querySelectorAll('.terminate-session-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                if (confirm('Are you sure you want to terminate this session?')) {
-                    const session = this.closest('.bg-white');
-                    const sessionId = session.getAttribute('data-session-id');
+            // Terminate Session
+            document.querySelectorAll('.terminate-session-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to terminate this session?')) {
+                        const session = this.closest('.bg-white');
+                        const sessionId = session.getAttribute('data-session-id');
 
-                    fetch('{% url "terminate_session" %}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({ session_id: sessionId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            session.style.opacity = '0';
-                            session.style.transform = 'translateX(100px)';
-                            setTimeout(() => {
-                                session.remove();
-                                const sessionsContainer = document.querySelector('#sessions .space-y-4');
-                                if (sessionsContainer.children.length === 0) {
-                                    document.querySelector('#sessions .empty-state').classList.remove('hidden');
-                                }
-                                document.querySelector('[data-tab="sessions"] .bg-blue-100').textContent = data.session_count;
-                            }, 300);
-                        } else {
-                            alert(data.message || 'Failed to terminate session.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-                }
-            });
-        });
-
-        // Terminate All Sessions
-        document.getElementById('terminate-all-sessions').addEventListener('click', function() {
-            if (confirm('Are you sure you want to terminate all sessions? This will log you out from all devices except the current one.')) {
-                fetch('{% url "terminate_all_sessions" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const sessionsContainer = document.querySelector('#sessions .space-y-4');
-                        sessionsContainer.innerHTML = '';
-                        document.querySelector('#sessions .empty-state').classList.remove('hidden');
-                        document.querySelector('[data-tab="sessions"] .bg-blue-100').textContent = data.session_count;
-                        alert('All sessions terminated successfully.');
-                    } else {
-                        alert(data.message || 'Failed to terminate sessions.');
+                        fetch('{% url "terminate_session" %}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({ session_id: sessionId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                session.style.opacity = '0';
+                                session.style.transform = 'translateX(100px)';
+                                setTimeout(() => {
+                                    session.remove();
+                                    const sessionsContainer = document.querySelector('#sessions .space-y-4');
+                                    if (sessionsContainer.children.length === 0) {
+                                        document.querySelector('#sessions .empty-state').classList.remove('hidden');
+                                    }
+                                    document.querySelector('[data-tab="sessions"] .bg-blue-100').textContent = data.session_count;
+                                }, 300);
+                            } else {
+                                alert(data.message || 'Failed to terminate session.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
+                });
+            });
+
+            // Terminate All Sessions
+            const terminateAllBtn = document.getElementById('terminate-all-sessions');
+            if (terminateAllBtn) {
+                terminateAllBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to terminate all sessions? This will log you out from all devices except the current one.')) {
+                        fetch('{% url "terminate_all_sessions" %}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const sessionsContainer = document.querySelector('#sessions .space-y-4');
+                                sessionsContainer.innerHTML = '';
+                                document.querySelector('#sessions .empty-state').classList.remove('hidden');
+                                document.querySelector('[data-tab="sessions"] .bg-blue-100').textContent = data.session_count;
+                                alert('All sessions terminated successfully.');
+                            } else {
+                                alert(data.message || 'Failed to terminate sessions.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                    }
                 });
             }
+
+            console.log('Profile page loaded successfully');
         });
     </script>
 {% endblock %}

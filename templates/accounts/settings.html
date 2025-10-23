@@ -96,13 +96,13 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                         <div>
                                             <label class="block text-gray-700 font-medium mb-2">First Name</label>
-                                            <input type="text" name="first_name" value="{{ user.first_name }}" 
+                                            <input type="text" name="first_name" value="{{ request.user.first_name|default:'' }}" 
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
                                                    placeholder="Enter your first name">
                                         </div>
                                         <div>
                                             <label class="block text-gray-700 font-medium mb-2">Last Name</label>
-                                            <input type="text" name="last_name" value="{{ user.last_name }}"
+                                            <input type="text" name="last_name" value="{{ request.user.last_name|default:'' }}"
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
                                                    placeholder="Enter your last name">
                                         </div>
@@ -110,7 +110,7 @@
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Email Address</label>
-                                        <input type="email" value="{{ user.email }}" 
+                                        <input type="email" value="{{ request.user.email }}" 
                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
                                                disabled>
                                         <p class="text-sm text-gray-500 mt-1">Contact support to change your email address</p>
@@ -118,17 +118,32 @@
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
-                                        {{ profile_form.phone_number }}
+                                        <input type="text" name="phone_number" value="{{ user.profile.phone_number|default:'' }}"
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                               placeholder="Enter your phone number">
+                                        {% if profile_form.phone_number.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ profile_form.phone_number.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Location</label>
-                                        {{ profile_form.location }}
+                                        <input type="text" name="location" value="{{ user.profile.location|default:'' }}"
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                               placeholder="Enter your location">
+                                        {% if profile_form.location.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ profile_form.location.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Bio</label>
-                                        {{ profile_form.bio }}
+                                        <textarea name="bio" rows="4"
+                                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                                  placeholder="Tell us about yourself">{{ user.profile.bio|default:'' }}</textarea>
+                                        {% if profile_form.bio.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ profile_form.bio.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="flex justify-end">
@@ -149,21 +164,36 @@
                                     {% csrf_token %}
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Current Password</label>
-                                        {{ password_form.current_password }}
+                                        <input type="password" name="current_password" 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                               placeholder="Enter your current password" required>
+                                        {% if password_form.current_password.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ password_form.current_password.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">New Password</label>
-                                        {{ password_form.new_password1 }}
+                                        <input type="password" name="new_password1" 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                               placeholder="Enter new password" required>
                                         <div id="password-strength" class="h-2 mt-2 rounded hidden">
                                             <div class="h-full rounded password-strength-bar"></div>
                                         </div>
                                         <p class="text-sm text-gray-500 mt-2">Password must be at least 8 characters with uppercase, lowercase, and numbers.</p>
+                                        {% if password_form.new_password1.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ password_form.new_password1.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-gray-700 font-medium mb-2">Confirm New Password</label>
-                                        {{ password_form.new_password2 }}
+                                        <input type="password" name="new_password2"
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                                               placeholder="Confirm new password" required>
+                                        {% if password_form.new_password2.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ password_form.new_password2.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="flex justify-end">
@@ -180,14 +210,16 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="font-medium">Two-factor authentication is 
-                                                <span class="text-red-600">disabled</span>
+                                                <span class="text-{% if user.profile.two_factor_enabled %}green-600{% else %}red-600{% endif %}">
+                                                    {% if user.profile.two_factor_enabled %}enabled{% else %}disabled{% endif %}
+                                                </span>
                                             </p>
                                             <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
                                         </div>
                                         <form method="POST" action="{% url 'toggle_2fa' %}">
                                             {% csrf_token %}
                                             <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg transition text-sm">
-                                                Enable 2FA
+                                                {% if user.profile.two_factor_enabled %}Disable 2FA{% else %}Enable 2FA{% endif %}
                                             </button>
                                         </form>
                                     </div>
@@ -230,26 +262,29 @@
                                         <h3 class="text-lg font-bold text-blue-900 mb-4">I'm Interested In</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
-                                                <input type="checkbox" name="interest_buying" {% if preferences_form.instance.interest_buying %}checked{% endif %} 
+                                                <input type="checkbox" name="interest_buying" {% if user.preferences.interest_buying %}checked{% endif %} 
                                                        class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
                                                 <span class="font-medium">Buying Properties</span>
                                             </label>
                                             <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
-                                                <input type="checkbox" name="interest_renting" {% if preferences_form.instance.interest_renting %}checked{% endif %}
+                                                <input type="checkbox" name="interest_renting" {% if user.preferences.interest_renting %}checked{% endif %}
                                                        class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
                                                 <span class="font-medium">Renting Properties</span>
                                             </label>
                                             <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
-                                                <input type="checkbox" name="interest_selling" {% if preferences_form.instance.interest_selling %}checked{% endif %}
+                                                <input type="checkbox" name="interest_selling" {% if user.preferences.interest_selling %}checked{% endif %}
                                                        class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
                                                 <span class="font-medium">Selling Properties</span>
                                             </label>
                                             <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
-                                                <input type="checkbox" name="interest_commercial" {% if preferences_form.instance.interest_commercial %}checked{% endif %}
+                                                <input type="checkbox" name="interest_commercial" {% if user.preferences.interest_commercial %}checked{% endif %}
                                                        class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
                                                 <span class="font-medium">Commercial Properties</span>
                                             </label>
                                         </div>
+                                        {% if preferences_form.interest_buying.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ preferences_form.interest_buying.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-8">
@@ -257,15 +292,21 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
                                                 <label class="block text-gray-700 font-medium mb-2">Minimum Budget</label>
-                                                <input type="number" name="min_budget" value="{{ preferences_form.instance.min_budget|default:'' }}"
+                                                <input type="number" name="min_budget" value="{{ user.preferences.min_budget|default:'' }}"
                                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
                                                        placeholder="e.g., 500000">
+                                                {% if preferences_form.min_budget.errors %}
+                                                    <p class="text-red-600 text-sm mt-1">{{ preferences_form.min_budget.errors }}</p>
+                                                {% endif %}
                                             </div>
                                             <div>
                                                 <label class="block text-gray-700 font-medium mb-2">Maximum Budget</label>
-                                                <input type="number" name="max_budget" value="{{ preferences_form.instance.max_budget|default:'' }}"
+                                                <input type="number" name="max_budget" value="{{ user.preferences.max_budget|default:'' }}"
                                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
                                                        placeholder="e.g., 5000000">
+                                                {% if preferences_form.max_budget.errors %}
+                                                    <p class="text-red-600 text-sm mt-1">{{ preferences_form.max_budget.errors }}</p>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -277,12 +318,16 @@
                                             {% for location in locations.split %}
                                             <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
                                                 <input type="checkbox" name="preferred_locations" value="{{ location }}"
+                                                       {% if location in user.preferences.preferred_locations %}checked{% endif %}
                                                        class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
                                                 <span>{{ location }}</span>
                                             </label>
                                             {% endfor %}
                                             {% endwith %}
                                         </div>
+                                        {% if preferences_form.preferred_locations.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ preferences_form.preferred_locations.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-8">
@@ -292,12 +337,16 @@
                                             {% for type in types.split %}
                                             <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer">
                                                 <input type="checkbox" name="property_types" value="{{ type }}"
+                                                       {% if type in user.preferences.property_types %}checked{% endif %}
                                                        class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded focus:ring-blue-900">
                                                 <span>{{ type }}</span>
                                             </label>
                                             {% endfor %}
                                             {% endwith %}
                                         </div>
+                                        {% if preferences_form.property_types.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ preferences_form.property_types.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="flex justify-end">
@@ -325,7 +374,7 @@
                                                     <p class="text-sm text-gray-600">Get notified about properties matching your preferences</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="email_property_recommendations" {% if notifications_form.instance.email_property_recommendations %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="email_property_recommendations" {% if user.notification_settings.email_property_recommendations %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
@@ -336,7 +385,7 @@
                                                     <p class="text-sm text-gray-600">Get notified when prices drop on saved properties</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="email_price_drop_alerts" {% if notifications_form.instance.email_price_drop_alerts %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="email_price_drop_alerts" {% if user.notification_settings.email_price_drop_alerts %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
@@ -347,7 +396,7 @@
                                                     <p class="text-sm text-gray-600">Get notified about new properties in your preferred areas</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="email_new_listings" {% if notifications_form.instance.email_new_listings %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="email_new_listings" {% if user.notification_settings.email_new_listings %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
@@ -358,7 +407,7 @@
                                                     <p class="text-sm text-gray-600">Receive real estate market insights and trends</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="email_market_updates" {% if notifications_form.instance.email_market_updates %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="email_market_updates" {% if user.notification_settings.email_market_updates %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
@@ -369,11 +418,14 @@
                                                     <p class="text-sm text-gray-600">Receive special offers and discounts</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="email_promotional_offers" {% if notifications_form.instance.email_promotional_offers %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="email_promotional_offers" {% if user.notification_settings.email_promotional_offers %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
                                         </div>
+                                        {% if notifications_form.email_property_recommendations.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ notifications_form.email_property_recommendations.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-8">
@@ -385,7 +437,7 @@
                                                     <p class="text-sm text-gray-600">Receive notifications on your mobile device</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="push_notifications" {% if notifications_form.instance.push_notifications %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="push_notifications" {% if user.notification_settings.push_notifications %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
@@ -396,11 +448,14 @@
                                                     <p class="text-sm text-gray-600">Receive important alerts via SMS</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="sms_notifications" {% if notifications_form.instance.sms_notifications %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="sms_notifications" {% if user.notification_settings.sms_notifications %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
                                         </div>
+                                        {% if notifications_form.push_notifications.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ notifications_form.push_notifications.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="flex justify-end">
@@ -428,7 +483,7 @@
                                                     <p class="text-sm text-gray-600">Allow us to share your preferences with trusted partners for better service</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="data_sharing" {% if privacy_form.instance.data_sharing %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="data_sharing" {% if user.privacy_settings.data_sharing %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
@@ -439,11 +494,14 @@
                                                     <p class="text-sm text-gray-600">Show personalized property recommendations based on your activity</p>
                                                 </div>
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" name="personalized_ads" {% if privacy_form.instance.personalized_ads %}checked{% endif %} class="sr-only peer">
+                                                    <input type="checkbox" name="personalized_ads" {% if user.privacy_settings.personalized_ads %}checked{% endif %} class="sr-only peer">
                                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-900"></div>
                                                 </label>
                                             </div>
                                         </div>
+                                        {% if privacy_form.data_sharing.errors %}
+                                            <p class="text-red-600 text-sm mt-1">{{ privacy_form.data_sharing.errors }}</p>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="flex justify-end">
@@ -490,7 +548,7 @@
                                         We value your privacy and are committed to protecting your personal information. 
                                         Our privacy policy explains how we collect, use, and safeguard your data.
                                     </p>
-                                    <a href="#" class="text-blue-900 hover:text-blue-700 font-medium">View Full Privacy Policy</a>
+                                    <a href="{% url 'privacy' %}" class="text-blue-900 hover:text-blue-700 font-medium">View Full Privacy Policy</a>
                                 </div>
                             </div>
                         </div>
@@ -556,7 +614,12 @@
                     
                     <div class="mb-6">
                         <label class="block text-gray-700 font-medium mb-2">Enter your password to confirm</label>
-                        {{ delete_form.password }}
+                        <input type="password" name="password" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent"
+                               placeholder="Enter your password" required>
+                        {% if delete_form.password.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ delete_form.password.errors }}</p>
+                        {% endif %}
                     </div>
                     
                     <div class="flex flex-col sm:flex-row gap-4">
@@ -575,7 +638,7 @@
     <!-- Custom Styles -->
     <style>
         .nav-item {
-            @apply flex items-center px-4 py-3 text-gray-700 rounded-lg transition-colors;
+            @apply flex items-center px-4 py-3 text-gray-700 rounded-lg transition-colors cursor-pointer;
         }
         .nav-item:hover {
             @apply bg-blue-50 text-blue-900;
@@ -585,6 +648,12 @@
         }
         .settings-section {
             @apply transition-opacity duration-300;
+        }
+        .settings-section.active {
+            @apply opacity-100 block;
+        }
+        .settings-section.hidden {
+            @apply opacity-0 hidden;
         }
         .password-strength-bar {
             transition: all 0.3s ease;
@@ -606,137 +675,147 @@
     <!-- Custom JavaScript -->
     <script>
         // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
-        
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: 1000,
+                once: true,
+                offset: 100
+            });
+        }
+
         // Settings Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Remove active class from all items
-                document.querySelectorAll('.nav-item').forEach(nav => {
-                    nav.classList.remove('active');
-                });
-                
-                // Add active class to clicked item
-                this.classList.add('active');
-                
-                // Hide all sections
-                document.querySelectorAll('.settings-section').forEach(section => {
-                    section.classList.add('hidden');
-                    section.classList.remove('active');
-                });
-                
-                // Show selected section
-                const sectionId = this.getAttribute('data-section');
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.classList.remove('hidden');
-                    targetSection.classList.add('active');
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.settings-section');
 
-        // Password Strength Indicator
-        const passwordInput = document.getElementById('id_new_password1');
-        const passwordStrength = document.getElementById('password-strength');
-        const passwordStrengthBar = document.querySelector('.password-strength-bar');
-        
-        if (passwordInput && passwordStrength && passwordStrengthBar) {
-            passwordInput.addEventListener('input', function() {
-                const password = this.value;
-                let strength = 0;
-                
-                // Check password length
-                if (password.length >= 8) strength++;
-                
-                // Check for uppercase letters
-                if (/[A-Z]/.test(password)) strength++;
-                
-                // Check for lowercase letters
-                if (/[a-z]/.test(password)) strength++;
-                
-                // Check for numbers
-                if (/[0-9]/.test(password)) strength++;
-                
-                // Check for special characters
-                if (/[^A-Za-z0-9]/.test(password)) strength++;
-                
-                // Update strength indicator
-                passwordStrength.classList.remove('hidden');
-                passwordStrengthBar.className = 'h-full rounded password-strength-bar';
-                
-                if (strength <= 2) {
-                    passwordStrengthBar.classList.add('password-weak');
-                } else if (strength <= 4) {
-                    passwordStrengthBar.classList.add('password-medium');
-                } else {
-                    passwordStrengthBar.classList.add('password-strong');
-                }
-                
-                // Hide if empty
-                if (password.length === 0) {
-                    passwordStrength.classList.add('hidden');
-                }
-            });
-        }
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all nav items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
 
-        // Delete Account Modal
-        const deleteAccountBtn = document.getElementById('delete-account-btn');
-        const deleteModal = document.getElementById('delete-modal');
-        const cancelDeleteBtn = document.getElementById('cancel-delete');
-        
-        if (deleteAccountBtn) {
-            deleteAccountBtn.addEventListener('click', function() {
-                deleteModal.classList.remove('hidden');
-            });
-        }
-        
-        if (cancelDeleteBtn) {
-            cancelDeleteBtn.addEventListener('click', function() {
-                deleteModal.classList.add('hidden');
-            });
-        }
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.classList.add('hidden');
+                        section.classList.remove('active');
+                    });
 
-        // Close modal when clicking outside
-        deleteModal.addEventListener('click', function(e) {
-            if (e.target === deleteModal) {
-                deleteModal.classList.add('hidden');
-            }
-        });
-
-        // Form submission handling
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const submitBtn = this.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
-                    
-                    // Re-enable after 3 seconds in case of error
-                    setTimeout(() => {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = submitBtn.textContent.includes('Save') ? 'Save Changes' : 'Update Password';
-                    }, 3000);
-                }
-            });
-        });
-
-        // Auto-save indicators
-        document.querySelectorAll('input, textarea, select').forEach(input => {
-            input.addEventListener('change', function() {
-                const form = this.closest('form');
-                if (form) {
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    if (submitBtn && !submitBtn.classList.contains('bg-green-600')) {
-                        submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                        const originalText = submitBtn.textContent;
-                        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>' + originalText;
+                    // Show selected section
+                    const sectionId = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.remove('hidden');
+                        targetSection.classList.add('active');
                     }
-                }
+                });
             });
+
+            // Password Strength Indicator
+            const passwordInput = document.querySelector('input[name="new_password1"]');
+            const passwordStrength = document.getElementById('password-strength');
+            const passwordStrengthBar = document.querySelector('.password-strength-bar');
+
+            if (passwordInput && passwordStrength && passwordStrengthBar) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+
+                    // Check password length
+                    if (password.length >= 8) strength++;
+                    // Check for uppercase letters
+                    if (/[A-Z]/.test(password)) strength++;
+                    // Check for lowercase letters
+                    if (/[a-z]/.test(password)) strength++;
+                    // Check for numbers
+                    if (/[0-9]/.test(password)) strength++;
+                    // Check for special characters
+                    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                    // Update strength indicator
+                    passwordStrength.classList.remove('hidden');
+                    passwordStrengthBar.className = 'h-full rounded password-strength-bar';
+
+                    if (strength <= 2) {
+                        passwordStrengthBar.classList.add('password-weak');
+                    } else if (strength <= 4) {
+                        passwordStrengthBar.classList.add('password-medium');
+                    } else {
+                        passwordStrengthBar.classList.add('password-strong');
+                    }
+
+                    // Hide if empty
+                    if (password.length === 0) {
+                        passwordStrength.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Delete Account Modal
+            const deleteAccountBtn = document.getElementById('delete-account-btn');
+            const deleteModal = document.getElementById('delete-modal');
+            const cancelDeleteBtn = document.getElementById('cancel-delete');
+
+            if (deleteAccountBtn && deleteModal) {
+                deleteAccountBtn.addEventListener('click', function() {
+                    deleteModal.classList.remove('hidden');
+                });
+            }
+
+            if (cancelDeleteBtn && deleteModal) {
+                cancelDeleteBtn.addEventListener('click', function() {
+                    deleteModal.classList.add('hidden');
+                });
+            }
+
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function(e) {
+                    if (e.target === deleteModal) {
+                        deleteModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Form submission handling
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        const originalText = submitBtn.textContent;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + originalText;
+
+                        // Re-enable after 3 seconds in case of error
+                        setTimeout(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                        }, 3000);
+                    }
+                });
+            });
+
+            // Handle checkbox arrays for locations and property types
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Handle preferred_locations checkboxes
+                    const locationCheckboxes = this.querySelectorAll('input[name="preferred_locations"]:checked');
+                    const locationInput = document.createElement('input');
+                    locationInput.type = 'hidden';
+                    locationInput.name = 'preferred_locations';
+                    locationInput.value = Array.from(locationCheckboxes).map(cb => cb.value).join(',');
+                    this.appendChild(locationInput);
+
+                    // Handle property_types checkboxes
+                    const typeCheckboxes = this.querySelectorAll('input[name="property_types"]:checked');
+                    const typeInput = document.createElement('input');
+                    typeInput.type = 'hidden';
+                    typeInput.name = 'property_types';
+                    typeInput.value = Array.from(typeCheckboxes).map(cb => cb.value).join(',');
+                    this.appendChild(typeInput);
+                });
+            });
+
+            console.log('Settings page loaded successfully');
         });
     </script>
 {% endblock %}
