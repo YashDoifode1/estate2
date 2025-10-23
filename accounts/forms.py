@@ -24,6 +24,7 @@ class CustomAuthenticationForm(AuthenticationForm):
     )
 
 class CustomUserCreationForm(UserCreationForm):
+    profile_picture = forms.ImageField(required=False)  # optional during registration
     first_name = forms.CharField(
         max_length=30,
         required=True,
@@ -82,7 +83,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'phone', 'password1', 'password2', 'terms', 'newsletter')
+        fields = ('first_name','profile_picture', 'last_name', 'email', 'phone', 'password1', 'password2', 'terms', 'newsletter')
 
     def save(self, commit=True):
         user = super().save(commit=False)

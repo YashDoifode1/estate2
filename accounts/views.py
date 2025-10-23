@@ -302,12 +302,18 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('profile')
+
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST, request.FILES)  # include request.FILES
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, 'Account created successfully!')
             return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -834,12 +840,14 @@ def delete_account(request):
 # AJAX Action Views
 @login_required
 @require_POST
+
+
 def upload_profile_picture(request):
-    form = ProfilePictureForm(request.POST, request.FILES, instance=request.user)
-    if form.is_valid():
-        form.save()
-        return JsonResponse({'success': True})
-    return JsonResponse({'success': False, 'errors': form.errors})
+    if request.method == 'POST':
+        form = ProfilePictureForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()  # saves the new image
+    return redirect('profile')
 
 @login_required
 @require_POST
