@@ -840,13 +840,11 @@ def delete_account(request):
 # AJAX Action Views
 @login_required
 @require_POST
-
-
 def upload_profile_picture(request):
     if request.method == 'POST':
         form = ProfilePictureForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
-            form.save()  # saves the new image
+            form.save()  # updates profile_picture and updated_at
     return redirect('profile')
 
 @login_required

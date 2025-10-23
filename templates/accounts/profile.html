@@ -12,9 +12,8 @@
                 <!-- Profile Picture -->
                 <div class="mb-6 md:mb-0 md:mr-8" data-aos="fade-right">
                     <div class="relative">
-                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}?{{ user.profile.profile_picture.updated_at.timestamp }}{% else %}https://randomuser.me/api/portraits/men/75.jpg{% endif %}" 
+                       <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}?{{ user.profile.updated_at.timestamp }}{% else %}https://randomuser.me/api/portraits/men/75.jpg{% endif %}" 
      alt="{{ user.get_full_name }}" class="w-32 h-32 rounded-full profile-pic">
-
                         <form id="profile-pic-form" method="POST" action="{% url 'upload_profile_picture' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="file" id="profile-pic-input" name="profile_picture" class="hidden" accept="image/*">
