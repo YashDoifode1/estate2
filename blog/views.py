@@ -57,6 +57,9 @@ def blog_detail(request, slug):
     post.views += 1
     post.save()
     
+    # Get approved comments only
+    comments = post.comments.filter(approved=True).order_by('-created_date')
+    
     # Get related posts (same categories)
     related_posts = BlogPost.objects.filter(
         categories__in=post.categories.all(),
@@ -79,6 +82,7 @@ def blog_detail(request, slug):
     
     context = {
         'post': post,
+        'comments': comments,  # pass approved comments to template
         'related_posts': related_posts,
         'recent_posts': recent_posts,
         'categories': categories,
@@ -87,6 +91,7 @@ def blog_detail(request, slug):
     }
     
     return render(request, 'blog/blog-detail.html', context)
+
 
 def newsletter_subscribe(request):
     if request.method == 'POST':
@@ -126,4 +131,4 @@ def add_comment(request, slug):
             comment.save()
             messages.success(request, 'Your comment has been submitted and is awaiting approval.')
     
-    return redirect('blog_detail', slug=slug)
+    return redirect('blog:blog_detail', slug=slug)

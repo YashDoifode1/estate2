@@ -40,7 +40,8 @@ urlpatterns = [
     # Consultation Actions
     path('cancel-consultation/', views.cancel_consultation, name='cancel_consultation'),
     path('terminate-session/', views.terminate_session, name='terminate_session'),
-path('terminate-all-sessions/', views.terminate_all_sessions, name='terminate_all_sessions'),
+    path('terminate-all-sessions/', views.terminate_all_sessions, name='terminate_all_sessions'),
+    
     # Password Reset URLs
     path('password-reset/', auth_views.PasswordResetView.as_view(
         template_name='accounts/password_reset.html',

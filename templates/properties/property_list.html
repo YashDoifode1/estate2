@@ -1,8 +1,341 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 
-{% block title %}Properties for Sale & Rent | DreamHomes Realty{% endblock %}
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --royal-blue: #1e3a8a;
+            --gold: #d4af37;
+        }
 
-{% block content %}
+        .profile-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+        }
+
+        .profile-pic {
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            background-color: white;
+            color: #1e3a8a;
+            border-bottom: 3px solid #d4af37;
+        }
+
+        .tab-button:not(.active) {
+            background-color: #f8fafc;
+            color: #64748b;
+        }
+
+        .tab-button:not(.active):hover {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        .property-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-scheduled {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        /* Login/Register specific styles */
+        .login-hero, .register-hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            min-height: 100vh;
+        }
+
+        .success-message, .error-message {
+            display: none;
+        }
+
+        .success-message.show, .error-message.show {
+            display: block;
+        }
+
+        .password-strength {
+            height: 4px;
+            margin-top: 8px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .password-weak {
+            background-color: #ef4444;
+            width: 25%;
+        }
+
+        .password-medium {
+            background-color: #f59e0b;
+            width: 50%;
+        }
+
+        .password-strong {
+            background-color: #10b981;
+            width: 100%;
+        }
+
+        .requirement-met {
+            color: #10b981;
+        }
+
+        .requirement-unmet {
+            color: #6b7280;
+        }
+
+        input.error {
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Include Header -->
+   
+
+    <!-- Main Content -->
+    <main>
+       
+    </main>
+
+    <!-- Include Footer -->
+    
+
+    <!-- JS Libraries -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({ duration: 1000, once: true, offset: 100 });
+
+        // Mobile Menu Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+});
+
+
+        // User Menu Toggle
+        const userMenuButton = document.getElementById('user-menu-button');
+        if (userMenuButton) {
+            userMenuButton.addEventListener('click', () => {
+                document.getElementById('user-menu').classList.toggle('hidden');
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const userMenu = document.getElementById('user-menu');
+            const userMenuBtn = document.getElementById('user-menu-button');
+            
+            if (userMenu && userMenuBtn && !userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+
+        // Add current year to footer
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentYear = new Date().getFullYear();
+            const yearElements = document.querySelectorAll('.current-year');
+            yearElements.forEach(element => {
+                element.textContent = currentYear;
+            });
+        });
+    </script>
+
+   
+   
+</body>
+</html>
+
+
+
+<!-- Header -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center mr-2">
+                <i class="fas fa-home text-white text-lg"></i>
+            </div>
+            <a href="{% url 'home' %}" class="text-2xl font-bold text-blue-900">
+                DreamHomes <span class="text-yellow-600">Realty</span>
+            </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex space-x-8 items-center">
+            <a href="{% url 'home' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Home</a>
+            <a href="{% url 'properties:property_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Properties</a>
+            <a href="{% url 'agents:agents_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Our Agents</a>
+            <a href="{% url 'about' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">About</a>
+            <a href="{% url 'blog:blog_list' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Blog</a>
+            <a href="{% url 'contact' %}" class="text-gray-600 font-medium hover:text-yellow-600 transition">Contact</a>
+
+            {% if user.is_authenticated %}
+            <div class="relative group">
+                <button class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-2 transition">
+                    <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80{% endif %}" 
+                        alt="User" class="w-8 h-8 rounded-full">
+                    <span class="text-gray-700">Welcome, {{ user.first_name|default:user.username }}</span>
+                    <i class="fas fa-chevron-down text-gray-600 text-sm"></i>
+                </button>
+
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                    <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                        <i class="fas fa-user mr-2"></i> My Profile
+                    </a>
+                    <a href="{% url 'settings' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                        <i class="fas fa-cog mr-2"></i> Settings
+                    </a>
+                    <hr class="my-2">
+                    <form action="{% url 'logout' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full text-left block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Sign Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <a href="{% url 'login' %}" class="text-blue-900 font-medium hover:text-yellow-600 transition">Login</a>
+            {% endif %}
+        </nav>
+
+        <!-- Mobile Buttons -->
+        <div class="flex items-center space-x-4">
+            {% if user.is_authenticated %}
+            <div class="md:hidden">
+                <button id="mobile-user-button" class="flex items-center p-2">
+                    <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80{% endif %}" 
+                        alt="User" class="w-8 h-8 rounded-full">
+                </button>
+            </div>
+            {% endif %}
+            <button id="mobile-menu-button" class="md:hidden text-blue-900 p-2">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menus -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        {% include 'includes/mobile_menu_links.html' %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <div id="mobile-user-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        {% include 'includes/mobile_user_links.html' %}
+    </div>
+    {% endif %}
+
+    <!-- Mobile Menu JS (only here, so no conflicts on other pages) -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileUserButton = document.getElementById('mobile-user-button');
+        const mobileUserMenu = document.getElementById('mobile-user-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mobileMenu.classList.toggle('hidden');
+                if (mobileUserMenu) mobileUserMenu.classList.add('hidden');
+            });
+        }
+
+        if (mobileUserButton && mobileUserMenu) {
+            mobileUserButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mobileUserMenu.classList.toggle('hidden');
+                if (mobileMenu) mobileMenu.classList.add('hidden');
+            });
+        }
+
+        document.addEventListener('click', (event) => {
+            if (mobileMenu && !mobileMenu.contains(event.target) && mobileMenuButton && !mobileMenuButton.contains(event.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+            if (mobileUserMenu && !mobileUserMenu.contains(event.target) && mobileUserButton && !mobileUserButton.contains(event.target)) {
+                mobileUserMenu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (mobileMenu) mobileMenu.classList.add('hidden');
+                if (mobileUserMenu) mobileUserMenu.classList.add('hidden');
+            }
+        });
+    });
+    </script>
+</header>
+
     <!-- Page Header -->
     <section class="bg-blue-900 text-white py-12">
         <div class="container mx-auto px-4">
@@ -444,4 +777,3 @@ function createPropertyCard(property) {
             fetchProperties();
         }
     </script>
-{% endblock %}

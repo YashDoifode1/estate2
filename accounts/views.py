@@ -94,19 +94,34 @@ def settings_view(request):
     }
     return render(request, 'accounts/settings.html', context)
 
+from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from .models import UserProfile
+from .forms import UserProfileForm, ProfileForm
+
 @login_required
-@require_POST
+@transaction.atomic
 def update_profile(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    form = UserProfileForm(request.POST, instance=profile)
-    
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Profile updated successfully!')
-    else:
-        messages.error(request, 'Please correct the errors below.')
-    
+    if request.method == 'POST':
+        user_form = ProfileForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, instance=request.user.profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save(commit=False)
+            # Ensure username is never empty
+            if not user.username:
+                user.username = user.email
+            user.save()
+            profile_form.save()
+            messages.success(request, "✅ Profile updated successfully.")
+        else:
+            print(user_form.errors, profile_form.errors)
+            messages.error(request, "⚠️ Please fix the errors below.")
+
     return redirect('settings')
+
 
 @login_required
 @require_POST

@@ -107,6 +107,62 @@
                                 </a>
                             </div>
                         </div>
+
+                        <!-- Comments Section -->
+<section class="mt-12 border-t border-gray-200 pt-8" data-aos="fade-up">
+    <h3 class="text-2xl font-bold text-blue-900 mb-6">{{ comments.count }} Comment{{ comments.count|pluralize }}</h3>
+    
+    <!-- Display Comments -->
+    <div class="space-y-6">
+      {% for comment in comments %}
+    <div class="border-b border-gray-100 pb-4">
+        <p class="font-semibold text-gray-800">{{ comment.name }} 
+            <span class="text-gray-500 text-sm">{{ comment.created_date|date:"F d, Y H:i" }}</span>
+        </p>
+        <p class="text-gray-700 mt-1">{{ comment.content }}</p>
+    </div>
+{% empty %}
+    <p class="text-gray-600">No comments yet. Be the first to comment!</p>
+{% endfor %}
+
+    </div>
+{% if messages %}
+    <div class="mb-6 space-y-2">
+        {% for message in messages %}
+            <div class="p-4 rounded-lg
+                {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    <!-- Comment Form -->
+    <div class="mt-10">
+        <h3 class="text-2xl font-bold text-blue-900 mb-4">Leave a Comment</h3>
+        <form action="{% url 'blog:add_comment' post.slug %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ comment_form.non_field_errors }}
+            
+            <div>
+                {{ comment_form.name.errors }}
+                {{ comment_form.name }}
+            </div>
+            <div>
+                {{ comment_form.email.errors }}
+                {{ comment_form.email }}
+            </div>
+            <div>
+                {{ comment_form.content.errors }}
+                {{ comment_form.content }}
+            </div>
+            
+            <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded-lg transition">
+                Submit Comment
+            </button>
+        </form>
+    </div>
+</section>
+
                         
                         <!-- Author Bio -->
                         <div class="bg-gray-50 p-6 rounded-lg">

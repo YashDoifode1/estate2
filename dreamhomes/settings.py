@@ -3,12 +3,17 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+#ENCRYTION ANOTHER SECURITY FEATURE
 SECRET_KEY = 'your-secret-key-here'
 
 DEBUG = True
 
+#TO GET APIS REQUEST ONLY FROM SECURITY FEATURES
 ALLOWED_HOSTS = []
 
+
+#INSTALL APPS + DEFUALT APPS
 INSTALLED_APPS = [
     "jazzmin",
 
@@ -24,6 +29,7 @@ INSTALLED_APPS = [
     'blog',
 ]
 
+# YET TO UNDERSTAND MUST STUDY ON YOUTUBE 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -36,6 +42,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'dreamhomes.urls'
 
+
+# SETTING UP TEMPLATE DIRECTORY
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -80,6 +88,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Jazzmin configuration
 JAZZMIN_SETTINGS = {
+
+    # BASIC SITE TEMPLATE APP 
     "site_title": "DreamHomes Admin",
     "site_header": "DreamHomes Realty",
     "site_brand": "DreamHomes",
@@ -89,6 +99,7 @@ JAZZMIN_SETTINGS = {
     "copyright": "DreamHomes Realty © 2025",
     "search_model": "properties.Property",  # Search bar will prioritize Property
     "user_avatar": None,
+
 
     # Top navigation bar links
     "topmenu_links": [
@@ -162,6 +173,8 @@ JAZZMIN_UI_TWEAKS = {
 
 
 LOGOUT_REDIRECT_URL = 'home'  # or 'login', depending on your flow
+
+#BASIC CONFIG
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -175,6 +188,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Custom user model
+#REALTED TO VIEWS OR MODELS MUST CONSIDER REVIEWING 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Login/Logout URLs
@@ -211,3 +225,7 @@ CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
 # Production settings (to be implemented)
 # 
+
+# MUST ASK GPTS TO INCLUDE SECURITY AND BRIEF INFO ABOUT IT TO ADDS ITS LIKE HTACCESS AND ENV VARIABLE 
+# MUST ASK ABOUT ROBOT.TXT AND OTHER SEO OPTIONS 
+# MUST ASK REGARDING SPIDERS ETC
