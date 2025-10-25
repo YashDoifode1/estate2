@@ -31,61 +31,59 @@
     </section>
 
     <!-- Quick Search Section -->
-    <section class="bg-white py-12 shadow-md -mt-10 relative z-10 rounded-lg mx-4 md:mx-auto max-w-6xl">
-        <div class="container mx-auto px-4">
-            <h2 class="text-2xl font-bold text-center text-blue-900 mb-8">Find Your Perfect Property</h2>
-            <form action="{% url 'properties:property_list' %}" method="GET" class="bg-gray-50 p-6 rounded-lg">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-gray-700 mb-2">I'm looking to</label>
-                        <select name="transaction_type" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
-                            <option value="">Buy</option>
-                            <option value="rent">Rent</option>
-                            <option value="sell">Sell</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">Location</label>
-                        <select name="location" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
-                            <option value="">All Locations</option>
-                            <option value="civil_lines">Civil Lines</option>
-                            <option value="dharampeth">Dharampeth</option>
-                            <option value="ramdaspeth">Ramdaspeth</option>
-                            <option value="wardhaman_nagar">Wardhaman Nagar</option>
-                            <option value="manish_nagar">Manish Nagar</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">Property Type</label>
-                        <select name="property_type" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
-                            <option value="">Any Type</option>
-                            <option value="apartment">Apartment</option>
-                            <option value="villa">Villa</option>
-                            <option value="house">House</option>
-                            <option value="commercial">Commercial</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">Budget</label>
-                        <select name="budget" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
-                            <option value="">Any Budget</option>
-                            <option value="under_20_lakhs">Under ₹20 Lakhs</option>
-                            <option value="20_40_lakhs">₹20-40 Lakhs</option>
-                            <option value="40_60_lakhs">₹40-60 Lakhs</option>
-                            <option value="60_lakhs_1_crore">₹60 Lakhs - ₹1 Crore</option>
-                            <option value="above_1_crore">Above ₹1 Crore</option>
-                        </select>
-                    </div>
+<section class="bg-white py-12 shadow-md -mt-10 relative z-10 rounded-lg mx-4 md:mx-auto max-w-6xl">
+    <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-center text-blue-900 mb-8">Find Your Perfect Property</h2>
+        <form action="{% url 'properties:property_list' %}" method="GET" class="bg-gray-50 p-6 rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-gray-700 mb-2">I'm looking to</label>
+                    <select name="status" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
+                        <option value="all">All</option>
+                        <option value="for_sale">Buy</option>
+                        <option value="for_rent">Rent</option>
+                    </select>
                 </div>
-                <div class="mt-6 text-center">
-                    <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg transition flex items-center justify-center mx-auto">
-                        <i class="fas fa-search mr-2"></i> Search Properties
-                    </button>
+                <div>
+                    <label class="block text-gray-700 mb-2">Location</label>
+                    <select name="location" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
+                        <option value="all">All Locations</option>
+                        {% for location in locations %}
+                            <option value="{{ location|lower }}">{{ location }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
-        </div>
-    </section>
-
+                <div>
+                    <label class="block text-gray-700 mb-2">Property Type</label>
+                    <select name="type" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
+                        <option value="all">Any Type</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="villa">Villa</option>
+                        <option value="house">House</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="land">Land</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Budget</label>
+                    <select name="price" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900">
+                        <option value="all">Any Budget</option>
+                        <option value="0-20">Under ₹20 Lakhs</option>
+                        <option value="20-40">₹20-40 Lakhs</option>
+                        <option value="40-60">₹40-60 Lakhs</option>
+                        <option value="60-100">₹60 Lakhs - ₹1 Crore</option>
+                        <option value="100-999">Above ₹1 Crore</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg transition flex items-center justify-center mx-auto">
+                    <i class="fas fa-search mr-2"></i> Search Properties
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
     <!-- Featured Properties -->
     <section class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">

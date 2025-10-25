@@ -493,119 +493,166 @@
 
     <!-- Custom JavaScript -->
     <script>
-        // DOM elements
-        const propertyGrid = document.getElementById('property-grid');
-        const resultsCount = document.getElementById('results-count');
-        const statusFilters = document.querySelectorAll('.status-filter');
-        const typeFilter = document.getElementById('type-filter');
-        const locationFilter = document.getElementById('location-filter');
-        const bedroomsFilter = document.getElementById('bedrooms-filter');
-        const priceFilter = document.getElementById('price-filter');
-        const searchInput = document.getElementById('search-input');
-        const sortOptions = document.getElementById('sort-options');
-        const resetFiltersBtn = document.getElementById('reset-filters');
-        const prevPageBtn = document.querySelector('.prev-page');
-        const nextPageBtn = document.querySelector('.next-page');
-        const paginationNav = document.querySelector('#pagination nav');
+    // DOM elements
+    const propertyGrid = document.getElementById('property-grid');
+    const resultsCount = document.getElementById('results-count');
+    const statusFilters = document.querySelectorAll('.status-filter');
+    const typeFilter = document.getElementById('type-filter');
+    const locationFilter = document.getElementById('location-filter');
+    const bedroomsFilter = document.getElementById('bedrooms-filter');
+    const priceFilter = document.getElementById('price-filter');
+    const searchInput = document.getElementById('search-input');
+    const sortOptions = document.getElementById('sort-options');
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    const prevPageBtn = document.querySelector('.prev-page');
+    const nextPageBtn = document.querySelector('.next-page');
+    const paginationNav = document.querySelector('#pagination nav');
 
-        // Current filters and pagination
-        let currentFilters = {
-            status: 'all',
-            type: 'all',
-            location: 'all',
-            bedrooms: 'all',
-            price: 'all',
-            search: '',
-            page: 1
+    // Initialize filters from URL query parameters
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            status: params.get('status') || 'all',
+            type: params.get('type') || 'all',
+            location: params.get('location') || 'all',
+            bedrooms: params.get('bedrooms') || 'all',
+            price: params.get('price') || 'all',
+            search: params.get('search') || '',
+            sort: params.get('sort') || 'newest',
+            page: parseInt(params.get('page')) || 1
         };
+    }
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchProperties();
-            setupEventListeners();
+    // Current filters and pagination
+    let currentFilters = getQueryParams();
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeFilters();
+        fetchProperties();
+        setupEventListeners();
+    });
+
+    // Initialize filter controls based on query parameters
+    function initializeFilters() {
+        // Set status filter button
+        statusFilters.forEach(btn => {
+            btn.classList.remove('active-filter');
+            if (btn.dataset.status === currentFilters.status) {
+                btn.classList.add('active-filter');
+            }
         });
 
-        // Set up event listeners
-        function setupEventListeners() {
-            // Status filter buttons
-            statusFilters.forEach(button => {
-                button.addEventListener('click', function() {
-                    statusFilters.forEach(btn => btn.classList.remove('active-filter'));
-                    this.classList.add('active-filter');
-                    currentFilters.status = this.dataset.status;
-                    currentFilters.page = 1;
-                    fetchProperties();
-                });
-            });
+        // Set dropdown values
+        typeFilter.value = currentFilters.type;
+        locationFilter.value = currentFilters.location;
+        bedroomsFilter.value = currentFilters.bedrooms;
+        priceFilter.value = currentFilters.price;
+        searchInput.value = currentFilters.search;
+        sortOptions.value = currentFilters.sort;
+    }
 
-            // Other filter dropdowns
-            typeFilter.addEventListener('change', function() {
-                currentFilters.type = this.value;
+    // Set up event listeners
+    function setupEventListeners() {
+        // Status filter buttons
+        statusFilters.forEach(button => {
+            button.addEventListener('click', function() {
+                statusFilters.forEach(btn => btn.classList.remove('active-filter'));
+                this.classList.add('active-filter');
+                currentFilters.status = this.dataset.status;
                 currentFilters.page = 1;
+                updateURL();
                 fetchProperties();
             });
+        });
 
-            locationFilter.addEventListener('change', function() {
-                currentFilters.location = this.value;
+        // Other filter dropdowns
+        typeFilter.addEventListener('change', function() {
+            currentFilters.type = this.value;
+            currentFilters.page = 1;
+            updateURL();
+            fetchProperties();
+        });
+
+        locationFilter.addEventListener('change', function() {
+            currentFilters.location = this.value;
+            currentFilters.page = 1;
+            updateURL();
+            fetchProperties();
+        });
+
+        bedroomsFilter.addEventListener('change', function() {
+            currentFilters.bedrooms = this.value;
+            currentFilters.page = 1;
+            updateURL();
+            fetchProperties();
+        });
+
+        priceFilter.addEventListener('change', function() {
+            currentFilters.price = this.value;
+            currentFilters.page = 1;
+            updateURL();
+            fetchProperties();
+        });
+
+        // Search input with debounce
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentFilters.search = this.value.toLowerCase();
                 currentFilters.page = 1;
+                updateURL();
                 fetchProperties();
-            });
+            }, 300);
+        });
 
-            bedroomsFilter.addEventListener('change', function() {
-                currentFilters.bedrooms = this.value;
-                currentFilters.page = 1;
+        // Sort options
+        sortOptions.addEventListener('change', function() {
+            currentFilters.sort = this.value;
+            currentFilters.page = 1;
+            updateURL();
+            fetchProperties();
+        });
+
+        // Reset filters
+        resetFiltersBtn.addEventListener('click', function() {
+            resetFilters();
+        });
+
+        // Pagination
+        prevPageBtn.addEventListener('click', function() {
+            if (currentFilters.page > 1) {
+                currentFilters.page--;
+                updateURL();
                 fetchProperties();
-            });
+            }
+        });
 
-            priceFilter.addEventListener('change', function() {
-                currentFilters.price = this.value;
-                currentFilters.page = 1;
-                fetchProperties();
-            });
+        nextPageBtn.addEventListener('click', function() {
+            currentFilters.page++;
+            updateURL();
+            fetchProperties();
+        });
 
-            // Search input with debounce
-            let searchTimeout;
-            searchInput.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    currentFilters.search = this.value.toLowerCase();
-                    currentFilters.page = 1;
-                    fetchProperties();
-                }, 300);
-            });
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
 
-            // Sort options
-            sortOptions.addEventListener('change', function() {
-                currentFilters.page = 1;
-                fetchProperties();
-            });
-
-            // Reset filters
-            resetFiltersBtn.addEventListener('click', function() {
-                resetFilters();
-            });
-
-            // Pagination
-            prevPageBtn.addEventListener('click', function() {
-                if (currentFilters.page > 1) {
-                    currentFilters.page--;
-                    fetchProperties();
-                }
-            });
-
-            nextPageBtn.addEventListener('click', function() {
-                currentFilters.page++;
-                fetchProperties();
-            });
-
-            // Mobile menu toggle
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                const mobileMenu = document.getElementById('mobile-menu');
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-       
+    // Update URL with current filters
+    function updateURL() {
+        const queryParams = new URLSearchParams();
+        Object.keys(currentFilters).forEach(key => {
+            if (currentFilters[key] && currentFilters[key] !== 'all' && !(key === 'page' && currentFilters[key] === 1)) {
+                queryParams.set(key, currentFilters[key]);
+            }
+        });
+        const newURL = `${window.location.pathname}?${queryParams.toString()}`;
+        history.pushState(null, '', newURL);
+    }
 
     function fetchProperties() {
         const queryParams = new URLSearchParams({
@@ -619,7 +666,6 @@
             page: currentFilters.page
         });
 
-        // FIX: Use the correct URL with namespace
         fetch(`{% url 'properties:get_properties' %}?${queryParams}`, {
             method: 'GET',
             headers: {
@@ -645,135 +691,128 @@
         });
     }
 
-    
+    function renderProperties(properties) {
+        propertyGrid.innerHTML = '';
+        
+        if (properties.length === 0) {
+            propertyGrid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-home text-5xl text-gray-400 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">No properties found</h3>
+                    <p class="text-gray-600">Try adjusting your filters or search terms</p>
+                </div>
+            `;
+            return;
+        }
+        
+        properties.forEach(property => {
+            const propertyCard = createPropertyCard(property);
+            propertyGrid.appendChild(propertyCard);
+        });
+    }
 
-        // Render properties to the grid
-        function renderProperties(properties) {
-            propertyGrid.innerHTML = '';
-            
-            if (properties.length === 0) {
-                propertyGrid.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <i class="fas fa-home text-5xl text-gray-400 mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-700 mb-2">No properties found</h3>
-                        <p class="text-gray-600">Try adjusting your filters or search terms</p>
+    function createPropertyCard(property) {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-lg overflow-hidden shadow-md property-card';
+        
+        const badgeColor = property.status === 'for_sale' ? 'bg-yellow-600' : 'bg-green-600';
+        const badgeText = property.status === 'for_sale' ? 'For Sale' : 'For Rent';
+        
+        card.innerHTML = `
+            <div class="relative">
+                <img src="${property.image || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'}" 
+                     alt="${property.title}" class="w-full h-48 object-cover">
+                <div class="absolute top-4 right-4 ${badgeColor} text-white px-3 py-1 rounded-full font-semibold text-sm">
+                    ${badgeText}
+                </div>
+                ${property.featured ? `
+                <div class="absolute top-4 left-4 bg-blue-900 text-white px-3 py-1 rounded-full font-semibold text-sm">
+                    Featured
+                </div>
+                ` : ''}
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-blue-900 mb-2">${property.title}</h3>
+                <p class="text-gray-600 mb-4 flex items-center">
+                    <i class="fas fa-map-marker-alt text-yellow-600 mr-2"></i> ${property.location}
+                </p>
+                <div class="flex justify-between text-gray-700 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-bed text-yellow-600 mr-2"></i> ${property.bedrooms} Beds
                     </div>
-                `;
-                return;
-            }
-            
-            properties.forEach(property => {
-                const propertyCard = createPropertyCard(property);
-                propertyGrid.appendChild(propertyCard);
-            });
-        }
-
-        // Create a property card element
-        // Create a property card element
-// Create a property card element
-function createPropertyCard(property) {
-    const card = document.createElement('div');
-    card.className = 'bg-white rounded-lg overflow-hidden shadow-md property-card';
-    
-    const badgeColor = property.status === 'for_sale' ? 'bg-yellow-600' : 'bg-green-600';
-    const badgeText = property.status === 'for_sale' ? 'For Sale' : 'For Rent';
-    
-    card.innerHTML = `
-        <div class="relative">
-            <img src="${property.image || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'}" 
-                 alt="${property.title}" class="w-full h-48 object-cover">
-            <div class="absolute top-4 right-4 ${badgeColor} text-white px-3 py-1 rounded-full font-semibold text-sm">
-                ${badgeText}
-            </div>
-            ${property.featured ? `
-            <div class="absolute top-4 left-4 bg-blue-900 text-white px-3 py-1 rounded-full font-semibold text-sm">
-                Featured
-            </div>
-            ` : ''}
-        </div>
-        <div class="p-6">
-            <h3 class="text-xl font-bold text-blue-900 mb-2">${property.title}</h3>
-            <p class="text-gray-600 mb-4 flex items-center">
-                <i class="fas fa-map-marker-alt text-yellow-600 mr-2"></i> ${property.location}
-            </p>
-            <div class="flex justify-between text-gray-700 mb-4">
-                <div class="flex items-center">
-                    <i class="fas fa-bed text-yellow-600 mr-2"></i> ${property.bedrooms} Beds
+                    <div class="flex items-center">
+                        <i class="fas fa-home text-yellow-600 mr-2"></i> ${property.type.charAt(0).toUpperCase() + property.type.slice(1)}
+                    </div>
                 </div>
-                <div class="flex items-center">
-                    <i class="fas fa-home text-yellow-600 mr-2"></i> ${property.type.charAt(0).toUpperCase() + property.type.slice(1)}
+                <div class="flex justify-between items-center">
+                    <p class="text-2xl font-bold text-blue-900">${property.price}</p>
+                    <a href="/properties/${property.id}/" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition">
+                        View
+                    </a>
                 </div>
             </div>
-            <div class="flex justify-between items-center">
-                <p class="text-2xl font-bold text-blue-900">${property.price}</p>
-                <a href="/properties/${property.id}/" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition">
-                    View
-                </a>
-            </div>
-        </div>
-    `;
-    
-    return card;
-}
+        `;
+        
+        return card;
+    }
 
-        // Update pagination controls
-        function updatePagination(currentPage, totalPages, totalProperties) {
-            resultsCount.textContent = `Showing ${Math.min((currentPage - 1) * 9 + 1, totalProperties)}-${Math.min(currentPage * 9, totalProperties)} of ${totalProperties} properties`;
-            
-            prevPageBtn.disabled = currentPage === 1;
-            nextPageBtn.disabled = currentPage === totalPages;
+    function updatePagination(currentPage, totalPages, totalProperties) {
+        resultsCount.textContent = `Showing ${Math.min((currentPage - 1) * 9 + 1, totalProperties)}-${Math.min(currentPage * 9, totalProperties)} of ${totalProperties} properties`;
+        
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
 
-            // Generate page buttons
-            paginationNav.innerHTML = `
-                <button class="prev-page px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            `;
-            
-            for (let i = 1; i <= totalPages; i++) {
-                const pageBtn = document.createElement('button');
-                pageBtn.className = `px-4 py-2 rounded-lg ${i === currentPage ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition`;
-                pageBtn.textContent = i;
-                pageBtn.addEventListener('click', () => {
-                    currentFilters.page = i;
-                    fetchProperties();
-                });
-                paginationNav.appendChild(pageBtn);
-            }
-            
-            paginationNav.innerHTML += `
-                <button class="next-page px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-        }
-
-        // Reset all filters
-        function resetFilters() {
-            currentFilters = {
-                status: 'all',
-                type: 'all',
-                location: 'all',
-                bedrooms: 'all',
-                price: 'all',
-                search: '',
-                page: 1
-            };
-            
-            statusFilters.forEach(btn => {
-                btn.classList.remove('active-filter');
-                if (btn.dataset.status === 'all') {
-                    btn.classList.add('active-filter');
-                }
+        paginationNav.innerHTML = `
+            <button class="prev-page px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        `;
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `px-4 py-2 rounded-lg ${i === currentPage ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition`;
+            pageBtn.textContent = i;
+            pageBtn.addEventListener('click', () => {
+                currentFilters.page = i;
+                updateURL();
+                fetchProperties();
             });
-            
-            typeFilter.value = 'all';
-            locationFilter.value = 'all';
-            bedroomsFilter.value = 'all';
-            priceFilter.value = 'all';
-            searchInput.value = '';
-            sortOptions.value = 'newest';
-            
-            fetchProperties();
+            paginationNav.appendChild(pageBtn);
         }
-    </script>
+        
+        paginationNav.innerHTML += `
+            <button class="next-page px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        `;
+    }
+
+    function resetFilters() {
+        currentFilters = {
+            status: 'all',
+            type: 'all',
+            location: 'all',
+            bedrooms: 'all',
+            price: 'all',
+            search: '',
+            page: 1
+        };
+        
+        statusFilters.forEach(btn => {
+            btn.classList.remove('active-filter');
+            if (btn.dataset.status === 'all') {
+                btn.classList.add('active-filter');
+            }
+        });
+        
+        typeFilter.value = 'all';
+        locationFilter.value = 'all';
+        bedroomsFilter.value = 'all';
+        priceFilter.value = 'all';
+        searchInput.value = '';
+        sortOptions.value = 'newest';
+        
+        updateURL();
+        fetchProperties();
+    }
+</script>

@@ -20,7 +20,6 @@ def property_list(request):
 
 def get_properties(request):
     """AJAX endpoint for property filtering and pagination"""
-    # Get filter parameters
     status = request.GET.get('status', 'all')
     property_type = request.GET.get('type', 'all')
     location = request.GET.get('location', 'all')
@@ -30,10 +29,8 @@ def get_properties(request):
     sort_by = request.GET.get('sort', 'newest')
     page_number = int(request.GET.get('page', 1))
     
-    # Start with active properties
     properties = Property.objects.filter(is_active=True)
     
-    # Apply filters
     if status != 'all':
         properties = properties.filter(status=status)
     
@@ -79,20 +76,14 @@ def get_properties(request):
         properties = properties.order_by('-created_at')
     
     # Pagination
-    paginator = Paginator(properties, 9)  # 9 properties per page
+    paginator = Paginator(properties, 9)
     page_obj = paginator.get_page(page_number)
     
-    # Prepare property data for JSON response
     property_data = []
     for prop in page_obj:
         primary_image = prop.images.filter(is_primary=True).first()
         image_url = primary_image.image.url if primary_image and primary_image.image else 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'
-        
-        # Format price based on status
-        if prop.status == 'for_rent':
-            price_display = f'₹{prop.price:,.0f}/month'
-        else:
-            price_display = f'₹{prop.price:,.0f}'
+        price_display = f'₹{prop.price:,.0f}/month' if prop.status == 'for_rent' else f'₹{prop.price:,.0f}'
         
         property_data.append({
             'id': prop.id,
@@ -116,7 +107,6 @@ def get_properties(request):
         'has_next': page_obj.has_next(),
         'has_previous': page_obj.has_previous(),
     })
-
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, Http404
 from django.core.paginator import Paginator

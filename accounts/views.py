@@ -61,14 +61,15 @@ def terminate_all_sessions(request):
 def home(request):
     # Featured properties
     featured_properties = Property.objects.filter(featured=True).order_by('-created_at')[:6]
-
-
     # Latest blog posts (published only)
     latest_posts = BlogPost.objects.filter(status='published').order_by('-published_date')[:3]
+    # Locations for the search form
+    locations = Property.objects.filter(is_active=True).values_list('location', flat=True).distinct()
 
     context = {
         'featured_properties': featured_properties,
         'latest_posts': latest_posts,
+        'locations': sorted([loc for loc in locations if loc]),
     }
     return render(request, 'accounts/home.html', context)
 
