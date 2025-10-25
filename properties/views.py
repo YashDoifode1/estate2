@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Property, SavedProperty
 
 # Create your views here.
 from django.shortcuts import render, get_object_or_404
@@ -134,6 +137,9 @@ def get_client_ip(request):
 def property_detail(request, property_id):
     """Property detail page"""
     property_obj = get_object_or_404(Property, id=property_id, is_active=True)
+    is_saved = False
+    if request.user.is_authenticated:
+        is_saved = SavedProperty.objects.filter(user=request.user, property=property_obj).exists()
 
     # Track view
     ip_address = get_client_ip(request)
@@ -166,6 +172,7 @@ def property_detail(request, property_id):
         'property': property_obj,
         'similar_properties': similar_properties,
         'form': form,
+        'is_saved': is_saved,
     }
     return render(request, 'properties/property_detail.html', context)
 
@@ -349,3 +356,52 @@ def contact(request):
         'office_location': office_location,
     }
     return render(request, 'properties/contact.html', context)
+
+
+
+
+@login_required
+def toggle_save_property(request, property_id):
+    """Add or remove a property from saved list"""
+    try:
+        property_obj = Property.objects.get(id=property_id)
+    except Property.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Property not found.'}, status=404)
+
+    saved, created = SavedProperty.objects.get_or_create(user=request.user, property=property_obj)
+
+    if not created:
+        # Already saved, so unsave it
+        saved.delete()
+        return JsonResponse({'success': True, 'saved': False, 'message': 'Property removed from saved list.'})
+    else:
+        return JsonResponse({'success': True, 'saved': True, 'message': 'Property saved successfully!'})
+
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import SavedProperty, Property
+
+@login_required
+def toggle_save(request, property_id):
+    property_obj = Property.objects.get(id=property_id)
+    saved, created = SavedProperty.objects.get_or_create(
+        user=request.user,
+        property=property_obj
+    )
+
+    if not created:
+        saved.delete()
+        is_saved = False
+        message = "Property removed from saved list."
+    else:
+        is_saved = True
+        message = "Property saved successfully!"
+
+    # Optional: Send confirmation email here if you want
+    # send_mail(...)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({"success": True, "is_saved": is_saved, "message": message})
+    else:
+        return redirect('properties:property_detail', property_id)

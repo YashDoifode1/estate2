@@ -98,7 +98,7 @@ class LoginSession(models.Model):
         return f"{self.user.email} - {self.device}"
 
 class SavedProperty(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='saved_properties')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="account_saved_properties")
     property = models.ForeignKey('properties.Property', on_delete=models.CASCADE)
     saved_at = models.DateTimeField(auto_now_add=True)
     

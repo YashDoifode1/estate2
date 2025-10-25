@@ -1,7 +1,6 @@
+from django.conf import settings
 from django.db import models
 
-# Create your models here.
-# properties/models.py
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
@@ -216,3 +215,14 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.subject}"
+    
+class SavedProperty(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="property_saved_properties")
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name="saved_by")
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'property')
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.property.title}"

@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:property_id>/', views.property_detail, name='property_detail'),
     path('<int:property_id>/schedule-visit/', views.schedule_visit, name='schedule_visit'),
     path('contact/', views.contact_view, name='contact'),
+    path('<int:property_id>/toggle-save/', views.toggle_save, name='toggle_save'),  # 👈 Add this
 ]
