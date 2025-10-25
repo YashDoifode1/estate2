@@ -115,38 +115,60 @@ from .models import Property, Amenity, PropertyView
 from .forms import ScheduleVisitForm
 import json
 
+# views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Property, PropertyView
+from .forms import ScheduleVisitForm
+from .utils import get_ip_info
+
+def get_client_ip(request):
+    """Handles proxies (X-Forwarded-For) properly"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
 def property_detail(request, property_id):
     """Property detail page"""
-    try:
-        property_obj = get_object_or_404(Property, id=property_id, is_active=True)
-    except Property.DoesNotExist:
-        raise Http404("Property does not exist or is not active")
-    
+    property_obj = get_object_or_404(Property, id=property_id, is_active=True)
+
     # Track view
-    if request.user.is_authenticated:
-        ip_address = request.META.get('REMOTE_ADDR')
-        user_agent = request.META.get('HTTP_USER_AGENT', '')
-        PropertyView.objects.create(
-            property=property_obj,
-            ip_address=ip_address,
-            user_agent=user_agent
-        )
-    
+    ip_address = get_client_ip(request)
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+
+    ip_data = get_ip_info(ip_address)
+
+    PropertyView.objects.create(
+        property=property_obj,
+        ip_address=ip_address,
+        user_agent=user_agent,
+        country=ip_data.get('country'),
+        region=ip_data.get('region'),
+        city=ip_data.get('city'),
+        latitude=ip_data.get('latitude'),
+        longitude=ip_data.get('longitude'),
+        isp=ip_data.get('isp'),
+    )
+
     # Get similar properties
     similar_properties = Property.objects.filter(
         is_active=True,
         type=property_obj.type,
         status=property_obj.status
     ).exclude(id=property_obj.id)[:3]
-    
+
     form = ScheduleVisitForm()
-    
+
     context = {
         'property': property_obj,
         'similar_properties': similar_properties,
         'form': form,
     }
     return render(request, 'properties/property_detail.html', context)
+
 
 from django.core.mail import send_mail
 from django.http import JsonResponse

@@ -180,14 +180,29 @@ class NearbyPlace(models.Model):
     def __str__(self):
         return f"{self.name} near {self.property.title}"
 
+# models.py
+from django.db import models
+
 class PropertyView(models.Model):
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='views')
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='views')
     ip_address = models.GenericIPAddressField()
     user_agent = models.TextField(blank=True)
     viewed_at = models.DateTimeField(auto_now_add=True)
-    
+
+    # New fields for IP geolocation
+    country = models.CharField(max_length=100, blank=True, null=True)
+    region = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    isp = models.CharField(max_length=150, blank=True, null=True)
+
     class Meta:
         ordering = ['-viewed_at']
+
+    def __str__(self):
+        return f"{self.property.title} viewed from {self.ip_address}"
+
 
 from django.db import models
 
