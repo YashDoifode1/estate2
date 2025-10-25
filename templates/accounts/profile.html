@@ -12,7 +12,7 @@
                 <!-- Profile Picture -->
                 <div class="mb-6 md:mb-0 md:mr-8" data-aos="fade-right">
                     <div class="relative">
-                       <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}?{{ user.profile.updated_at.timestamp }}{% else %}https://randomuser.me/api/portraits/men/75.jpg{% endif %}" 
+                       <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}?{{ user.profile.updated_at.timestamp }}{% else %}https://tse3.mm.bing.net/th/id/OIP.4czxjq7uqtqUzrUmEbp16AAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3{% endif %}" 
      alt="{{ user.get_full_name }}" class="w-32 h-32 rounded-full profile-pic">
                         <form id="profile-pic-form" method="POST" action="{% url 'upload_profile_picture' %}" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -399,6 +399,7 @@
             </div>
         </div>
     </section>
+    {% include 'includes/footer.html' %}
 
    
 

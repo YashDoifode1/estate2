@@ -1,9 +1,34 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}DreamHomes Realty - Your trusted partner for buying, renting, and selling properties in Nagpur, Maharashtra.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}real estate, Nagpur, properties, buy home, rent home, DreamHomes Realty, apartments, villas, commercial properties{% endblock %}">
+    <meta name="author" content="DreamHomes Realty">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:title" content="{% block og_title %}DreamHomes Realty | Real Estate in Nagpur{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Find your dream home in Nagpur with DreamHomes Realty. Explore properties for sale and rent.{% endblock %}">
+    <meta property="og:image" content="{% static 'images/og-image.jpg' %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}DreamHomes Realty | Real Estate in Nagpur{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Find your dream home in Nagpur with DreamHomes Realty. Explore properties for sale and rent.{% endblock %}">
+    <meta name="twitter:image" content="{% static 'images/og-image.jpg' %}">
+
     <title>{% block title %}DreamHomes Realty{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -143,10 +168,35 @@
             color: #6b7280;
         }
 
-        input.error {
+        .input.error {
             border-color: #ef4444;
         }
     </style>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "DreamHomes Realty",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "logo": "{% static 'images/logo.png' %}",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+91-9876543210",
+            "contactType": "customer service",
+            "email": "info@dreamhomesrealty.com"
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "123 Civil Lines",
+            "addressLocality": "Nagpur",
+            "addressRegion": "Maharashtra",
+            "postalCode": "440001",
+            "addressCountry": "IN"
+        }
+    }
+    </script>
 </head>
 <body class="font-sans bg-gray-50">
     <!-- Include Header -->
@@ -159,7 +209,7 @@
     </main>
 
     <!-- Include Footer -->
-    
+    {% include 'includes/footer.html' %}
 
     <!-- JS Libraries -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
