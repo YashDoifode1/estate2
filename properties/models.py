@@ -36,6 +36,15 @@ class PropertyType(models.Model):
 
 
 class Property(models.Model):
+
+    
+    @property
+    def image_url(self):
+        """Return the URL of the primary image or a default image if none exists."""
+        primary = self.images.filter(is_primary=True).first()
+        if primary and primary.image:
+            return primary.image.url
+        return 'https://via.placeholder.com/300x200?text=No+Image'
     # 🔹 Define all choices first
     STATUS_CHOICES = [
         ('for_sale', 'For Sale'),
@@ -120,6 +129,20 @@ class Property(models.Model):
     
     def __str__(self):
         return f"{self.property_id} - {self.title}"
+    
+    @property
+    def primary_image_url(self):
+        primary = self.images.filter(is_primary=True).first()
+        if primary and primary.image:
+            return primary.image.url
+        return 'https://via.placeholder.com/600x400?text=No+Image'
+
+    @property
+    def gallery_images(self):
+        """Return all images ordered by `order` field or any logic."""
+        return self.images.all().order_by('order')
+    
+    
     
     @property
     def is_featured(self):

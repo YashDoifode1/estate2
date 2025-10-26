@@ -38,15 +38,28 @@
                 </div>
                 
                 <!-- Image Gallery -->
-                <div class="mb-8">
-                    <div class="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fas fa-home text-6xl text-blue-900 mb-4"></i>
-                            <p class="text-gray-700 text-xl">Property Images</p>
-                            <p class="text-gray-500">Image gallery would be displayed here</p>
-                        </div>
-                    </div>
+                <!-- Image Gallery -->
+<div class="mb-8">
+    {% if property.gallery_images %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for img in property.gallery_images %}
+                <div class="bg-gray-200 h-64 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img src="{{ img.image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover">
                 </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Placeholder if no images -->
+        <div class="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
+            <div class="text-center">
+                <i class="fas fa-home text-6xl text-blue-900 mb-4"></i>
+                <p class="text-gray-700 text-xl">Property Images</p>
+                <p class="text-gray-500">Image gallery would be displayed here</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
                 
                 <!-- Property Title & Price -->
                 <div class="mb-8">
@@ -463,6 +476,8 @@
         setTimeout(() => toast.remove(), 2500);
     }
 </script>
+
+
 
 <style>
 @keyframes fadeIn {
