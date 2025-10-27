@@ -1,4 +1,5 @@
 from django.contrib import admin
+from .models import SavedProperty
 from django.utils.html import format_html
 from .models import (
     Property,
@@ -158,3 +159,10 @@ class PropertyViewAdmin(admin.ModelAdmin):
     readonly_fields = ("property", "ip_address", "user_agent", "viewed_at")
     search_fields = ("property__title", "ip_address")
     ordering = ("-viewed_at",)
+
+
+@admin.register(SavedProperty)
+class SavedPropertyAdmin(admin.ModelAdmin):
+    list_display = ('user', 'property', 'saved_at')
+    list_filter = ('saved_at',)
+    search_fields = ('user__email', 'property__title')

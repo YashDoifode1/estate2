@@ -64,3 +64,25 @@ coverage.xml
 
 # Others
 *.bak
+
+
+# Environment variables
+.env
+*.env
+
+# Database
+*.sqlite3
+*.db
+
+# Media
+/media/
+!/media/.keep
+
+# Static files
+/staticfiles/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/

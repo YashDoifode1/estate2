@@ -5,6 +5,20 @@ from accounts import views as account_views
 from properties.views import contact  # Update this import
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path, include
+from django.contrib.sitemaps.views import sitemap
+from django.views.generic.base import TemplateView
+from .sitemap import StaticViewSitemap, PropertySitemap, BlogSitemap
+import os
+from django.conf import settings
+
+# Sitemaps configuration
+sitemaps = {
+    'static': StaticViewSitemap,
+    'properties': PropertySitemap,
+    'blog': BlogSitemap,
+}
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,3 +47,13 @@ urlpatterns = [
     path('settings/', account_views.settings, name='settings'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    from django.views.static import serve
+    urlpatterns += [
+        path('robots.txt', serve, {
+            'path': 'robots.txt',
+            'document_root': settings.BASE_DIR,
+            'content_type': 'text/plain'
+        }),
+    ]

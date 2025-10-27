@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: {{ scheme }}://{{ domain }}{% url 'sitemap' %}
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /media/private/
+
+# Allow search engines for public content
+Allow: /properties/
+Allow: /blog/
+Allow: /agents/
+
+# Development vs Production
+{% if debug %}
+# Development environment - discourage crawling
+Disallow: /
+User-agent: *
+Crawl-delay: 10
+{% else %}
+# Production environment - allow crawling
+User-agent: *
+Allow: /
+Crawl-delay: 1
+{% endif %}

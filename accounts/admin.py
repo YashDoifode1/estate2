@@ -27,17 +27,17 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'phone_number', 'location')
     search_fields = ('user__email', 'user__first_name', 'user__last_name', 'location')
 
-@admin.register(SavedProperty)
-class SavedPropertyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'property', 'saved_at')
-    list_filter = ('saved_at',)
-    search_fields = ('user__email', 'property__title')
+# @admin.register(SavedProperty)
+# class SavedPropertyAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'property', 'saved_at')
+#     list_filter = ('saved_at',)
+#     search_fields = ('user__email', 'property__title')
 
-@admin.register(Consultation)
-class ConsultationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'agent', 'title', 'date', 'time', 'status')
-    list_filter = ('status', 'mode', 'date')
-    search_fields = ('user__email', 'agent__email', 'title')
+# @admin.register(Consultation)
+# class ConsultationAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'agent', 'title', 'date', 'time', 'status')
+#     list_filter = ('status', 'mode', 'date')
+#     search_fields = ('user__email', 'agent__email', 'title')
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):

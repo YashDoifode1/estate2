@@ -12,6 +12,9 @@ from .models import CustomUser, UserProfile, UserPreferences, NotificationSettin
 from .forms import CustomAuthenticationForm, CustomUserCreationForm, ProfilePictureForm, UserProfileForm, PasswordChangeForm, PreferencesForm, NotificationSettingsForm, PrivacySettingsForm, DeleteAccountForm, NewsletterForm, ProfileForm
 from django.shortcuts import render
 from properties.models import Property
+from properties.models import SavedProperty
+from django.db import transaction
+
 from blog.models import BlogPost  # Correct import
 
 
@@ -95,7 +98,7 @@ def settings_view(request):
     }
     return render(request, 'accounts/settings.html', context)
 
-from django.db import transaction
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -336,7 +339,13 @@ def register_view(request):
 
 @login_required
 def profile_view(request):
-    saved_properties = request.user.saved_properties.select_related('property').all()
+    from properties.models import SavedProperty  # import from properties app
+
+    saved_properties = (
+        request.user.property_saved_properties
+        .select_related('property')
+        .all()
+    )
     consultations = request.user.consultations.select_related('agent').all()
     notifications = request.user.notifications.filter(is_read=False)
     sessions = LoginSession.objects.filter(user=request.user).order_by('-last_active')
@@ -350,6 +359,7 @@ def profile_view(request):
         'newsletter_form': NewsletterForm(),
     }
     return render(request, 'accounts/profile.html', context)
+
 
 
 @login_required
@@ -609,29 +619,55 @@ def logout_view(request):
     return redirect('home')
 
 # Profile Views
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import LoginSession
+     # if you have a Company model
+from properties.models import SavedProperty
+from .forms import NewsletterForm
+
 @login_required
 def profile_view(request):
+    """Show user's profile page with saved properties, consultations, and notifications."""
+
+    # ✅ Get saved properties from the properties app
     try:
-        saved_properties = request.user.saved_properties.select_related('property').all()
-    except:
+        saved_properties = (
+            request.user.property_saved_properties
+            .select_related("property")
+            .all()
+        )
+    except Exception:
         saved_properties = []
-    
+
+    # ✅ Get consultations (if relationship exists)
     try:
-        consultations = request.user.consultations.select_related('agent').all()
-    except:
+        consultations = request.user.consultations.select_related("agent").all()
+    except Exception:
         consultations = []
-    
+
+    # ✅ Get unread notifications
     try:
         notifications = request.user.notifications.filter(is_read=False)
-    except:
+    except Exception:
         notifications = []
-    
+
+    # ✅ Get user sessions
+    sessions = LoginSession.objects.filter(user=request.user).order_by("-last_active")
+
+    # ✅ Context for template
     context = {
-        'saved_properties': saved_properties,
-        'consultations': consultations,
-        'notifications': notifications,
+        
+        "saved_properties": saved_properties,
+        "consultations": consultations,
+        "notifications": notifications,
+        "sessions": sessions,
+        "newsletter_form": NewsletterForm(),
     }
-    return render(request, 'accounts/profile.html', context)
+
+    return render(request, "accounts/profile.html", context)
+
+
 
 @login_required
 def settings_view(request):

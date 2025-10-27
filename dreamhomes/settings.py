@@ -1,37 +1,58 @@
+"""
+DreamHomes Realty - Django Settings
+Windows-compatible development version
+"""
+
 import os
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# =============================================================================
+# CORE SECURITY SETTINGS
+# =============================================================================
 
-#ENCRYTION ANOTHER SECURITY FEATURE
-SECRET_KEY = 'your-secret-key-here'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-#TO GET APIS REQUEST ONLY FROM SECURITY FEATURES
-ALLOWED_HOSTS = []
+# Hosts/domain names that this Django site can serve
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# =============================================================================
+# APPLICATION DEFINITION
+# =============================================================================
 
-#INSTALL APPS + DEFUALT APPS
 INSTALLED_APPS = [
-    "jazzmin",
-
+    'jazzmin',  # Admin interface
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',  # SEO: Sitemap support
+    'django.contrib.humanize',  # Better template formatting
+    
+    # Local apps
     'accounts',
     'properties',
     'agents',
     'blog',
 ]
 
-# YET TO UNDERSTAND MUST STUDY ON YOUTUBE 
+# =============================================================================
+# MIDDLEWARE CONFIGURATION
+# =============================================================================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -40,10 +61,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# =============================================================================
+# URL & WSGI CONFIGURATION
+# =============================================================================
+
 ROOT_URLCONF = 'dreamhomes.urls'
+WSGI_APPLICATION = 'dreamhomes.wsgi.application'
 
+# =============================================================================
+# TEMPLATE CONFIGURATION
+# =============================================================================
 
-# SETTING UP TEMPLATE DIRECTORY
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -61,7 +89,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dreamhomes.wsgi.application'
+# =============================================================================
+# DATABASE CONFIGURATION (SQLite for Windows development)
+# =============================================================================
 
 DATABASES = {
     'default': {
@@ -69,6 +99,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# =============================================================================
+# PASSWORD VALIDATION
+# =============================================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -85,147 +119,129 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# =============================================================================
+# INTERNATIONALIZATION
+# =============================================================================
 
-# Jazzmin configuration
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Asia/Kolkata'
+USE_I18N = True
+USE_TZ = True
+
+# =============================================================================
+# STATIC & MEDIA FILES
+# =============================================================================
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# WhiteNoise for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# =============================================================================
+# CUSTOM USER MODEL
+# =============================================================================
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# =============================================================================
+# AUTHENTICATION & SESSION SETTINGS
+# =============================================================================
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Security settings for production (disabled in development)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# =============================================================================
+# EMAIL CONFIGURATION (Development - Console backend)
+# =============================================================================
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@dreamhomesrealty.com'
+
+# =============================================================================
+# JAZZMIN ADMIN CONFIGURATION
+# =============================================================================
+
 JAZZMIN_SETTINGS = {
-
-    # BASIC SITE TEMPLATE APP 
     "site_title": "DreamHomes Admin",
     "site_header": "DreamHomes Realty",
     "site_brand": "DreamHomes",
-    "site_logo": "images/favicon.jpeg",  # optional: upload in static/images/
+    # "site_logo": "images/favicon.jpeg",
     "site_icon": "images/favicon.ico",
     "welcome_sign": "Welcome to DreamHomes Admin Dashboard",
-    "copyright": "DreamHomes Realty © 2025",
-    "search_model": "properties.Property",  # Search bar will prioritize Property
+    "copyright": "DreamHomes Realty",
+    "search_model": "properties.Property",
     "user_avatar": None,
 
-
-    # Top navigation bar links
     "topmenu_links": [
         {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"app": "properties"},
         {"app": "agents"},
         {"app": "blog"},
-        {"app": "contact"},
     ],
 
-    # Sidebar customization
     "show_sidebar": True,
     "navigation_expanded": True,
+    "order_with_respect_to": ["properties", "agents", "blog", "auth"],
 
-    # App order
-    "order_with_respect_to": ["properties", "agents", "blog", "contact", "auth"],
-
-    # Hide or reorder certain apps/models
-    "hide_apps": [],
-    "hide_models": [],
-
-    # Custom icons per model
     "icons": {
-        # Auth
         "auth.User": "fas fa-user",
         "auth.Group": "fas fa-users-cog",
-
-        # Blog
         "blog.BlogPost": "fas fa-newspaper",
-        "blog.BlogCategory": "fas fa-tags",
-        "blog.BlogTag": "fas fa-tag",
-        "blog.BlogComment": "fas fa-comments",
-
-        # Properties App
-         "properties.Property": "fas fa-home",
-    "properties.PropertyType": "fas fa-building",
-    "properties.PropertyImage": "fas fa-image",
-    "properties.Amenity": "fas fa-list",
-    "properties.PropertyAmenity": "fas fa-check-circle",
-    "properties.NearbyPlace": "fas fa-map-marker-alt",
-    "properties.PropertyView": "fas fa-eye",
-
-        # Agents
+        "properties.Property": "fas fa-home",
+        "properties.PropertyType": "fas fa-building",
+        "properties.PropertyImage": "fas fa-image",
+        "properties.Amenity": "fas fa-list",
         "agents.Agent": "fas fa-user-tie",
-
-        # Contact Messages
-        "contact.ContactMessage": "fas fa-envelope",
     },
 
-    # UI features
     "related_modal_active": True,
     "show_ui_builder": True,
 }
 
-# Optional UI theme tweaks
 JAZZMIN_UI_TWEAKS = {
-    "theme": "flatly",  # Other great ones: "cosmo", "darkly", "lumen"
-    "navbar_small_text": False,
-    "footer_small_text": True,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "accent": "blue",
+    "theme": "flatly",
     "navbar": "navbar-dark bg-primary",
-    "footer": "footer-dark bg-dark",
     "sidebar_fixed": True,
-    "layout_boxed": False,
-    "theme_switcher": True,
-    "actions_sticky_top": True,
 }
 
+# =============================================================================
+# CACHE CONFIGURATION (Simple memory cache for development)
+# =============================================================================
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
-LOGOUT_REDIRECT_URL = 'home'  # or 'login', depending on your flow
+# =============================================================================
+# SEO & SITE SETTINGS
+# =============================================================================
 
-#BASIC CONFIG
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
+SITE_NAME = "DreamHomes Realty"
+SITE_DESCRIPTION = "Find your dream home with DreamHomes Realty"
+SITE_KEYWORDS = "real estate, properties, homes for sale, apartment rental"
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Custom user model
-#REALTED TO VIEWS OR MODELS MUST CONSIDER REVIEWING 
-AUTH_USER_MODEL = 'accounts.CustomUser'
-
-# Login/Logout URLs
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
-LOGIN_URL = 'login'
+# =============================================================================
+# DEFAULT AUTO FIELD
+# =============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# Email Configuration
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-# EMAIL_HOST = 'localhost'
-# EMAIL_PORT = 1025
-# EMAIL_USE_TLS = False
-# DEFAULT_FROM_EMAIL = 'noreply@dreamhomesrealty.com'
-
-# Remove CONTACT_EMAIL if it's causing issues, or make sure it's defined
-# CONTACT_EMAIL = 'contact@dreamhomesrealty.com'
-
-# For production, use:
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'yashdoifode1439@gmail.com'
-EMAIL_HOST_PASSWORD = 'mvub juzg shso fhpa'
-DEFAULT_FROM_EMAIL = 'your-email@example.com'
-
-# settings.py
-SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-
-# Production settings (to be implemented)
-# 
-
-# MUST ASK GPTS TO INCLUDE SECURITY AND BRIEF INFO ABOUT IT TO ADDS ITS LIKE HTACCESS AND ENV VARIABLE 
-# MUST ASK ABOUT ROBOT.TXT AND OTHER SEO OPTIONS 
-# MUST ASK REGARDING SPIDERS ETC

@@ -424,3 +424,13 @@
             console.log('Profile page loaded successfully');
         });
     </script>
+
+
+
+    from accounts.models import Notification
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+user = User.objects.get(email="yashdoifode1439@gmail.com")
+
+print(Notification.objects.filter(user=user, is_read=False))
