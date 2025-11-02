@@ -434,3 +434,15 @@ User = get_user_model()
 user = User.objects.get(email="yashdoifode1439@gmail.com")
 
 print(Notification.objects.filter(user=user, is_read=False))
+
+
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = 'your-secret-key-here'
+
+DEBUG = True
+
+ALLOWED_HOSTS = ['dreamhousenagpur.pythonanywhere.com']

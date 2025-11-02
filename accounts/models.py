@@ -152,17 +152,34 @@ class Notification(models.Model):
 
 # accounts/models.py
 
-# dont touch it
-# class UserProfile(models.Model):
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-#     phone_number = models.CharField(max_length=15, blank=True, null=True)
-#     location = models.CharField(max_length=255, blank=True, null=True)
-#     bio = models.TextField(blank=True, null=True)
+# <<<<<<< HEAD
+# # dont touch it
+# # class UserProfile(models.Model):
+# #     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+# #     phone_number = models.CharField(max_length=15, blank=True, null=True)
+# #     location = models.CharField(max_length=255, blank=True, null=True)
+# #     bio = models.TextField(blank=True, null=True)
     
-#     # New email notification preferences
-#     notify_property_updates = models.BooleanField(default=True)
-#     notify_blog_updates = models.BooleanField(default=True)
-#     notify_account_alerts = models.BooleanField(default=True)
+# #     # New email notification preferences
+# #     notify_property_updates = models.BooleanField(default=True)
+# #     notify_blog_updates = models.BooleanField(default=True)
+# #     notify_account_alerts = models.BooleanField(default=True)
 
-#     def __str__(self):
-#         return f"{self.user.email} Profile"
+# #     def __str__(self):
+# #         return f"{self.user.email} Profile"
+# =======
+# dont touch it 
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    
+    # New email notification preferences
+    notify_property_updates = models.BooleanField(default=True)
+    notify_blog_updates = models.BooleanField(default=True)
+    notify_account_alerts = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.user.email} Profile"
+# >>>>>>> dec4102768110382c0bffe461d4d594d4d4a0969
