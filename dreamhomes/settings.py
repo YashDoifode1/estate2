@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'false'
 
 # Hosts/domain names that this Django site can serve
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -83,7 +83,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dreamhomes.context_processors.current_year', 
+                'dreamhomes.context_processors.current_year',
+                'dreamhomes.context_processors.company_info', 
             ],
         },
     },
@@ -245,3 +246,20 @@ SITE_KEYWORDS = "real estate, properties, homes for sale, apartment rental"
 # =============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =============================================================================
+# FOOTER COMPANY INFO (Loaded from environment variables)
+# =============================================================================
+
+COMPANY_INFO = {
+    "NAME": os.getenv("COMPANY_NAME", "DreamHomes Realty"),
+    "TAGLINE": os.getenv("COMPANY_TAGLINE", "Your trusted partner in real estate."),
+    "ADDRESS": os.getenv("COMPANY_ADDRESS", "Nagpur, India"),
+    "PHONE": os.getenv("COMPANY_PHONE", "+91 98765 43210"),
+    "EMAIL": os.getenv("COMPANY_EMAIL", "info@dreamhomesrealty.com"),
+    "HOURS": os.getenv("COMPANY_HOURS", "Mon - Sat: 9:00 AM - 7:00 PM"),
+    "FACEBOOK": os.getenv("FACEBOOK_URL", "#"),
+    "TWITTER": os.getenv("TWITTER_URL", "#"),
+    "INSTAGRAM": os.getenv("INSTAGRAM_URL", "#"),
+    "LINKEDIN": os.getenv("LINKEDIN_URL", "#"),
+}

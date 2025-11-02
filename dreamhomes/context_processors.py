@@ -27,3 +27,10 @@ def scheme_and_domain(request):
         'scheme': request.scheme,
         'domain': get_current_site(request).domain,
     }
+
+
+
+from django.conf import settings
+
+def company_info(request):
+    return {"COMPANY_INFO": settings.COMPANY_INFO}
