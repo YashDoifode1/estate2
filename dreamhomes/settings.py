@@ -1,44 +1,38 @@
 """
-DreamHomes Realty - Django Settings
-Windows-compatible development version
+DreamHomes Realty - Simplified Django Settings
+(No .env and no extra security layers)
 """
 
 import os
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# =============================================================================
+# BASE SETTINGS
+# =============================================================================
+SECURE_SSL_REDIRECT = False
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# =============================================================================
-# CORE SECURITY SETTINGS
-# =============================================================================
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'false'
-
-# Hosts/domain names that this Django site can serve
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+SECRET_KEY = get_random_secret_key()
+DEBUG = True
+ALLOWED_HOSTS = ["*"]
 
 # =============================================================================
-# APPLICATION DEFINITION
+# APPLICATIONS
 # =============================================================================
 
 INSTALLED_APPS = [
-    'jazzmin',  # Admin interface
-    
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sitemaps',  # SEO: Sitemap support
-    'django.contrib.humanize',  # Better template formatting
-    
+    'django.contrib.sitemaps',
+    'django.contrib.humanize',
+
     # Local apps
     'accounts',
     'properties',
@@ -47,12 +41,12 @@ INSTALLED_APPS = [
 ]
 
 # =============================================================================
-# MIDDLEWARE CONFIGURATION
+# MIDDLEWARE
 # =============================================================================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -61,15 +55,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# =============================================================================
-# URL & WSGI CONFIGURATION
-# =============================================================================
-
 ROOT_URLCONF = 'dreamhomes.urls'
 WSGI_APPLICATION = 'dreamhomes.wsgi.application'
 
 # =============================================================================
-# TEMPLATE CONFIGURATION
+# TEMPLATES
 # =============================================================================
 
 TEMPLATES = [
@@ -84,14 +74,14 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'dreamhomes.context_processors.current_year',
-                'dreamhomes.context_processors.company_info', 
+                'dreamhomes.context_processors.company_info',
             ],
         },
     },
 ]
 
 # =============================================================================
-# DATABASE CONFIGURATION (SQLite for Windows development)
+# DATABASE
 # =============================================================================
 
 DATABASES = {
@@ -102,23 +92,13 @@ DATABASES = {
 }
 
 # =============================================================================
-# PASSWORD VALIDATION
+# AUTHENTICATION
 # =============================================================================
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+AUTH_USER_MODEL = 'accounts.CustomUser'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 # =============================================================================
 # INTERNATIONALIZATION
@@ -130,90 +110,53 @@ USE_I18N = True
 USE_TZ = True
 
 # =============================================================================
-# STATIC & MEDIA FILES
+# STATIC & MEDIA
 # =============================================================================
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# WhiteNoise for static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # =============================================================================
-# CUSTOM USER MODEL
-# =============================================================================
-
-AUTH_USER_MODEL = 'accounts.CustomUser'
-
-# =============================================================================
-# AUTHENTICATION & SESSION SETTINGS
-# =============================================================================
-
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
-
-SESSION_COOKIE_AGE = 1209600  # 2 weeks
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
-# Security settings for production (disabled in development)
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# =============================================================================
-# EMAIL CONFIGURATION (Development - Console backend)
+# EMAIL (Console for testing)
 # =============================================================================
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@dreamhomesrealty.com'
 
 # =============================================================================
-# JAZZMIN ADMIN CONFIGURATION
+# COMPANY INFO (Hardcoded for simplicity)
+# =============================================================================
+
+COMPANY_INFO = {
+    "NAME": "DreamHomes Realty",
+    "TAGLINE": "Your trusted partner in real estate.",
+    "ADDRESS": "123 Civil Lines, Nagpur, Maharashtra 440001",
+    "PHONE": "+91 98765 43210",
+    "EMAIL": "info@dreamhomesrealty.com",
+    "HOURS": "Mon - Sat: 9:00 AM - 7:00 PM",
+    "FACEBOOK": "https://facebook.com/dreamhomes",
+    "TWITTER": "https://twitter.com/dreamhomes",
+    "INSTAGRAM": "https://instagram.com/dreamhomes",
+    "LINKEDIN": "https://linkedin.com/company/dreamhomes",
+}
+
+# =============================================================================
+# JAZZMIN ADMIN SETTINGS
 # =============================================================================
 
 JAZZMIN_SETTINGS = {
     "site_title": "DreamHomes Admin",
     "site_header": "DreamHomes Realty",
     "site_brand": "DreamHomes",
-    # "site_logo": "images/favicon.jpeg",
     "site_icon": "images/favicon.ico",
     "welcome_sign": "Welcome to DreamHomes Admin Dashboard",
     "copyright": "DreamHomes Realty",
     "search_model": "properties.Property",
-    "user_avatar": None,
-
-    "topmenu_links": [
-        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"app": "properties"},
-        {"app": "agents"},
-        {"app": "blog"},
-    ],
-
-    "show_sidebar": True,
-    "navigation_expanded": True,
-    "order_with_respect_to": ["properties", "agents", "blog", "auth"],
-
-    "icons": {
-        "auth.User": "fas fa-user",
-        "auth.Group": "fas fa-users-cog",
-        "blog.BlogPost": "fas fa-newspaper",
-        "properties.Property": "fas fa-home",
-        "properties.PropertyType": "fas fa-building",
-        "properties.PropertyImage": "fas fa-image",
-        "properties.Amenity": "fas fa-list",
-        "agents.Agent": "fas fa-user-tie",
-    },
-
-    "related_modal_active": True,
-    "show_ui_builder": True,
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -223,43 +166,80 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # =============================================================================
-# CACHE CONFIGURATION (Simple memory cache for development)
+# COMPANY INFO (Hardcoded for simplicity)
 # =============================================================================
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-    }
+# =============================================================================
+# COMPANY INFO (Extended)
+# =============================================================================
+
+COMPANY_INFO = {
+    "NAME": "DreamHomes Realty",
+    "TAGLINE": "Your trusted partner in real estate.",
+    "ADDRESS": "123 Real Estate Avenue, Civil Lines, Nagpur, Maharashtra 440001",
+    "PHONES": ["+91 98765 43210", "+91 71234 56789"],
+    "EMAILS": ["info@dreamhomesrealty.com", "sales@dreamhomesrealty.com"],
+    "HOURS": {
+        "WEEKDAYS": "Monday - Friday: 9:00 AM - 6:00 PM",
+        "SATURDAY": "Saturday: 10:00 AM - 4:00 PM",
+        "SUNDAY": "Sunday: Closed",
+    },
+    "EMERGENCY_PHONE": "+91 98765 43210",
+    "OFFICE_LOCATION": {
+        "lat": 21.1458,
+        "lng": 79.0882,
+        "heading": 210,
+        "pitch": 5,
+        "fov": 80,
+    },
+    "TEAM_MEMBERS": [
+        {
+            "name": "Rahul Sharma",
+            "position": "Founder & CEO",
+            "description": "Leading DreamHomes Realty with over 15 years of experience in the Nagpur real estate market.",
+            "image_url": "https://randomuser.me/api/portraits/men/45.jpg",
+            "email": "rahul@dreamhomesrealty.com",
+            "linkedin_url": "https://linkedin.com/in/rahulsharma",
+            "twitter_url": "https://twitter.com/rahulsharma",
+        },
+        {
+            "name": "Priya Deshmukh",
+            "position": "Sales Director",
+            "description": "Expert in residential and luxury property sales with a client-first approach.",
+            "image_url": "https://randomuser.me/api/portraits/women/65.jpg",
+            "email": "priya@dreamhomesrealty.com",
+            "linkedin_url": "https://linkedin.com/in/priyadeshmukh",
+            "twitter_url": "https://twitter.com/priyadeshmukh",
+        },
+        {
+            "name": "Arjun Mehta",
+            "position": "Marketing Manager",
+            "description": "Drives creative campaigns that help clients connect with their dream homes.",
+            "image_url": "https://randomuser.me/api/portraits/men/33.jpg",
+            "email": "arjun@dreamhomesrealty.com",
+            "linkedin_url": "https://linkedin.com/in/arjunmehta",
+            "twitter_url": "https://twitter.com/arjunmehta",
+        },
+        {
+            "name": "Neha Patil",
+            "position": "Customer Relations Head",
+            "description": "Ensures every client receives outstanding support throughout their real estate journey.",
+            "image_url": "https://randomuser.me/api/portraits/women/52.jpg",
+            "email": "neha@dreamhomesrealty.com",
+            "linkedin_url": "https://linkedin.com/in/nehapatil",
+            "twitter_url": "https://twitter.com/nehapatil",
+        },
+    ],
 }
 
-# =============================================================================
-# SEO & SITE SETTINGS
-# =============================================================================
 
-SITE_NAME = "DreamHomes Realty"
-SITE_DESCRIPTION = "Find your dream home with DreamHomes Realty"
-SITE_KEYWORDS = "real estate, properties, homes for sale, apartment rental"
 
 # =============================================================================
-# DEFAULT AUTO FIELD
+# OTHER SETTINGS
 # =============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# =============================================================================
-# FOOTER COMPANY INFO (Loaded from environment variables)
-# =============================================================================
-
-COMPANY_INFO = {
-    "NAME": os.getenv("COMPANY_NAME", "DreamHomes Realty"),
-    "TAGLINE": os.getenv("COMPANY_TAGLINE", "Your trusted partner in real estate."),
-    "ADDRESS": os.getenv("COMPANY_ADDRESS", "Nagpur, India"),
-    "PHONE": os.getenv("COMPANY_PHONE", "+91 98765 43210"),
-    "EMAIL": os.getenv("COMPANY_EMAIL", "info@dreamhomesrealty.com"),
-    "HOURS": os.getenv("COMPANY_HOURS", "Mon - Sat: 9:00 AM - 7:00 PM"),
-    "FACEBOOK": os.getenv("FACEBOOK_URL", "#"),
-    "TWITTER": os.getenv("TWITTER_URL", "#"),
-    "INSTAGRAM": os.getenv("INSTAGRAM_URL", "#"),
-    "LINKEDIN": os.getenv("LINKEDIN_URL", "#"),
-}
+# Optional check in console
+print("✅ Django loaded successfully (DEBUG mode ON)")
+print(f"Company: {COMPANY_INFO['NAME']}")

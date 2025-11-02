@@ -30,7 +30,11 @@ def scheme_and_domain(request):
 
 
 
-from django.conf import settings
-
 def company_info(request):
-    return {"COMPANY_INFO": settings.COMPANY_INFO}
+    from django.conf import settings
+    return {
+        "company": settings.COMPANY_INFO,
+        "office_location": settings.COMPANY_INFO.get("OFFICE_LOCATION", {}),
+        "team_members": settings.COMPANY_INFO.get("TEAM_MEMBERS", []),
+    }
+
